@@ -23,7 +23,8 @@ jobs:
           echo "<details>" >> README.md
           echo "  <summary>Expand $title Notes</summary>" >> README.md
           echo "  " >> README.md
-          sed 's/^/  /' "$file" >> README.md
+          # Replace './Images' with './Notes/Images' before appending content
+          sed 's/\.\//.\/Notes\//' "$file" | sed 's/^/  /' >> README.md
           echo -e "\n</details>" >> README.md
         done
 
