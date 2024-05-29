@@ -100,3 +100,18 @@ In this example, count_up_to is a generator function that yields numbers from 1 
 
 Using yield allows for memory-efficient iteration over large sequences, as only one value needs to be stored in memory at a time, unlike with lists where the entire sequence is stored. Additionally, it enables lazy evaluation, meaning that values are generated only when needed, which can improve performance in certain scenarios.
 
+## Serialization
+Serialization in Python refers to the process of converting complex data structures, such as objects or data collections, into a format that can be easily stored or transmitted and later reconstructed back into its original form. This process is essential for tasks like saving data to a file, sending data over a network, or storing data in a database.
+
+Python provides several built-in modules for serialization, such as:
+
+- pickle: This module can serialize Python objects into a binary format. It can handle almost any Python object, including custom classes and functions.
+
+- json: This module serializes Python objects into a human-readable format called JSON (JavaScript Object Notation). JSON is commonly used for transmitting data between a server and a client over a network.
+
+- marshal: This module is similar to pickle but is more restricted in terms of the types of objects it can serialize. It is primarily used for serializing Python code objects.
+
+- shelve: This module provides a simple interface for persistently storing Python objects in a dictionary-like format.
+
+Serialization is particularly useful for tasks like data storage, data exchange between different systems or languages, and caching. However, it's essential to consider security implications, especially when deserializing data, as it can lead to security vulnerabilities if not handled properly.
+
