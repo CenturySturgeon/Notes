@@ -168,7 +168,7 @@
   
   This website is really useful so you can get an idea (it's a little outdated, 2020) of the latency (how much time it takes an operation to perform) when working with data.
   
-  ![Latency Values for 2020](./Images/Latency_Numbers.jpeg)
+  ![Latency Values for 2020](./Notes/Images/Latency_Numbers.jpeg)
   
   - **1 Byte** = **8 bits** 
   - SSD: Solid State Drive
