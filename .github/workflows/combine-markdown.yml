@@ -19,9 +19,9 @@ jobs:
         for file in Notes/*.md; do
           filename=$(basename "$file" .md)
           title=$(echo "$filename" | sed 's/^[0-9]*_//' | sed 's/_/ /g')
-          echo -e "\n## $title" >> README.md
+          # echo -e "\n## $title" >> README.md
           echo "<details>" >> README.md
-          echo "  <summary><h2 style='display: inline;'> $title </h2></summary><br>" >> README.md
+          echo "  <summary><h2 style='display: inline;'> $title </h2></summary>" >> README.md
           echo "  " >> README.md
           # Replace './Images' with './Notes/Images' before appending content
           sed 's/\.\//.\/Notes\//' "$file" | sed 's/^/  /' >> README.md

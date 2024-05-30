@@ -100,7 +100,7 @@ In this example, count_up_to is a generator function that yields numbers from 1 
 
 Using yield allows for memory-efficient iteration over large sequences, as only one value needs to be stored in memory at a time, unlike with lists where the entire sequence is stored. Additionally, it enables lazy evaluation, meaning that values are generated only when needed, which can improve performance in certain scenarios.
 
-## Serialization
+### Serialization
 Serialization in Python refers to the process of converting complex data structures, such as objects or data collections, into a format that can be easily stored or transmitted and later reconstructed back into its original form. This process is essential for tasks like saving data to a file, sending data over a network, or storing data in a database.
 
 Python provides several built-in modules for serialization, such as:
