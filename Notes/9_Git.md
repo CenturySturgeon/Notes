@@ -17,3 +17,21 @@
 Just use `git reset <file>` and the file will be removed from the current index (the "about to be committed" list) without changing anything else.
 
 To unstage **all files** from the current stage set use `git reset`
+
+### Ignoring a previously tracked file
+
+`.gitignore` will prevent untracked files from being added (without an add -f) to the set of files tracked by Git. However, Git will continue to track any files that are already being tracked.
+
+To stop tracking a file, we must remove it from the index:
+```bash
+git rm --cached <file>
+```
+
+To remove a folder and all files in the folder recursively:
+```bash
+git rm -r --cached <folder>
+```
+
+The removal of the file from the head revision will happen on the next commit.
+
+**WARNING**: While this will not remove the physical file from your local machine, it will remove the files from other developers' machines on their next git pull.

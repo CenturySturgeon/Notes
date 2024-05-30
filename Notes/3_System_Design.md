@@ -63,9 +63,9 @@ Redis, **RE**mote **DI**ctionary **S**erver, is an open-source, in-memory data s
 
 ### Designing Systems & Components
 <details>
-  <summary><h3 style="display: inline;">Rate Limiter</h3></summary><br>
+  <summary><h4 style="display: inline;">Rate Limiter</h4></summary><br>
 
-#### Requirements
+##### Requirements
 
 1. Take 1 Billion (1x10^9 or 1,000,000,000) users.
 2. Must be as general use as possible (multiple services use it).
@@ -75,9 +75,9 @@ Components you ended up using:
 - Memcache
 - Consistent Hashing
 
-#### Algorithms
+##### Algorithms
 
-##### Fixed Window Algorithm for Rate limiters
+###### Fixed Window Algorithm for Rate limiters
 
 We set a fix window of time, lets say every minute a user can send 100 requests, so everytime a new minute encompasses we refresh his available requests total to 100.
 
@@ -85,7 +85,7 @@ We set a fix window of time, lets say every minute a user can send 100 requests,
 
 - Issue with refresh rate of the algorithm: With a requests/per minute of a 100; if the user sends a request at 0:59 and then at 1:00 the valid window refreshes, the user could send another 100 requests at 1:01: in total 200 requests in a matter of 2 seconds
 
-##### Sliding window
+###### Sliding window
 
 Any time a user makes a request we check if it is inside the invalid window, every second we shift this valid window by one second so the user can't take advantage of the refresh rate of the fixed window Algo.
 
@@ -100,7 +100,7 @@ $4 \text{ Bytes} \times \text{Max\_No.Of\_Requests} \times \text{No\_Of\_Users} 
 - Token bucket
 - Sliding Window Counter (Balance between Fixed Window and Sliding Window Algorithms)
 
-#### Data Schemas
+##### Data Schemas
 
 **Identify User and his count**
 key -> Value
