@@ -1,8 +1,6 @@
 # My Software Engineering Notes
-
-## Python
 <details>
-  <summary><h2 style='display: inline;'> Python </h2></summary><br>
+  <summary><h2 style='display: inline;'> Python </h2></summary>
   
   ### Decorators
   Python decorators are a powerful feature that allows you to modify or extend the behavior of functions or methods without changing their actual code. They essentially allow you to wrap another function or method and execute code before and/or after the wrapped function runs. Decorators are typically denoted by the @ symbol followed by the decorator function name, placed just above the function definition.
@@ -106,7 +104,7 @@
   
   Using yield allows for memory-efficient iteration over large sequences, as only one value needs to be stored in memory at a time, unlike with lists where the entire sequence is stored. Additionally, it enables lazy evaluation, meaning that values are generated only when needed, which can improve performance in certain scenarios.
   
-  ## Serialization
+  ### Serialization
   Serialization in Python refers to the process of converting complex data structures, such as objects or data collections, into a format that can be easily stored or transmitted and later reconstructed back into its original form. This process is essential for tasks like saving data to a file, sending data over a network, or storing data in a database.
   
   Python provides several built-in modules for serialization, such as:
@@ -123,10 +121,8 @@
   
 
 </details>
-
-## Django
 <details>
-  <summary><h2 style='display: inline;'> Django </h2></summary><br>
+  <summary><h2 style='display: inline;'> Django </h2></summary>
   
   ### One-to-many Relations
   
@@ -159,10 +155,8 @@
       address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True)
   ```
 </details>
-
-## System Design
 <details>
-  <summary><h2 style='display: inline;'> System Design </h2></summary><br>
+  <summary><h2 style='display: inline;'> System Design </h2></summary>
   
   ### Napkin Math
   
@@ -287,12 +281,10 @@
   </details>
 
 </details>
-
-## Git
 <details>
-  <summary><h2 style='display: inline;'> Git </h2></summary><br>
+  <summary><h2 style='display: inline;'> Git </h2></summary>
   
-  ## Connecting a new PC to your GitHub profile
+  ### Connecting a new PC to your GitHub profile
   
   1. Generate a token using the instructions from [Creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens):
      - GitHub profile -> Settings -> Developer Settings -> Personal access tokens
@@ -306,7 +298,7 @@
   
   **REMEMBER:** Don't forget to set the token's permissions, even for public repositories!
   
-  ## Removing a file added with `git add`
+  ### Removing a file added with `git add`
   
   Just use `git reset <file>` and the file will be removed from the current index (the "about to be committed" list) without changing anything else.
   
