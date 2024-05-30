@@ -223,9 +223,9 @@
   
   ### Designing Systems & Components
   <details>
-    <summary><h3 style="display: inline;">Rate Limiter</h3></summary><br>
+    <summary><h4 style="display: inline;">Rate Limiter</h4></summary><br>
   
-  #### Requirements
+  ##### Requirements
   
   1. Take 1 Billion (1x10^9 or 1,000,000,000) users.
   2. Must be as general use as possible (multiple services use it).
@@ -235,9 +235,9 @@
   - Memcache
   - Consistent Hashing
   
-  #### Algorithms
+  ##### Algorithms
   
-  ##### Fixed Window Algorithm for Rate limiters
+  ###### Fixed Window Algorithm for Rate limiters
   
   We set a fix window of time, lets say every minute a user can send 100 requests, so everytime a new minute encompasses we refresh his available requests total to 100.
   
@@ -245,7 +245,7 @@
   
   - Issue with refresh rate of the algorithm: With a requests/per minute of a 100; if the user sends a request at 0:59 and then at 1:00 the valid window refreshes, the user could send another 100 requests at 1:01: in total 200 requests in a matter of 2 seconds
   
-  ##### Sliding window
+  ###### Sliding window
   
   Any time a user makes a request we check if it is inside the invalid window, every second we shift this valid window by one second so the user can't take advantage of the refresh rate of the fixed window Algo.
   
@@ -260,7 +260,7 @@
   - Token bucket
   - Sliding Window Counter (Balance between Fixed Window and Sliding Window Algorithms)
   
-  #### Data Schemas
+  ##### Data Schemas
   
   **Identify User and his count**
   key -> Value
@@ -303,5 +303,23 @@
   Just use `git reset <file>` and the file will be removed from the current index (the "about to be committed" list) without changing anything else.
   
   To unstage **all files** from the current stage set use `git reset`
+  
+  ### Ignoring a previously tracked file
+  
+  `.gitignore` will prevent untracked files from being added (without an add -f) to the set of files tracked by Git. However, Git will continue to track any files that are already being tracked.
+  
+  To stop tracking a file, we must remove it from the index:
+  ```bash
+  git rm --cached <file>
+  ```
+  
+  To remove a folder and all files in the folder recursively:
+  ```bash
+  git rm -r --cached <folder>
+  ```
+  
+  The removal of the file from the head revision will happen on the next commit.
+  
+  **WARNING**: While this will not remove the physical file from your local machine, it will remove the files from other developers' machines on their next git pull.
 
 </details>
