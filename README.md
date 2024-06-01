@@ -2,10 +2,30 @@
 
 ```mermaid
 graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+  subgraph Client
+    A[Web Browser]
+  end
+
+  subgraph Load Balancer
+    LB[Load Balancer]
+  end
+
+  subgraph Web Servers
+    WS1[Web Server 1]
+    WS2[Web Server 2]
+  end
+
+  subgraph Database Servers
+    DB1[Database Server 1]
+    DB2[Database Server 2]
+  end
+
+  A --> LB
+  LB --> WS1
+  LB --> WS2
+  WS1 --> DB1
+  WS2 --> DB2
+
 ```
 
 <details>
