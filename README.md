@@ -1,4 +1,6 @@
 # My Software Engineering Notes
+
+![Kiku](images/Kiku.jpg)
 <details>
   <summary><h2 style='display: inline;'> Python </h2></summary>
   
@@ -188,6 +190,7 @@ class Author
 This website is really useful so you can get an idea (it's a little outdated, 2020) of the latency (how much time it takes an operation to perform) when working with data.
 
 ![Latency_Numbers](images/Latency_Numbers.jpeg)
+![Kiku](images/Kiku.jpg)
 
 - **1 Byte** = **8 bits** 
 - **1 IPV4** Addresss = **4 Bytes**
