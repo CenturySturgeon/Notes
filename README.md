@@ -1,4 +1,8 @@
 # My Software Engineering Notes
+
+![Redis](images/Redis.jpg)
+
+
 <details>
   <summary><h2 style='display: inline;'> Python </h2></summary>
   
