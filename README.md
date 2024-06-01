@@ -200,7 +200,7 @@ class Author
 
 This website is really useful so you can get an idea (it's a little outdated, 2020) of the latency (how much time it takes an operation to perform) when working with data.
 
-![LatencyNumbers](images/LatencyNumbers.jpg)
+[![Latency Numbers](images/LatencyNumbers.jpg)](https://github.com/CenturySturgeon/Notes/blob/main/images/LatencyNumbers.jpg)
 
 </details>
 
