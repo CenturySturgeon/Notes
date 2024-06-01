@@ -25,8 +25,8 @@ jobs:
           echo "<details>" >> README.md
           echo "  <summary><h2 style='display: inline;'> $title </h2></summary>" >> README.md
           echo "  " >> README.md
-          # Replace '/Images' with '/Notes/Images' before appending content
-          sed 's/\/Images/Notes\/Images/g' "$file" | cat >> README.md
+          # Replace '../images' with 'images' before appending content
+          sed 's/\.\.\/images/images/g' "$file" | cat >> README.md
           echo -e "\n</details>" >> README.md
         done
 
