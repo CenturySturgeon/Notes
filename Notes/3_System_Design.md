@@ -23,17 +23,22 @@
 
 ### Napkin Math
 
+- **1 Byte** = **8 bits** 
+- **1 IPV4** Addresss = **4 Bytes**
+- **1 IPV6** Address = **16 Bytes**
+- **1 Unix Timestamp** = **4 Bytes**
+- SSD: Solid State Drive
+
+<details>
+  <summary><h5 style="display: inline;">Latency Numbers Every Programmer Should Know</h5></summary><br>
+
 [Latency Numbers Every Programmer Should Know](https://colin-scott.github.io/personal_website/research/interactive_latency.html)
 
 This website is really useful so you can get an idea (it's a little outdated, 2020) of the latency (how much time it takes an operation to perform) when working with data.
 
 ![LatencyNumbers](../images/LatencyNumbers.jpg)
 
-- **1 Byte** = **8 bits** 
-- **1 IPV4** Addresss = **4 Bytes**
-- **1 IPV6** Address = **16 Bytes**
-- **1 Unix Timestamp** = **4 Bytes**
-- SSD: Solid State Drive
+</details>
 
 #### Concepts I Found Interesting
 
