@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Notes/*'
 
 jobs:
   build:
@@ -24,7 +26,7 @@ jobs:
           echo "  <summary><h2 style='display: inline;'> $title </h2></summary>" >> README.md
           echo "  " >> README.md
           # Replace '/Images' with '/Notes/Images' before appending content
-          sed 's/\/Images/\/Notes\/Images/g' "$file" | cat >> README.md
+          sed 's/\/Images/Notes\/Images/g' "$file" | cat >> README.md
           echo -e "\n</details>" >> README.md
         done
 
