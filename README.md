@@ -1,5 +1,13 @@
 # My Software Engineering Notes
 
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
 <details>
   <summary><h2 style='display: inline;'> Python </h2></summary>
   
