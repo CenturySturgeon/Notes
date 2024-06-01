@@ -6,7 +6,7 @@ graph TD;
     A[Web Browser]
   end
 
-  subgraph Load Balancer
+  subgraph
     LB[Load Balancer]
   end
 
