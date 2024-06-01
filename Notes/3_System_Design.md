@@ -1,10 +1,33 @@
+### Fundamentals
+
+<details>
+  <summary><h4 style="display: inline;">Functional vs Non-Functional Requirements</h4></summary><br>
+
+| Functional Requirements          | Non-Functional Requirements              |
+|---------------------------------|-----------------------------------------|
+| A functional requirement defines a system or its component. | A non-functional requirement defines the quality attribute of a software system. |
+| It specifies “What should the software system do?” | It places constraints on “How should the software system fulfill the functional requirements?” |
+| Functional requirement is specified by User. | Non-functional requirement is specified by technical peoples e.g. Architect, Technical leaders and software developers. |
+| It is mandatory. | It is not mandatory. |
+| It is captured in use case. | It is captured as a quality attribute. |
+| Defined at a component level. | Applied to a system as a whole. |
+| Helps you verify the functionality of the software. | Helps you to verify the performance of the software. |
+| Functional Testing like System, Integration, End to End, API testing, etc are done. | Non-Functional Testing like Performance, Stress, Usability, Security testing, etc are done. |
+| Usually easy to define. | Usually more difficult to define. |
+| **Example**                      | **Example**                             |
+| 1) Authentication of user whenever he/she logs into the system. | 1) Emails should be sent with a latency of no greater than 12 hours from such an activity. |
+| 2) System shutdown in case of a cyber attack. | 2) The processing of each request should be done within 10 seconds |
+| 3) A Verification email is sent to user whenever he/she registers for the first time on some software system. | 3) The site should load in 3 seconds when the number of simultaneous users are > 10000 |
+
+</details>
+
 ### Napkin Math
 
 [Latency Numbers Every Programmer Should Know](https://colin-scott.github.io/personal_website/research/interactive_latency.html)
 
 This website is really useful so you can get an idea (it's a little outdated, 2020) of the latency (how much time it takes an operation to perform) when working with data.
 
-![Latency Values for 2020](./Images/Latency_Numbers.jpeg)
+![Latency Values for 2020](/Images/Latency_Numbers.jpeg)
 
 - **1 Byte** = **8 bits** 
 - **1 IPV4** Addresss = **4 Bytes**
