@@ -1,6 +1,4 @@
 # My Software Engineering Notes
-
-![Kiku](images/Kiku.jpg)
 <details>
   <summary><h2 style='display: inline;'> Python </h2></summary>
   
@@ -189,8 +187,7 @@ class Author
 
 This website is really useful so you can get an idea (it's a little outdated, 2020) of the latency (how much time it takes an operation to perform) when working with data.
 
-![Latency_Numbers](images/Latency_Numbers.jpeg)
-![Kiku](images/Kiku.jpg)
+![Latency Values for 2020](Notes/Images/Latency_Numbers.jpeg)
 
 - **1 Byte** = **8 bits** 
 - **1 IPV4** Addresss = **4 Bytes**
@@ -225,7 +222,7 @@ In the context of CPU cache, when a thread acquires a mutex lock before accessin
 <details>
   <summary><h4 style="display: inline;">Redis</h4></summary><br>
 
-![Redis logo](images/redis.svg)
+![Redis logo](Notes/Images/Kiku.jpg)
 
 Redis, **RE**mote **DI**ctionary **S**erver, is an open-source, in-memory data structure store used as a database, cache, and message broker. It supports various data structures such as strings, hashes, lists, sets, sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes, and streams. Redis is known for its high performance, flexibility, and rich set of features.
 
