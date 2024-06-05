@@ -66,3 +66,7 @@ Independent line:
 $4 \text{ Bytes} \times \text{Max\_No.Of\_Requests} \times \text{No\_Of\_Users}$
 
 In line $4 \text{ Bytes} \times \text{Max\_No.Of\_Requests} \times \text{No\_Of\_Users}$
+
+# Color
+<span style="color:blue; background-color:white;">some *blue* text</span>.
+
