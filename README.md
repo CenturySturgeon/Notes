@@ -1,33 +1,4 @@
 # My Software Engineering Notes
-
-```mermaid
-graph TD;
-  subgraph Client
-    A[Web Browser]
-  end
-
-  subgraph
-    LB[Load Balancer]
-  end
-
-  subgraph Web Servers
-    WS1[Web Server 1]
-    WS2[Web Server 2]
-  end
-
-  subgraph Database Servers
-    DB1[Database Server 1]
-    DB2[Database Server 2]
-  end
-
-  A --> LB
-  LB --> WS1
-  LB --> WS2
-  WS1 --> DB1
-  WS2 --> DB2
-
-```
-
 <details>
   <summary><h2 style='display: inline;'> Python </h2></summary>
   
@@ -225,7 +196,7 @@ class Author
 
 This website is really useful so you can get an idea (it's a little outdated, 2020) of the latency (how much time it takes an operation to perform) when working with data.
 
-[![Latency Numbers](images/LatencyNumbers.jpg)](https://github.com/CenturySturgeon/Notes/blob/main/images/LatencyNumbers.jpg)
+![LatencyNumbers](https://github.com/CenturySturgeon/Notes/blob/main/images/LatencyNumbers.jpg)
 
 </details>
 
@@ -256,7 +227,7 @@ In the context of CPU cache, when a thread acquires a mutex lock before accessin
 <details>
   <summary><h4 style="display: inline;">Redis</h4></summary><br>
 
-![Redis](images/Redis.jpg)
+![Redis](https://github.com/CenturySturgeon/Notes/blob/main/images/Redis.jpg)
 
 Redis, **RE**mote **DI**ctionary **S**erver, is an open-source, in-memory data structure store used as a database, cache, and message broker. It supports various data structures such as strings, hashes, lists, sets, sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes, and streams. Redis is known for its high performance, flexibility, and rich set of features.
 
@@ -337,6 +308,66 @@ User_Id/Ip -> Count (Enforces count using rule)
 
 </details>
 
+</details>
+<details>
+  <summary><h2 style='display: inline;'> Algorithms </h2></summary>
+  
+### Big O Notation
+
+
+![Big O Notation](https://github.com/CenturySturgeon/Notes/blob/main/images/BigONotation.png)
+
+#### Static Arrays
+
+| Operation | Big O Time | Notes                                                                 |
+|-----------|------------|-----------------------------------------------------------------------|
+| Reading   | O(1)       | Reading an element by index is constant time.                         |
+| Insertion | O(n)*      | Insertion at the end of the array 'push( )' is typically O(1) on average. However, resizing may occasionally lead to O(n) time complexity. |
+| Deletion  | O(n)*      | Deletion from the end of the array 'pop( )' is typically O(1) on average. However, resizing may occasionally lead to O(n) time complexity. |
+
+#### Dynamic Arrays (Python Lists)
+
+| Operation | Big O Time | Notes                                                                                           |
+|-----------|------------|-------------------------------------------------------------------------------------------------|
+| Reading   | O(1)       | Reading an element by index is constant time, similar to regular arrays.                         |
+| Insertion | O(1)*      | Insertion at the end of the list ('append()' operation) is typically O(1) on average. However, inserting in the middle requires shifting, leading to O(n) time complexity. |
+| Deletion  | O(1)*      | Deletion from the end of the list ('pop()' operation) is typically O(1) on average. However, deleting from the middle requires shifting, leading to O(n) time complexity. |
+
+**Notes**: Insertion and deletion at the end of a Python list (using methods like 'append()' and 'pop()') are also usually O(1) because Python dynamically manages memory for the list and avoids resizing the array too often. However, as mentioned in the notes, if insertion or deletion happens in the middle of the list, it requires shifting elements, resulting in an O(n) time complexity due to the need to move subsequent elements.
+
+#### Stacks
+
+| Operation | Big O Time | Notes                                                                 |
+|-----------|------------|-----------------------------------------------------------------------|
+| Reading   | O(1)       | Reading an element by index is constant time.                         |
+| Insertion | O(n)*      | Insertion at the end of the array ('push()' operation) is typically O(1) on average. However, resizing may occasionally lead to O(n) time complexity. |
+| Deletion  | O(n)*      | Deletion from the end of the array ('pop()' operation) is typically O(1) on average. However, resizing may occasionally lead to O(n) time complexity. |
+
+#### Stacks
+
+| Operation | Big O Time | Notes                                                                                           |
+|-----------|------------|-------------------------------------------------------------------------------------------------|
+| Push      | O(1)       |                                                                                                 |
+| Pop       | O(1)*      | Check if the stack is empty first.                                                              |
+| Peek/Top  | O(1)*      | Retrieves without removing.                                                                     |
+
+#### Linked Lists (1 Direction)
+
+| Operation | Big O Time | Notes                                                     |
+|-----------|------------|-----------------------------------------------------------|
+| Access    | O(n)       |                                                           |
+| Search    | O(n)*      |                                                           |
+| Insertion | O(1)*      | Assuming you have the reference to the desired position.  |
+| Deletion  | O(1)*      | Assuming you have the reference to the desired position.  |
+
+#### Linked List (2 Directions)
+
+| Operation | Big O Time | Notes                                                     |
+|-----------|------------|-----------------------------------------------------------|
+| Access    | O(n)       |                                                           |
+| Search    | O(n)*      |                                                           |
+| Insertion | O(1)*      | Assuming you have the reference to the desired position.  |
+| Deletion  | O(1)*      | Assuming you have the reference to the desired position.  |
 </details>
 <details>
   <summary><h2 style='display: inline;'> Git </h2></summary>
