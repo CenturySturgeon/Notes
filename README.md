@@ -104,6 +104,63 @@ In this example, count_up_to is a generator function that yields numbers from 1 
 
 Using yield allows for memory-efficient iteration over large sequences, as only one value needs to be stored in memory at a time, unlike with lists where the entire sequence is stored. Additionally, it enables lazy evaluation, meaning that values are generated only when needed, which can improve performance in certain scenarios.
 
+### Zip
+
+the zip() function in Python is used to combine multiple iterables (lists, tuples, etc.) element-wise. It takes in two or more iterables as arguments and returns an iterator that generates tuples of corresponding elements from each iterable.
+
+Here's a basic example:
+
+```python
+list1 = [1, 2, 3]
+list2 = ['a', 'b', 'c']
+
+zipped = zip(list1, list2)
+
+for item in zipped:
+    print(item)
+# Output:
+
+(1, 'a')
+(2, 'b')
+(3, 'c')
+```
+
+In this example, zip() pairs the first element of list1 with the first element of list2, the second element of list1 with the second element of list2, and so on.
+
+One important thing to note about zip() is that it stops generating tuples as soon as one of the input iterables is exhausted. For example:
+
+```python
+list1 = [1, 2, 3]
+list2 = ['a', 'b']
+
+zipped = zip(list1, list2)
+
+for item in zipped:
+    print(item)
+# Output:
+
+(1, 'a')
+(2, 'b')
+```
+
+Here, since list2 has only two elements, the third element of list1 is ignored.
+
+If you want to get a list of tuples instead of an iterator, you can use the list() function to convert the iterator returned by zip() into a list:
+
+```python
+list1 = [1, 2, 3]
+list2 = ['a', 'b', 'c']
+
+zipped = list(zip(list1, list2))
+
+print(zipped)
+# Output:
+
+[(1, 'a'), (2, 'b'), (3, 'c')]
+```
+
+zip() is commonly used in scenarios where you need to iterate over multiple lists simultaneously, especially when the lists are related and you want to process their elements together.
+
 ### Serialization
 Serialization in Python refers to the process of converting complex data structures, such as objects or data collections, into a format that can be easily stored or transmitted and later reconstructed back into its original form. This process is essential for tasks like saving data to a file, sending data over a network, or storing data in a database.
 
@@ -321,7 +378,7 @@ User_Id/Ip -> Count (Enforces count using rule)
 ***
 
 
-| Operation | Big O Time | Notes                                                                 |
+| Operation | Big-O Time | Notes                                                                 |
 |-----------|------------|-----------------------------------------------------------------------|
 | Reading   | O(1)       | Reading an element by index is constant time.                         |
 | Insertion | O(n)*      | Insertion at the end of the array 'push( )' is typically O(1) on average. However, resizing may occasionally lead to O(n) time complexity. |
@@ -330,7 +387,7 @@ User_Id/Ip -> Count (Enforces count using rule)
 #### Dynamic Arrays (Python Lists)
 ***
 
-| Operation | Big O Time | Notes                                                                                           |
+| Operation | Big-O Time | Notes                                                                                           |
 |-----------|------------|-------------------------------------------------------------------------------------------------|
 | Reading   | O(1)       | Reading an element by index is constant time, similar to regular arrays.                         |
 | Insertion | O(1)*      | Insertion at the end of the list ('append()' operation) is typically O(1) on average. However, inserting in the middle requires shifting, leading to O(n) time complexity. |
@@ -341,7 +398,7 @@ User_Id/Ip -> Count (Enforces count using rule)
 #### Stacks
 ***
 
-| Operation | Big O Time | Notes                                                                                           |
+| Operation | Big-O Time | Notes                                                                                           |
 |-----------|------------|-------------------------------------------------------------------------------------------------|
 | Push      | O(1)       |                                                                                                 |
 | Pop       | O(1)*      | Check if the stack is empty first.                                                              |
@@ -350,7 +407,7 @@ User_Id/Ip -> Count (Enforces count using rule)
 #### Linked Lists (1 Direction)
 ***
 
-| Operation | Big O Time | Notes                                                     |
+| Operation | Big-O Time | Notes                                                     |
 |-----------|------------|-----------------------------------------------------------|
 | Access    | O(n)       |                                                           |
 | Search    | O(n)*      |                                                           |
@@ -360,7 +417,7 @@ User_Id/Ip -> Count (Enforces count using rule)
 #### Linked List (2 Directions)
 ***
 
-| Operation | Big O Time | Notes                                                     |
+| Operation | Big-O Time | Notes                                                     |
 |-----------|------------|-----------------------------------------------------------|
 | Access    | O(n)       |                                                           |
 | Search    | O(n)*      |                                                           |
@@ -371,7 +428,7 @@ User_Id/Ip -> Count (Enforces count using rule)
 ***
 
 
-| Operation | Big O Time | Notes                                                     |
+| Operation | Big-O Time | Notes                                                     |
 |-----------|------------|-----------------------------------------------------------|
 | Enqueue   | O(1)       |                                                           |
 | Dequeue   |  O(1)      |                                                           |
@@ -379,7 +436,7 @@ User_Id/Ip -> Count (Enforces count using rule)
 #### Binary Trees
 ***
 
-| Operation       | Big O Time | Notes                                              |
+| Operation       | Big-O Time | Notes                                              |
 |-----------------|------------|----------------------------------------------------|
 | Search          | O(log n)   | Depends on the height of the binary tree           |
 | Insertion       | O(log n)   | Depends on the height of the binary tree           |
@@ -393,7 +450,7 @@ User_Id/Ip -> Count (Enforces count using rule)
 #### Heaps
 ***
 
-| Operation        | Big O Time | Notes                                       |
+| Operation        | Big-O Time | Notes                                       |
 |------------------|------------|---------------------------------------------|
 | Insertion        | O(log n)   | Heapify up operation                        |
 | Deletion (Root)  | O(log n)   | Heapify down operation                      |
@@ -433,6 +490,11 @@ User_Id/Ip -> Count (Enforces count using rule)
 | Insertion Sort | O(n)       | O(n^2)     | O(n^2)     | O(1)             |
 | Bucket Sort    | O(n+k)     | O(n+k)     | O(n^2)     | O(n)             |
 
+
+### Saved for later
+
+#### Prefix Sum with Dictionary
+https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-sum-hashmap-patterns-7-problems
 </details>
 <details>
   <summary><h2 style='display: inline;'> Git </h2></summary>
