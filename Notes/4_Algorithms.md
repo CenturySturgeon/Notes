@@ -7,7 +7,7 @@
 ***
 
 
-| Operation | Big O Time | Notes                                                                 |
+| Operation | Big-O Time | Notes                                                                 |
 |-----------|------------|-----------------------------------------------------------------------|
 | Reading   | O(1)       | Reading an element by index is constant time.                         |
 | Insertion | O(n)*      | Insertion at the end of the array 'push( )' is typically O(1) on average. However, resizing may occasionally lead to O(n) time complexity. |
@@ -16,7 +16,7 @@
 #### Dynamic Arrays (Python Lists)
 ***
 
-| Operation | Big O Time | Notes                                                                                           |
+| Operation | Big-O Time | Notes                                                                                           |
 |-----------|------------|-------------------------------------------------------------------------------------------------|
 | Reading   | O(1)       | Reading an element by index is constant time, similar to regular arrays.                         |
 | Insertion | O(1)*      | Insertion at the end of the list ('append()' operation) is typically O(1) on average. However, inserting in the middle requires shifting, leading to O(n) time complexity. |
@@ -27,7 +27,7 @@
 #### Stacks
 ***
 
-| Operation | Big O Time | Notes                                                                                           |
+| Operation | Big-O Time | Notes                                                                                           |
 |-----------|------------|-------------------------------------------------------------------------------------------------|
 | Push      | O(1)       |                                                                                                 |
 | Pop       | O(1)*      | Check if the stack is empty first.                                                              |
@@ -36,7 +36,7 @@
 #### Linked Lists (1 Direction)
 ***
 
-| Operation | Big O Time | Notes                                                     |
+| Operation | Big-O Time | Notes                                                     |
 |-----------|------------|-----------------------------------------------------------|
 | Access    | O(n)       |                                                           |
 | Search    | O(n)*      |                                                           |
@@ -46,7 +46,7 @@
 #### Linked List (2 Directions)
 ***
 
-| Operation | Big O Time | Notes                                                     |
+| Operation | Big-O Time | Notes                                                     |
 |-----------|------------|-----------------------------------------------------------|
 | Access    | O(n)       |                                                           |
 | Search    | O(n)*      |                                                           |
@@ -57,7 +57,7 @@
 ***
 
 
-| Operation | Big O Time | Notes                                                     |
+| Operation | Big-O Time | Notes                                                     |
 |-----------|------------|-----------------------------------------------------------|
 | Enqueue   | O(1)       |                                                           |
 | Dequeue   |  O(1)      |                                                           |
@@ -65,7 +65,7 @@
 #### Binary Trees
 ***
 
-| Operation       | Big O Time | Notes                                              |
+| Operation       | Big-O Time | Notes                                              |
 |-----------------|------------|----------------------------------------------------|
 | Search          | O(log n)   | Depends on the height of the binary tree           |
 | Insertion       | O(log n)   | Depends on the height of the binary tree           |
@@ -79,7 +79,7 @@
 #### Heaps
 ***
 
-| Operation        | Big O Time | Notes                                       |
+| Operation        | Big-O Time | Notes                                       |
 |------------------|------------|---------------------------------------------|
 | Insertion        | O(log n)   | Heapify up operation                        |
 | Deletion (Root)  | O(log n)   | Heapify down operation                      |
@@ -118,3 +118,9 @@
 | Quicksort      | O(n log n) | O(n log n) | O(n^2)     | O(log n) - O(n)  |
 | Insertion Sort | O(n)       | O(n^2)     | O(n^2)     | O(1)             |
 | Bucket Sort    | O(n+k)     | O(n+k)     | O(n^2)     | O(n)             |
+
+
+### Saved for later
+
+#### Prefix Sum with Dictionary
+https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-sum-hashmap-patterns-7-problems
