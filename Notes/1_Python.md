@@ -81,9 +81,41 @@ print(next(ch_iterator)) # -> G
 
 ---
 
-A `Generator` in Python is a function that returns an iterator using the `Yield` keyword. In this article, we will discuss how the generator function works in Python.
+`Generators` are a powerful feature that allow you to iterate over a sequence of items without storing them all in memory at once. They are implemented using a special type of function using `yield` expressions.
 
+Here are key points about Python generators:
 
+- Lazy Evaluation: Generators generate values on-the-fly as they are requested instead of generating them all at once and storing them in memory. This is achieved using the yield statement instead of return.
+
+-Memory Efficiency: Since generators produce values one at a time, they are memory efficient especially for large datasets or infinite sequences.
+
+- Iteration Support: Generators support iteration automatically, which means you can use them in loops or any other context that expects an iterable.
+
+- State Maintenance: The state of local variables in a generator function is remembered between calls. This allows you to write complex iterative algorithms.
+
+- Syntax: Generators are defined using a function that contains one or more yield statements. When called, they return a generator object, which can be iterated over using a for loop or by explicitly calling next() on it.
+
+Here’s a simple example of a generator function that generates squares of numbers up to a given limit:
+
+```Python
+def square_generator(n):
+    for i in range(n):
+        yield i ** 2
+
+# Using the generator
+gen = square_generator(5)
+for num in gen:
+    print(num)
+
+# Output:
+# 0
+# 1
+# 4
+# 9
+# 16
+```
+
+Generators are specially handy when you want to access an array of values but don't want to store them in memory at once (like that API implementation problem you once saw).
 
 ### Yield 
 
