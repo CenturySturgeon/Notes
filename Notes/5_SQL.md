@@ -27,6 +27,8 @@ Standard Query Language
 
 ### Joins
 
+![SQL Joins](../images/SQLJoins.png)
+
 ### Comparisson Math Operators
 
 | Operator | Description                  |
