@@ -23,6 +23,42 @@ Standard Query Language
 
 ### Foreign Keys
 
+Foreign keys in a relational database are columns (or combinations of columns) that establish and enforce a link between data in two tables. They create a parent-child relationship between the tables, where the child table (or referencing table) contains values that match values in the primary key column(s) of the parent table (or referenced table).
+
+- Rows only have this **if they belong to another record**.
+- Many rows can have the same foreign key.
+- Name varies, usually called something like **"xyz_id"**.
+- Exactly equal to the primary key of the referenced row.
+- Changes if the relationship changes.
+
+```mermaid
+graph TD;
+    subgraph Comments
+        A1[Comment 1]
+        A2[Comment 2]
+        A3[Comment 3]
+    end
+    B[Photo]
+    A1 --> B
+    A2 -->B
+    A3 -->B
+```
+
+You might find it easier to understand by thinking how Instagram handles its comments. Each comment belongs to a user, so in the comments table you would have a foreign key for each comment pointing at its owner (the user who wrote this comment).
+
+```mermaid
+graph TD;
+    subgraph Comments
+        A1[Comment 1]
+        A2[Comment 2]
+        A3[Comment 3]
+    end
+    B[User]
+    A1 --> B
+    A2 -->B
+    A3 -->B
+```
+
 ### ON DELETE Options
 
 ### Joins
