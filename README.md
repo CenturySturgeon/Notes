@@ -640,6 +640,8 @@ Standard Query Language
 
 ### Joins
 
+![SQL Joins](https://github.com/CenturySturgeon/Notes/blob/main/images/SQLJoins.png)
+
 ### Comparisson Math Operators
 
 | Operator | Description                  |
