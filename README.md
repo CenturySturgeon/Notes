@@ -617,7 +617,7 @@ To run PostgreSQL online use [pg-sql](https://pg-sql.com)
 
 ### Notes
 - In SQL, keywords are written in capital letters (like `SELECT`) while variables are written in lower-case (like a column name).
-- PostgreSQL doesn't execute queries from left to right. It's important to understand this when writing queries so you comprehend what's going on behing the scenes as its very useful when writing complicated queries.
+- SQL doesn't execute queries from left to right. It's important to understand this when writing queries so you comprehend what's going on behing the scenes as its very useful when writing complicated queries.
 
 
 ### Key Concepts
@@ -630,48 +630,12 @@ To run PostgreSQL online use [pg-sql](https://pg-sql.com)
 - **Identifiers**: Tell the database what thing we want to act on. Always written in lower 
 case letters.
 
-### Relationship Types
-
 |                     |                                                                                               |
 |---------------------|-----------------------------------------------------------------------------------------------|
 | One-To-Many         | "A user has many photos".                                                                     |
 | Many-To-One         | "Many photos belong to a user".                                                               |
 | Many-To-Many        | "Many students have many classes" <br> "Many classes have many students".                     |
 | One-To-One          | "A boat has a single captain" <br> "A captain belongs to a single boat".                      |
-
-
-### Primary Keys
-
-### Foreign Keys
-
-Foreign keys in a relational database are columns (or combinations of columns) that establish and enforce a link between data in two tables. They create a parent-child relationship between the tables, where the child table (or referencing table) contains values that match values in the primary key column(s) of the parent table (or referenced table).
-
-- Rows only have this **if they belong to another record**.
-- Many rows can have the same foreign key.
-- Name varies, usually called something like **"xyz_id"**.
-- Exactly equal to the primary key of the referenced row.
-- Changes if the relationship changes.
-
-You might find it easier to understand by thinking how Instagram handles its comments. Each comment belongs to a user, so in the comments table you would have a foreign key for each comment pointing at its owner (the user who wrote this comment).
-
-```mermaid
-graph TD;
-    subgraph Comments
-        A1[Comment 1]
-        A2[Comment 2]
-        A3[Comment 3]
-    end
-    B[Photo]
-    A1 -->B
-    A2 -->B
-    A3 -->B
-```
-
-### ON DELETE Options
-
-### Joins
-
-![SQL Joins](https://github.com/CenturySturgeon/Notes/blob/main/images/SQLJoins.png)
 
 ### Comparisson Math Operators
 
@@ -834,7 +798,7 @@ VALUES
 SELECT title, box_office FROM movies;
 ```
 
-### PostgreSQL Common Column Types
+### PostgreSQL Column Types
 
 | Data Type                  | Description                            | Capacity/Range                                                                                     |
 |----------------------------|----------------------------------------|----------------------------------------------------------------------------------------------------|
@@ -879,6 +843,131 @@ SELECT title, box_office FROM movies;
 | `uuid`                     | Universally unique identifier          | 128-bit number (UUID)                                                                              |
 | `xml`                      | XML data                               | Unlimited size                                                                                     |
 
+### Relationship Types
+
+#### One-To-Many
+
+One-to-many relationships can be easilly identified by the frase "has many" as in the following examples:
+
+- A classroom `has many` students.
+- An office `has many` workers.
+- A house `has many` people living in it.
+
+#### Many-To-One
+
+Many-to-one relationships are the same as one-to-many, they're just viewed from the other side of the relationship.
+
+- Many students `have one` classroom.
+- Many workers `have one` office.
+- Many people live in a house.
+
+#### One-To-One 
+
+One-to-one relationships are the simplest to understand and identify as they express one way roads between to objects.
+
+- One company `has one` CEO.
+- One country `has one` capitol.
+- One person `has one` drivers license.
+
+#### Many-To-Many
+
+Many-to-many relationships are the most complex to identify because they imply that multiple records from one entity can be related to multiple records from another entity. These relationships are typically identified by the use of `many-to-many` or `have many` keywords, which must be applied from both perspectives.
+
+- Movies `have many` actors. <-> Many actors `have many` movies.
+- Many conference calls `have many` employees. <-> Many employees `have many` conference calls.
+- A google doc can be edited by `many` users at the same time. <-> A single user can edit `many` different documents.
+
+The last example from Google Docs might be easier to understand, as its opposite would be a one-to-one relationship: `A document can only be edited by a single user. <-> A user can only edit a single document`.
+Another example is building a database for an E-Commerce application where you need to track which users purchase which product categories. In this context, many-to-many relationships are evident because `Users can purchase products from many different categorys. <-> Each kind of product can be purchased by many different users.`
+
+
+### Primary Keys
+
+Primary Keys uniquely identify a record in a table, they are usually an integer or an UUID. **There can't be two rows with the same primary key in a table**.
+
+#### Photos Table
+
+| id INTEGER, PK | url VARCHAR (50) | user_id (FK, points to users record) |
+|----------------|------------------|--------------------------------------|
+| 1              | [url_1]          | 1                                    |
+| 2              | [url_2]          | 3                                    |
+| 3              | [url_3]          | 2                                    |
+| ...            | ...              | ...                                  |
+
+#### Users Table
+
+| id INTEGER, PK | username VARCHAR (50) | email VARCHAR (50) |
+|----------------|-----------------------|--------------------|
+| 1              | user1                 | user1@example.com  |
+| 2              | user2                 | user2@example.com  |
+| 3              | user3                 | user3@example.com  |
+| ...            | ...                   | ...                |
+
+The SQL code for creating this tables is shown below:
+```SQL
+-- Create the users table
+CREATE TABLE users (
+  -- Serial means it auto-generates a value when a record is addedALTER
+  -- Primary Key adds special performance benefits when looking for records
+  id SERIAL PRIMARY KEY,
+  user_name VARCHAR(50)
+);
+-- Insert some data into the users table
+INSERT INTO users (user_name) VALUES ('Juan'), ('Jose'), ('Luis'), ('x123');
+
+-- Create photos table
+CREATE TABLE photos (
+    id SERIAL PRIMARY KEY,
+    url VARCHAR(50),
+    -- Name the column as 'user_id' which holds the link to the users table
+    -- References keyword is used to specify the table and the column for the Foreign Key relationship
+    user_id INTEGER REFERENCES users(id)
+);
+
+-- Insert values into the photos table using the foregin key
+INSERT INTO photos (url, user_id) VALUES ('http://one.jpg', 4);
+```
+
+As you can see, the `id` field on each table is a **Primary Key**, and the `user_id` field on the `Photos` table is a **Foreign Key**
+
+##### Notes:
+- Even when you delete or modify records **the primary key will not change**, which ensures that all records can be consistently accessed using the PK.
+- **Primary Key (PK)**: `id` columns are marked as primary keys (`PK`) in both tables, ensuring each row has a unique identifier.
+- **Foreign Key (FK)**: In the `photos` table, `user_id` is a foreign key that references the `id` column in the `users` table, establishing a relationship between photos and users.
+- **Data Types**: `url` and `email` are specified as `varchar(50)`, indicating the expected character limits for these columns.
+  
+These tables provide a basic structure for modeling photos and users in a database schema, demonstrating the use of primary keys, foreign keys, and column data types as per your requirements. Adjustments can be made based on specific database management system requirements or additional constraints.
+
+### Foreign Keys
+
+Foreign keys in a relational database are columns (or combinations of columns) that establish and enforce a link between data in two tables. They create a parent-child relationship between the tables, where the child table contains values that match values in the primary key column(s) of the parent table.
+
+- Rows can  **only have this if they belong to another record**.
+- Many rows can have the same foreign key.
+- Name varies, usually called something like **"xyz_id"**.
+- **Exactly equal to the primary key of the referenced row**.
+- Changes if the relationship changes.
+
+You might find it easier to understand by thinking how Instagram handles its comments. Each comment belongs to a photo were it was written, so in the comments table you would have a foreign key for each comment pointing at its photo (the one where the comment was written into).
+
+```mermaid
+graph TD;
+    subgraph Comments
+        A1[Comment 1]
+        A2[Comment 2]
+        A3[Comment 3]
+    end
+    B[Photo]
+    A1 -->B
+    A2 -->B
+    A3 -->B
+```
+
+### ON DELETE Options
+
+### Joins
+
+![SQL Joins](https://github.com/CenturySturgeon/Notes/blob/main/images/SQLJoins.png)
 </details>
 <details>
   <summary><h2 style='display: inline;'> Git </h2></summary>
