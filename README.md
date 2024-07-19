@@ -814,7 +814,7 @@ DELETE FROM table_name WHERE column_1 = 5;
 
 ---
 
-### Queries Examples
+### Query Examples
 
 ```SQL
 CREATE TABLE movies (
@@ -834,36 +834,51 @@ VALUES
 SELECT title, box_office FROM movies;
 ```
 
-| Data Type                        | Description                                                  | Capacity/Range                                             |
-|----------------------------------|--------------------------------------------------------------|------------------------------------------------------------|
-| `integer`                        | 4 bytes signed integer                                       | -2,147,483,648 to 2,147,483,647                            |
-| `bigint`                         | 8 bytes signed integer                                       | -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807    |
-| `numeric(precision, scale)`      | variable precision number                                    | up to 131072 digits before the decimal point, up to 16383 digits after |
-| `character varying(n)`           | variable-length character string                             | maximum length `n`                                         |
-| `character(n)`                   | fixed-length character string                                | length `n`                                                 |
-| `text`                           | variable unlimited length character string                   | unlimited                                                  |
-| `timestamp`                      | date and time (no time zone)                                 |                                                            |
-| `timestamptz`                    | date and time with time zone                                 |                                                            |
-| `date`                           | date only                                                    |                                                            |
-| `time`                           | time of day (no date)                                        |                                                            |
-| `interval`                       | time interval                                                |                                                            |
-| `boolean`                        | logical Boolean (true/false)                                 |                                                            |
-| `bytea`                          | binary data                                                  |                                                            |
-| `point`                          | geometric point (x, y)                                        |                                                            |
-| `line`                           | infinite line (A, B, C)                                      |                                                            |
-| `lseg`                           | line segment [(x1, y1), (x2, y2)]                            |                                                            |
-| `box`                            | rectangular box [(x1, y1), (x2, y2)]                         |                                                            |
-| `path`                           | geometric path [(x1, y1), ...]                               |                                                            |
-| `polygon`                        | closed geometric path [(x1, y1), ...]                        |                                                            |
-| `circle`                         | circle <(x, y), r>                                           |                                                            |
-| `inet`                           | IP address (IPv4 or IPv6)                                    |                                                            |
-| `cidr`                           | network IP address                                           |                                                            |
-| `array`                          | array of any other datatype                                  |                                                            |
-| `json`                           | JSON data                                                    |                                                            |
-| `jsonb`                          | JSON data (binary format)                                    |                                                            |
-| `uuid`                           | universally unique identifier                                |                                                            |
-| `enum`                           | user-defined enumerated types                                |                                                            |
-| Composite Types                  | user-defined row types                                       |                                                            |
+### PostgreSQL Common Column Types
+
+| Data Type                  | Description                            | Capacity/Range                                                                                     |
+|----------------------------|----------------------------------------|----------------------------------------------------------------------------------------------------|
+| `bigint`                   | Signed eight-byte integer              | -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807                                            |
+| `bigserial`                | Autoincrementing eight-byte integer    | 1 to 9,223,372,036,854,775,807                                                                     |
+| `bit(n)`                   | Fixed-length bit string                | Up to 1,048,576 bits (131,072 bytes)                                                               |
+| `bit varying(n)`           | Variable-length bit string             | Up to 1,048,576 bits (131,072 bytes)                                                               |
+| `boolean`                  | Logical Boolean (true/false)           | true or false                                                                                      |
+| `box`                      | Rectangular box on a plane             | Represented by two points                                                                          |
+| `bytea`                    | Binary data ("byte array")             | Up to 1 GB                                                                                         |
+| `character(n)`             | Fixed-length character string          | Up to 1 billion characters                                                                         |
+| `character varying(n)`     | Variable-length character string       | Up to 1 billion characters                                                                         |
+| `cidr`                     | IPv4 or IPv6 network address           | IPv4: 0.0.0.0/0 to 255.255.255.255/32<br>IPv6: ::/0 to ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/128 |
+| `circle`                   | Circle on a plane                      | Defined by a center (point) and a radius                                                           |
+| `date`                     | Calendar date (year, month, day)       | 4713 BC to 5874897 AD                                                                              |
+| `double precision`         | Double precision floating-point number | 15 decimal digits precision                                                                        |
+| `inet`                     | IPv4 or IPv6 host address              | IPv4: 0.0.0.0 to 255.255.255.255<br>IPv6: :: to ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff            |
+| `integer`                  | Signed four-byte integer               | -2,147,483,648 to 2,147,483,647                                                                    |
+| `interval`                 | Time interval                          | -178000000 years to 178000000 years                                                                |
+| `json`                     | JSON data format                       | 1 GB                                                                                               |
+| `jsonb`                    | Binary JSON data format                | 1 GB                                                                                               |
+| `line`                     | Infinite line on a plane               | Defined by a point and a direction vector                                                          |
+| `lseg`                     | Line segment on a plane                | Defined by two points                                                                              |
+| `macaddr`                  | MAC (Media Access Control) address     | 6 bytes, formatted as XX:XX:XX:XX:XX:XX                                                            |
+| `money`                    | Currency amount                        | -922,337,203,685,477.5808 to +922,337,203,685,477.5807                                             |
+| `numeric(p, s)`            | Exact numeric of selectable precision  | Up to 131,072 digits before the decimal point; up to 16,383 digits after the decimal point         |
+| `path`                     | Geometric path on a plane              | Sequence of points                                                                                 |
+| `pg_lsn`                   | Log sequence number                    | 64-bit unsigned integer                                                                            |
+| `point`                    | Geometric point on a plane             | Coordinate (x, y)                                                                                  |
+| `polygon`                  | Closed geometric path on a plane       | Sequence of points forming a closed loop                                                           |
+| `real`                     | Single precision floating-point number | 6 decimal digits precision                                                                         |
+| `smallint`                 | Signed two-byte integer                | -32,768 to 32,767                                                                                  |
+| `smallserial`              | Autoincrementing two-byte integer      | 1 to 32,767                                                                                        |
+| `serial`                   | Autoincrementing four-byte integer     | 1 to 2,147,483,647                                                                                 |
+| `text`                     | Variable-length character string       | Up to 1 billion characters                                                                         |
+| `time`                     | Time of day (no time zone)             | 00:00:00 to 24:00:00                                                                               |
+| `timestamp`                | Date and time (no time zone)           | 4713 BC to 294276 AD                                                                               |
+| `timestamp with time zone` | Date and time (including time zone)    | 4713 BC to 294276 AD                                                                               |
+| `tsquery`                  | Text search query                      | Sequence of lexemes                                                                                |
+| `tsvector`                 | Text search document                   | Sequence of lexemes                                                                                |
+| `txid_snapshot`            | User-level transaction ID snapshot     | Varies                                                                                             |
+| `uuid`                     | Universally unique identifier          | 128-bit number (UUID)                                                                              |
+| `xml`                      | XML data                               | Unlimited size                                                                                     |
+
 </details>
 <details>
   <summary><h2 style='display: inline;'> Git </h2></summary>
