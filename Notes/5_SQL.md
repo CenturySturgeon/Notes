@@ -165,26 +165,6 @@ DELETE FROM table_name WHERE column_1 = 5;
 
 ---
 
-### Query Examples
-
-```SQL
-CREATE TABLE movies (
-    title VARCHAR(60),
-    box_office INTEGER
-);
-```
-
-```SQL
-INSERT INTO movies (title, box_office)
-VALUES 
-    ('The Avengers', 1500000000),
-    ('Batman v Superman', 873000000);
-```
-
-```SQL
-SELECT title, box_office FROM movies;
-```
-
 ### PostgreSQL Column Types
 
 | Data Type                  | Description                            | Capacity/Range                                                                                     |
@@ -270,16 +250,11 @@ Another example is building a database for an E-Commerce application where you n
 
 ### Primary Keys
 
-Primary Keys uniquely identify a record in a table, they are usually an integer or an UUID. **There can't be two rows with the same primary key in a table**.
+- Primary Keys uniquely identify a record in a table, 
+- They are usually an integer or an UUID. 
+- **There can't be two rows with the same primary key in a table**.
 
-#### Photos Table
-
-| id INTEGER, PK | url VARCHAR (50) | user_id (FK, points to users record) |
-|----------------|------------------|--------------------------------------|
-| 1              | [url_1]          | 1                                    |
-| 2              | [url_2]          | 3                                    |
-| 3              | [url_3]          | 2                                    |
-| ...            | ...              | ...                                  |
+Below is an example of how a primary key `PK` looks like in a table.
 
 #### Users Table
 
@@ -290,40 +265,13 @@ Primary Keys uniquely identify a record in a table, they are usually an integer 
 | 3              | user3                 | user3@example.com  |
 | ...            | ...                   | ...                |
 
-The SQL code for creating this tables is shown below:
-```SQL
--- Create the users table
-CREATE TABLE users (
-  -- Serial means it auto-generates a value when a record is addedALTER
-  -- Primary Key adds special performance benefits when looking for records
-  id SERIAL PRIMARY KEY,
-  user_name VARCHAR(50)
-);
--- Insert some data into the users table
-INSERT INTO users (user_name) VALUES ('Juan'), ('Jose'), ('Luis'), ('x123');
-
--- Create photos table
-CREATE TABLE photos (
-    id SERIAL PRIMARY KEY,
-    url VARCHAR(50),
-    -- Name the column as 'user_id' which holds the link to the users table
-    -- References keyword is used to specify the table and the column for the Foreign Key relationship
-    user_id INTEGER REFERENCES users(id)
-);
-
--- Insert values into the photos table using the foregin key
-INSERT INTO photos (url, user_id) VALUES ('http://one.jpg', 4);
-```
-
 As you can see, the `id` field on each table is a **Primary Key**, and the `user_id` field on the `Photos` table is a **Foreign Key**
 
 ##### Notes:
 - Even when you delete or modify records **the primary key will not change**, which ensures that all records can be consistently accessed using the PK.
 - **Primary Key (PK)**: `id` columns are marked as primary keys (`PK`) in both tables, ensuring each row has a unique identifier.
-- **Foreign Key (FK)**: In the `photos` table, `user_id` is a foreign key that references the `id` column in the `users` table, establishing a relationship between photos and users.
-- **Data Types**: `url` and `email` are specified as `varchar(50)`, indicating the expected character limits for these columns.
   
-These tables provide a basic structure for modeling photos and users in a database schema, demonstrating the use of primary keys, foreign keys, and column data types as per your requirements. Adjustments can be made based on specific database management system requirements or additional constraints.
+These tables provide a basic structure for modeling photos and users in a database schema, demonstrating the use of primary keys and column data types as per your requirements.
 
 ### Foreign Keys
 
@@ -350,8 +298,99 @@ graph TD;
     A3 -->B
 ```
 
-### ON DELETE Options
+Another great example comes from the tables below, notice how the `photos` table records reference a specific user using it's `id` (the Foreign Key).
+
+#### Users Table
+
+| id INTEGER, PK | username VARCHAR (50) | email VARCHAR (50) |
+|----------------|-----------------------|--------------------|
+| 1              | user1                 | user1@example.com  |
+| 2              | user2                 | user2@example.com  |
+| 3              | user3                 | user3@example.com  |
+| ...            | ...                   | ...                |
+
+#### Photos Table
+
+| id INTEGER, PK | url VARCHAR (50) | user_id (FK, points to users record) |
+|----------------|------------------|--------------------------------------|
+| 1              | [url_1]          | 1                                    |
+| 2              | [url_2]          | 3                                    |
+| 3              | [url_3]          | 2                                    |
+| ...            | ...              | ...                                  |
+
+As you can see, the `id` field on each table is a **Primary Key**, and the `user_id` field on the `Photos` table is a **Foreign Key**
+
+##### Notes:
+- Even when you delete or modify records **the primary key will not change**, which ensures that all records can be consistently accessed using the PK.
+- **Primary Key (PK)**: `id` columns are marked as primary keys (`PK`) in both tables, ensuring each row has a unique identifier.
+- **Foreign Key (FK)**: In the `photos` table, `user_id` is a foreign key that references the `id` column in the `users` table, establishing a relationship between photos and users.
+- **Data Types**: `url` and `email` are specified as `varchar(50)`, indicating the expected character limits for these columns.
+  
+These tables provide a basic structure for modeling photos and users in a database schema, demonstrating the use of primary keys, foreign keys, and column data types as per your requirements. Adjustments can be made based on specific database management system requirements or additional constraints.
+
+```SQL
+-- Create the users table
+CREATE TABLE users (
+  -- Serial means it auto-generates a value when a record is addedALTER
+  -- Primary Key adds special performance benefits when looking for records
+  id SERIAL PRIMARY KEY,
+  user_name VARCHAR(50)
+);
+-- Insert some data into the users table
+INSERT INTO users (user_name) VALUES ('Juan'), ('Jose'), ('Luis'), ('x123');
+
+-- Create photos table
+CREATE TABLE photos (
+    id SERIAL PRIMARY KEY,
+    url VARCHAR(50),
+    -- Name the column as 'user_id' which holds the link to the users table
+    -- References keyword is used to specify the table and the column for the Foreign Key relationship
+    user_id INTEGER REFERENCES users(id)
+);
+
+-- Insert values into the photos table using the foregin key
+INSERT INTO photos (url, user_id) VALUES ('http://one.jpg', 4), ('http://tg3223.jpg', 3),
+('http://two.jpg', 2), ('http://on234e.jpg', 1), ('http://o23.jpg', 1);
+```
+
+Below are some examples of some queries that show how to use the foreign key constraints in a useful way:
+
+```SQL
+-- Select all photos that were posted by the user whos id is 4.
+SELECT * FROM photos WHERE user_id = 1;
+
+-- List all photos with details about the associated user for each
+SELECT * FROM photos JOIN users ON users.id = photos.user_id;
+
+-- Note in this variation of the above query, columns of both tables are available thanks to the JOIN
+-- url exists on the photos table while user_name exists on the user table
+SELECT url, user_name FROM photos JOIN users ON users.id = photos.user_id;
+```
 
 ### Joins
 
 ![SQL Joins](../images/SQLJoins.png)
+
+### ON DELETE Options
+
+### Query Examples
+
+```SQL
+CREATE TABLE movies (
+    title VARCHAR(60),
+    box_office INTEGER
+);
+```
+
+```SQL
+INSERT INTO movies (title, box_office)
+VALUES 
+    ('The Avengers', 1500000000),
+    ('Batman v Superman', 873000000);
+```
+
+```SQL
+SELECT title, box_office FROM movies;
+```
+
+### Excercises
