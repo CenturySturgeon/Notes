@@ -39,19 +39,6 @@ Foreign keys in a relational database are columns (or combinations of columns) t
 - Exactly equal to the primary key of the referenced row.
 - Changes if the relationship changes.
 
-```mermaid
-graph TD;
-    subgraph Comments
-        A1[Comment 1]
-        A2[Comment 2]
-        A3[Comment 3]
-    end
-    B[Photo]
-    A1 -->B
-    A2 -->B
-    A3 -->B
-```
-
 You might find it easier to understand by thinking how Instagram handles its comments. Each comment belongs to a user, so in the comments table you would have a foreign key for each comment pointing at its owner (the user who wrote this comment).
 
 ```mermaid
@@ -61,7 +48,7 @@ graph TD;
         A2[Comment 2]
         A3[Comment 3]
     end
-    B[User]
+    B[Photo]
     A1 -->B
     A2 -->B
     A3 -->B
