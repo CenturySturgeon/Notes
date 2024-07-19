@@ -613,9 +613,7 @@ https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-s
   
 Standard Query Language
 
-To run PostgreSQL online use: 
-
-https://pg-sql.com
+To run PostgreSQL online use [pg-sql](https://pg-sql.com)
 
 ### Notes
 - In SQL, keywords are written in capital letters (like `SELECT`) while variables are written in lower-case (like a column name).
@@ -662,7 +660,7 @@ graph TD;
         A3[Comment 3]
     end
     B[Photo]
-    A1 --> B
+    A1 -->B
     A2 -->B
     A3 -->B
 ```
@@ -677,7 +675,7 @@ graph TD;
         A3[Comment 3]
     end
     B[User]
-    A1 --> B
+    A1 -->B
     A2 -->B
     A3 -->B
 ```
@@ -732,7 +730,7 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 
 ### Agregate Functions
 
-### Common Queries Structure
+### Common Queries
 
 #### Create Table
 
