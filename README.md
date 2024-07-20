@@ -681,102 +681,11 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 
 ### Agregate Functions
 
-### Common Queries
 
-#### Create Table
-
-```SQL
-CREATE TABLE table_name (
-    column_title COLUMN_TYPE(optional_value)
-);
-```
-
-#### Insert Single/Multiple Values Into A Table
-
-To insert a single value just write a single set of parenthesis with column values.
-
-```SQL
-INSERT INTO table_name (column_name1, column_name2) VALUES 
-(column1_value1, column2_value1)
-(column1_value2, column2_value2)
-(column1_value3, column2_value3),
-;
-```
-
-#### Retrieving Information From A Table
-
-Select all records from table:
-```SQL
-SELECT * FROM table_name;
-```
-
-Select specific columns from table:
-```SQL
-SELECT column_name, column2_name FROM table_name;
-```
-**Note**: The order of the columns is the order of their printing. You can also print the same column multiple times.
-
-You can perform operations between columns when retrieving information:
-```SQL
-SELECT column_1, column_2 / column_3 FROM table_name;
-```
-**Note**: If your operation's result goes beyond what the column can store you will get an error. For example, if you use INTEGER as the column type and the result of a multiplication of two columns goes over its capacity (2,147,483,648) you will get an `Integer out of range` error.
-
-When performing operations on retrieval, new columns will come out with weird names. To rename the result column:
-```SQL
-SELECT column_1, column_2 * column_3 AS result_column_name FROM table_name;
-```
-
-Concatenating column values as strings:
-```SQL
-SELECT column_1 || ', ' || column_2  AS concatenated_column_name FROM table_name;
-```
-
-The same as above but using CONCAT() instead of '||':
-```SQL
-SELECT CONCAT(column_1, ', ', column_2) FROM table_name;
-```
-
-#### Filtering Out Records
-
-Use the WHERE key word to filter data by using it in pair with comparisson or math operators.
-
-```SQL
-SELECT column_1, column_2 WHERE column_1 > 5000 FROM table_name;
-```
-
-
-```SQL
-SELECT column_1, column_2 FROM table_name WHERE column_1 BETWEEN 5 AND 10;
-```
-
-Below you'll find a neat trick; using a list of possible values for an IN check in a query:
-
-```SQL
-SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2, ...);
-```
-
-You could also use a negative filter to get all records whose column_1 is not in the list by using the `NOT IN` key words. Note that you can chain as many AND and OR operators as you want.
-
-```SQL
-SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2) AND column_2 = 'arbitrary_value';
-```
-
-#### Updating & Deleting Records
-
-To update records you use the `UPDATE` and `SET` key words.
-
-```SQL
-UPDATE table_name SET column_1 = 5000 WHERE column_2 = 'arbitrary_value';
-```
-
-To delete records you use the `DELETE` key word. Be sure to **NEVER FORGET THE `FROM` STATEMENT**!
-
-```SQL
-DELETE FROM table_name WHERE column_1 = 5;
-```
 
 ---
+
+
 
 ### PostgreSQL Column Types
 
@@ -861,6 +770,11 @@ The last example from Google Docs might be easier to understand, as its opposite
 Another example is building a database for an E-Commerce application where you need to track which users purchase which product categories. In this context, many-to-many relationships are evident because `Users can purchase products from many different categorys. <-> Each kind of product can be purchased by many different users.`
 
 
+
+---
+
+
+
 ### Primary Keys
 
 - Primary Keys uniquely identify a record in a table, 
@@ -882,9 +796,8 @@ As you can see, the `id` field on each table is a **Primary Key**, and the `user
 
 ##### Notes:
 - Even when you delete or modify records **the primary key will not change**, which ensures that all records can be consistently accessed using the PK.
-- **Primary Key (PK)**: `id` columns are marked as primary keys (`PK`) in both tables, ensuring each row has a unique identifier.
-  
-These tables provide a basic structure for modeling photos and users in a database schema, demonstrating the use of primary keys and column data types as per your requirements.
+- **Primary Key (PK)**: `id` columns are marked as primary keys ensuring each row has a unique identifier.
+
 
 ### Foreign Keys
 
@@ -985,6 +898,107 @@ SELECT url, user_name FROM photos JOIN users ON users.id = photos.user_id;
 ![SQL Joins](https://github.com/CenturySturgeon/Notes/blob/main/images/SQLJoins.png)
 
 ### ON DELETE Options
+
+
+
+---
+
+
+
+### Common Queries
+
+#### Create Table
+
+```SQL
+CREATE TABLE table_name (
+    column_title COLUMN_TYPE(optional_value)
+);
+```
+
+#### Insert Single/Multiple Values Into A Table
+
+To insert a single value just write a single set of parenthesis with column values.
+
+```SQL
+INSERT INTO table_name (column_name1, column_name2) VALUES 
+(column1_value1, column2_value1)
+(column1_value2, column2_value2)
+(column1_value3, column2_value3),
+;
+```
+
+#### Retrieving Information From A Table
+
+Select all records from table:
+```SQL
+SELECT * FROM table_name;
+```
+
+Select specific columns from table:
+```SQL
+SELECT column_name, column2_name FROM table_name;
+```
+**Note**: The order of the columns is the order of their printing. You can also print the same column multiple times.
+
+You can perform operations between columns when retrieving information:
+```SQL
+SELECT column_1, column_2 / column_3 FROM table_name;
+```
+**Note**: If your operation's result goes beyond what the column can store you will get an error. For example, if you use INTEGER as the column type and the result of a multiplication of two columns goes over its capacity (2,147,483,648) you will get an `Integer out of range` error.
+
+When performing operations on retrieval, new columns will come out with weird names. To rename the result column:
+```SQL
+SELECT column_1, column_2 * column_3 AS result_column_name FROM table_name;
+```
+
+Concatenating column values as strings:
+```SQL
+SELECT column_1 || ', ' || column_2  AS concatenated_column_name FROM table_name;
+```
+
+The same as above but using CONCAT() instead of '||':
+```SQL
+SELECT CONCAT(column_1, ', ', column_2) FROM table_name;
+```
+
+#### Filtering Out Records
+
+Use the WHERE key word to filter data by using it in pair with comparisson or math operators.
+
+```SQL
+SELECT column_1, column_2 WHERE column_1 > 5000 FROM table_name;
+```
+
+
+```SQL
+SELECT column_1, column_2 FROM table_name WHERE column_1 BETWEEN 5 AND 10;
+```
+
+Below you'll find a neat trick; using a list of possible values for an IN check in a query:
+
+```SQL
+SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2, ...);
+```
+
+You could also use a negative filter to get all records whose column_1 is not in the list by using the `NOT IN` key words. Note that you can chain as many AND and OR operators as you want.
+
+```SQL
+SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2) AND column_2 = 'arbitrary_value';
+```
+
+#### Updating & Deleting Records
+
+To update records you use the `UPDATE` and `SET` key words.
+
+```SQL
+UPDATE table_name SET column_1 = 5000 WHERE column_2 = 'arbitrary_value';
+```
+
+To delete records you use the `DELETE` key word. Be sure to **NEVER FORGET THE `FROM` STATEMENT**!
+
+```SQL
+DELETE FROM table_name WHERE column_1 = 5;
+```
 
 ### Query Examples
 
