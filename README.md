@@ -613,6 +613,8 @@ https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-s
   
 Standard Query Language
 
+![SQL Joins](https://github.com/CenturySturgeon/Notes/blob/main/images/SQLLogo.png)
+
 To run PostgreSQL online use [pg-sql](https://pg-sql.com)
 
 ### Notes
@@ -638,13 +640,13 @@ case letters.
 | Many-To-Many | "Many students have many classes" <-> "Many classes have many students". |
 | One-To-One   | "A boat has a single captain" <-> "A captain belongs to a single boat".  |
 
-| FK ON DELETE Option | Description                                                               |
-|---------------------|---------------------------------------------------------------------------|
-| `NO ACTION`         | **The default option**; raises an error if there are dependent rows.      |
-| `RESTRICT`          | Similar to `NO ACTION`; raises an error if there are dependent rows.      |
-| `CASCADE`           | Deletes all rows that have a foreign key referencing the deleted row.     |
-| `SET NULL`          | Sets the foreign key column in the referencing rows to `NULL`.            |
-| `SET DEFAULT`       | Sets the foreign key column in the referencing rows to its default value. |
+| Delete Option | Description                                                               |
+|---------------|---------------------------------------------------------------------------|
+| `NO ACTION`   | **The default option**; raises an error if there are dependent rows.      |
+| `RESTRICT`    | Similar to `NO ACTION`; raises an error if there are dependent rows.      |
+| `CASCADE`     | Deletes all rows that have a foreign key referencing the deleted row.     |
+| `SET NULL`    | Sets the foreign key column in the referencing rows to `NULL`.            |
+| `SET DEFAULT` | Sets the foreign key column in the referencing rows to its default value. |
 
 
 ### Comparisson Math Operators
@@ -701,46 +703,46 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 
 | Data Type                  | Description                            | Capacity/Range                                                                                     |
 |----------------------------|----------------------------------------|----------------------------------------------------------------------------------------------------|
-| `bigint`                   | Signed eight-byte integer              | -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807                                            |
-| `bigserial`                | Autoincrementing eight-byte integer    | 1 to 9,223,372,036,854,775,807                                                                     |
-| `bit(n)`                   | Fixed-length bit string                | Up to 1,048,576 bits (131,072 bytes)                                                               |
-| `bit varying(n)`           | Variable-length bit string             | Up to 1,048,576 bits (131,072 bytes)                                                               |
-| `boolean`                  | Logical Boolean (true/false)           | true or false                                                                                      |
-| `box`                      | Rectangular box on a plane             | Represented by two points                                                                          |
-| `bytea`                    | Binary data ("byte array")             | Up to 1 GB                                                                                         |
-| `character(n)`             | Fixed-length character string          | Up to 1 billion characters                                                                         |
-| `character varying(n)`     | Variable-length character string       | Up to 1 billion characters                                                                         |
-| `cidr`                     | IPv4 or IPv6 network address           | IPv4: 0.0.0.0/0 to 255.255.255.255/32<br>IPv6: ::/0 to ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/128 |
-| `circle`                   | Circle on a plane                      | Defined by a center (point) and a radius                                                           |
-| `date`                     | Calendar date (year, month, day)       | 4713 BC to 5874897 AD                                                                              |
-| `double precision`         | Double precision floating-point number | 15 decimal digits precision                                                                        |
-| `inet`                     | IPv4 or IPv6 host address              | IPv4: 0.0.0.0 to 255.255.255.255<br>IPv6: :: to ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff            |
-| `integer`                  | Signed four-byte integer               | -2,147,483,648 to 2,147,483,647                                                                    |
-| `interval`                 | Time interval                          | -178000000 years to 178000000 years                                                                |
-| `json`                     | JSON data format                       | 1 GB                                                                                               |
-| `jsonb`                    | Binary JSON data format                | 1 GB                                                                                               |
-| `line`                     | Infinite line on a plane               | Defined by a point and a direction vector                                                          |
-| `lseg`                     | Line segment on a plane                | Defined by two points                                                                              |
-| `macaddr`                  | MAC (Media Access Control) address     | 6 bytes, formatted as XX:XX:XX:XX:XX:XX                                                            |
-| `money`                    | Currency amount                        | -922,337,203,685,477.5808 to +922,337,203,685,477.5807                                             |
-| `numeric(p, s)`            | Exact numeric of selectable precision  | Up to 131,072 digits before the decimal point; up to 16,383 digits after the decimal point         |
-| `path`                     | Geometric path on a plane              | Sequence of points                                                                                 |
-| `pg_lsn`                   | Log sequence number                    | 64-bit unsigned integer                                                                            |
-| `point`                    | Geometric point on a plane             | Coordinate (x, y)                                                                                  |
-| `polygon`                  | Closed geometric path on a plane       | Sequence of points forming a closed loop                                                           |
-| `real`                     | Single precision floating-point number | 6 decimal digits precision                                                                         |
-| `smallint`                 | Signed two-byte integer                | -32,768 to 32,767                                                                                  |
-| `smallserial`              | Autoincrementing two-byte integer      | 1 to 32,767                                                                                        |
-| `serial`                   | Autoincrementing four-byte integer     | 1 to 2,147,483,647                                                                                 |
-| `text`                     | Variable-length character string       | Up to 1 billion characters                                                                         |
-| `time`                     | Time of day (no time zone)             | 00:00:00 to 24:00:00                                                                               |
-| `timestamp`                | Date and time (no time zone)           | 4713 BC to 294276 AD                                                                               |
-| `timestamp with time zone` | Date and time (including time zone)    | 4713 BC to 294276 AD                                                                               |
-| `tsquery`                  | Text search query                      | Sequence of lexemes                                                                                |
-| `tsvector`                 | Text search document                   | Sequence of lexemes                                                                                |
-| `txid_snapshot`            | User-level transaction ID snapshot     | Varies                                                                                             |
-| `uuid`                     | Universally unique identifier          | 128-bit number (UUID)                                                                              |
-| `xml`                      | XML data                               | Unlimited size                                                                                     |
+| `BIGINT`                   | Signed eight-byte integer              | -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807                                            |
+| `BIGSERIAL`                | Autoincrementing eight-byte integer    | 1 to 9,223,372,036,854,775,807                                                                     |
+| `BIT(n)`                   | Fixed-length bit string                | Up to 1,048,576 bits (131,072 bytes)                                                               |
+| `BIT VARYING(n)`           | Variable-length bit string             | Up to 1,048,576 bits (131,072 bytes)                                                               |
+| `BOOLEAN`                  | Logical Boolean (true/false)           | true or false                                                                                      |
+| `BOX`                      | Rectangular box on a plane             | Represented by two points                                                                          |
+| `BYTEA`                    | Binary data ("byte array")             | Up to 1 GB                                                                                         |
+| `CHARACTER(n)`             | Fixed-length character string          | Up to 1 billion characters                                                                         |
+| `CHARACTER VARYING(n)`     | Variable-length character string       | Up to 1 billion characters                                                                         |
+| `CIDR`                     | IPv4 or IPv6 network address           | IPv4: 0.0.0.0/0 to 255.255.255.255/32<br>IPv6: ::/0 to ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/128 |
+| `CIRCLE`                   | Circle on a plane                      | Defined by a center (point) and a radius                                                           |
+| `DATE`                     | Calendar date (year, month, day)       | 4713 BC to 5874897 AD                                                                              |
+| `DOUBLE PRECISION`         | Double precision floating-point number | 15 decimal digits precision                                                                        |
+| `INET`                     | IPv4 or IPv6 host address              | IPv4: 0.0.0.0 to 255.255.255.255<br>IPv6: :: to ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff            |
+| `INTEGER`                  | Signed four-byte integer               | -2,147,483,648 to 2,147,483,647                                                                    |
+| `INTERVAL`                 | Time interval                          | -178000000 years to 178000000 years                                                                |
+| `JSON`                     | JSON data format                       | 1 GB                                                                                               |
+| `JSONB`                    | Binary JSON data format                | 1 GB                                                                                               |
+| `LINE`                     | Infinite line on a plane               | Defined by a point and a direction vector                                                          |
+| `LSEG`                     | Line segment on a plane                | Defined by two points                                                                              |
+| `MACADDR`                  | MAC (Media Access Control) address     | 6 bytes, formatted as XX:XX:XX:XX:XX:XX                                                            |
+| `MONEY`                    | Currency amount                        | -922,337,203,685,477.5808 to +922,337,203,685,477.5807                                             |
+| `NUMERIC(p, s)`            | Exact numeric of selectable precision  | Up to 131,072 digits before the decimal point; up to 16,383 digits after the decimal point         |
+| `PATH`                     | Geometric path on a plane              | Sequence of points                                                                                 |
+| `PG_LSN`                   | Log sequence number                    | 64-bit unsigned integer                                                                            |
+| `POINT`                    | Geometric point on a plane             | Coordinate (x, y)                                                                                  |
+| `POLYGON`                  | Closed geometric path on a plane       | Sequence of points forming a closed loop                                                           |
+| `REAL`                     | Single precision floating-point number | 6 decimal digits precision                                                                         |
+| `SMALLINT`                 | Signed two-byte integer                | -32,768 to 32,767                                                                                  |
+| `SMALLSERIAL`              | Autoincrementing two-byte integer      | 1 to 32,767                                                                                        |
+| `SERIAL`                   | Autoincrementing four-byte integer     | 1 to 2,147,483,647                                                                                 |
+| `TEXT`                     | Variable-length character string       | Up to 1 billion characters                                                                         |
+| `TIME`                     | Time of day (no time zone)             | 00:00:00 to 24:00:00                                                                               |
+| `TIMESTAMP`                | Date and time (no time zone)           | 4713 BC to 294276 AD                                                                               |
+| `TIMESTAMP WITH TIME ZONE` | Date and time (including time zone)    | 4713 BC to 294276 AD                                                                               |
+| `TSQUERY`                  | Text search query                      | Sequence of lexemes                                                                                |
+| `TSVECTOR`                 | Text search document                   | Sequence of lexemes                                                                                |
+| `TXID_SNAPSHOT`            | User-level transaction ID snapshot     | Varies                                                                                             |
+| `UUID`                     | Universally unique identifier          | 128-bit number (UUID)                                                                              |
+| `XML`                      | XML data                               | Unlimited size                                                                                     |
 
 ### Relationship Types
 
@@ -1057,6 +1059,164 @@ SELECT title, box_office FROM movies;
 ```
 
 ### Excercises
+
+#### Data
+
+##### Section 4
+
+```SQL
+CREATE TABLE users(
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50)
+);
+ 
+CREATE TABLE photos (
+  id SERIAL PRIMARY KEY,
+  url VARCHAR(200),
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+);
+ 
+CREATE TABLE comments (
+  id SERIAL PRIMARY KEY,
+  contents VARCHAR(240),
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  photo_id INTEGER REFERENCES photos(id) ON DELETE CASCADE
+);
+ 
+INSERT INTO users (username) 
+VALUES 
+  ('Reyna.Marvin'),
+        ('Micah.Cremin'),
+        ('Alfredo66'),
+        ('Gerard_Mitchell42'),
+        ('Frederique_Donnelly');
+ 
+INSERT INTO photos (url, user_id)
+VALUES
+  ('https://santina.net', 3),
+        ('https://alayna.net', 5),
+        ('https://kailyn.name', 3),
+        ('http://marjolaine.name', 1),
+        ('http://chet.net', 5),
+        ('http://jerrold.org', 2),
+        ('https://meredith.net', 4),
+        ('http://isaias.net', 4),
+        ('http://dayne.com', 4),
+        ('http://colten.net', 2),
+        ('https://adelbert.biz', 5),
+        ('http://kolby.org', 1),
+        ('https://deon.biz', 2),
+        ('https://marina.com', 5),
+        ('http://johnson.info', 1),
+        ('https://linda.info', 2),
+        ('https://tyrique.info', 4),
+        ('http://buddy.info', 5),
+        ('https://elinore.name', 2),
+        ('http://sasha.com', 3);
+ 
+INSERT INTO comments (contents, user_id, photo_id)
+VALUES
+  ('Quo velit iusto ducimus quos a incidunt nesciunt facilis.', 2, 4),
+        ('Non est totam.', 5, 5),
+        ('Fuga et iste beatae.', 3, 3),
+        ('Molestias tempore est.', 1, 5),
+        ('Est voluptatum voluptatem voluptatem est ullam quod quia in.', 1, 5),
+        ('Aut et similique porro ullam.', 1, 3),
+        ('Fugiat cupiditate consequatur sit magni at non ad omnis.', 1, 2),
+        ('Accusantium illo maiores et sed maiores quod natus.', 2, 5),
+        ('Perferendis cumque eligendi.', 1, 2),
+        ('Nihil quo voluptatem placeat.', 5, 5),
+        ('Rerum dolor sunt sint.', 5, 2),
+        ('Id corrupti tenetur similique reprehenderit qui sint qui nulla tenetur.', 2, 1),
+        ('Maiores quo quia.', 1, 5),
+        ('Culpa perferendis qui perferendis eligendi officia neque ex.', 1, 4),
+        ('Reprehenderit voluptates rerum qui veritatis ut.', 1, 1),
+        ('Aut ipsum porro deserunt maiores sit.', 5, 3),
+        ('Aut qui eum eos soluta pariatur.', 1, 1),
+        ('Praesentium tempora rerum necessitatibus aut.', 4, 3),
+        ('Magni error voluptas veniam ipsum enim.', 4, 2),
+        ('Et maiores libero quod aliquam sit voluptas.', 2, 3),
+        ('Eius ab occaecati quae eos aut enim rem.', 5, 4),
+        ('Et sit occaecati.', 4, 3),
+        ('Illum omnis et excepturi totam eum omnis.', 1, 5),
+        ('Nemo nihil rerum alias vel.', 5, 1),
+        ('Voluptas ab eius.', 5, 1),
+        ('Dolor soluta quisquam voluptatibus delectus.', 3, 5),
+        ('Consequatur neque beatae.', 4, 5),
+        ('Aliquid vel voluptatem.', 4, 5),
+        ('Maiores nulla ea non autem.', 4, 5),
+        ('Enim doloremque delectus.', 1, 4),
+        ('Facere vel assumenda.', 2, 5),
+        ('Fugiat dignissimos dolorum iusto fugit voluptas et.', 2, 1),
+        ('Sed cumque in et.', 1, 3),
+        ('Doloribus temporibus hic eveniet temporibus corrupti et voluptatem et sint.', 5, 4),
+        ('Quia dolorem officia explicabo quae.', 3, 1),
+        ('Ullam ad laborum totam veniam.', 1, 2),
+        ('Et rerum voluptas et corporis rem in hic.', 2, 3),
+        ('Tempora quas facere.', 3, 1),
+        ('Rem autem corporis earum necessitatibus dolores explicabo iste quo.', 5, 5),
+        ('Animi aperiam repellendus in aut eum consequatur quos.', 1, 2),
+        ('Enim esse magni.', 4, 3),
+        ('Saepe cumque qui pariatur.', 4, 4),
+        ('Sit dolorem ipsam nisi.', 4, 1),
+        ('Dolorem veniam nisi quidem.', 2, 5),
+        ('Porro illum perferendis nemo libero voluptatibus vel.', 3, 3),
+        ('Dicta enim rerum culpa a quo molestiae nam repudiandae at.', 2, 4),
+        ('Consequatur magnam autem voluptas deserunt.', 5, 1),
+        ('Incidunt cum delectus sunt tenetur et.', 4, 3),
+        ('Non vel eveniet sed molestiae tempora.', 2, 1),
+        ('Ad placeat repellat et veniam ea asperiores.', 5, 1),
+        ('Eum aut magni sint.', 3, 1),
+        ('Aperiam voluptates quis velit explicabo ipsam vero eum.', 1, 3),
+        ('Error nesciunt blanditiis quae quis et tempora velit repellat sint.', 2, 4),
+        ('Blanditiis saepe dolorem enim eos sed ea.', 1, 2),
+        ('Ab veritatis est.', 2, 2),
+        ('Vitae voluptatem voluptates vel nam.', 3, 1),
+        ('Neque aspernatur est non ad vitae nisi ut nobis enim.', 4, 3),
+        ('Debitis ut amet.', 4, 2),
+        ('Pariatur beatae nihil cum molestiae provident vel.', 4, 4),
+        ('Aperiam sunt aliquam illum impedit.', 1, 4),
+        ('Aut laudantium necessitatibus harum eaque.', 5, 3),
+        ('Debitis voluptatum nesciunt quisquam voluptatibus fugiat nostrum sed dolore quasi.', 3, 2),
+        ('Praesentium velit voluptatem distinctio ut voluptatum at aut.', 2, 2),
+        ('Voluptates nihil voluptatum quia maiores dolorum molestias occaecati.', 1, 4),
+        ('Quisquam modi labore.', 3, 2),
+        ('Fugit quia perferendis magni doloremque dicta officia dignissimos ut necessitatibus.', 1, 4),
+        ('Tempora ipsam aut placeat ducimus ut exercitationem quis provident.', 5, 3),
+        ('Expedita ducimus cum quibusdam.', 5, 1),
+        ('In voluptates doloribus aut ut libero possimus adipisci iste.', 3, 2),
+        ('Sit qui est sed accusantium quidem id voluptatum id.', 1, 5),
+        ('Libero eius quo consequatur laudantium reiciendis reiciendis aliquid nemo.', 1, 2),
+        ('Officia qui reprehenderit ut accusamus qui voluptatum at.', 2, 2),
+        ('Ad similique quo.', 4, 1),
+        ('Commodi culpa aut nobis qui illum deserunt reiciendis.', 2, 3),
+        ('Tenetur quam aut rerum doloribus est ipsa autem.', 4, 2),
+        ('Est accusamus aut nisi sit aut id non natus assumenda.', 2, 4),
+        ('Et sit et vel quos recusandae quo qui.', 1, 3),
+        ('Velit nihil voluptatem et sed.', 4, 4),
+        ('Sunt vitae expedita fugiat occaecati.', 1, 3),
+        ('Consequatur quod et ipsam in dolorem.', 4, 2),
+        ('Magnam voluptatum molestias vitae voluptatibus beatae nostrum sunt.', 3, 5),
+        ('Alias praesentium ut voluptatem alias praesentium tempora voluptas debitis.', 2, 5),
+        ('Ipsam cumque aut consectetur mollitia vel quod voluptates provident suscipit.', 3, 5),
+        ('Ad dignissimos quia aut commodi vel ut nisi.', 3, 3),
+        ('Fugit ut architecto doloremque neque quis.', 4, 5),
+        ('Repudiandae et voluptas aut in excepturi.', 5, 3),
+        ('Aperiam voluptatem animi.', 5, 1),
+        ('Et mollitia vel soluta fugiat.', 4, 1),
+        ('Ut nemo voluptas voluptatem voluptas.', 5, 2),
+        ('At aut quidem voluptatibus rem.', 5, 1),
+        ('Temporibus voluptates iure fuga alias minus eius.', 2, 3),
+        ('Non autem laboriosam consectetur officiis aut excepturi nobis commodi.', 4, 3),
+        ('Esse voluptatem sed deserunt ipsum eaque maxime rerum qui.', 5, 5),
+        ('Debitis ipsam ut pariatur molestiae ut qui aut reiciendis.', 4, 4),
+        ('Illo atque nihil et quod consequatur neque pariatur delectus.', 3, 3),
+        ('Qui et hic accusantium odio quis necessitatibus et magni.', 4, 2),
+        ('Debitis repellendus inventore omnis est facere aliquam.', 3, 3),
+        ('Occaecati eos possimus deleniti itaque aliquam accusamus.', 3, 4),
+        ('Molestiae officia architecto eius nesciunt.', 5, 4),
+        ('Minima dolorem reiciendis excepturi culpa sapiente eos deserunt ut.', 3, 3);
+```
 </details>
 <details>
   <summary><h2 style='display: inline;'> Git </h2></summary>
