@@ -618,6 +618,7 @@ To run PostgreSQL online use [pg-sql](https://pg-sql.com)
 ### Notes
 - In SQL, keywords are written in capital letters (like `SELECT`) while variables are written in lower-case (like a column name).
 - SQL doesn't execute queries from left to right. It's important to understand this when writing queries so you comprehend what's going on behing the scenes as its very useful when writing complicated queries.
+- NULL value means that specific table cell is empty.
 
 
 ### Key Concepts
@@ -630,12 +631,21 @@ To run PostgreSQL online use [pg-sql](https://pg-sql.com)
 - **Identifiers**: Tell the database what thing we want to act on. Always written in lower 
 case letters.
 
-|                     |                                                                                               |
-|---------------------|-----------------------------------------------------------------------------------------------|
-| One-To-Many         | "A user has many photos".                                                                     |
-| Many-To-One         | "Many photos belong to a user".                                                               |
-| Many-To-Many        | "Many students have many classes" <br> "Many classes have many students".                     |
-| One-To-One          | "A boat has a single captain" <br> "A captain belongs to a single boat".                      |
+| Relationship | Hint                                                                     |
+|--------------|--------------------------------------------------------------------------|
+| One-To-Many  | "A user has many photos".                                                |
+| Many-To-One  | "Many photos belong to a user".                                          |
+| Many-To-Many | "Many students have many classes" <-> "Many classes have many students". |
+| One-To-One   | "A boat has a single captain" <-> "A captain belongs to a single boat".  |
+
+| FK ON DELETE Option | Description                                                               |
+|---------------------|---------------------------------------------------------------------------|
+| `NO ACTION`         | **The default option**; raises an error if there are dependent rows.      |
+| `RESTRICT`          | Similar to `NO ACTION`; raises an error if there are dependent rows.      |
+| `CASCADE`           | Deletes all rows that have a foreign key referencing the deleted row.     |
+| `SET NULL`          | Sets the foreign key column in the referencing rows to `NULL`.            |
+| `SET DEFAULT`       | Sets the foreign key column in the referencing rows to its default value. |
+
 
 ### Comparisson Math Operators
 
@@ -893,11 +903,37 @@ SELECT * FROM photos JOIN users ON users.id = photos.user_id;
 SELECT url, user_name FROM photos JOIN users ON users.id = photos.user_id;
 ```
 
+#### ON DELETE Options
+
+When deleting records that have children rows pointing at them (via the foreign key), it's necessary to specify the behavior this child row should have as its foreign key value will become inexistent. Here's where `ON DELETE` options come into play; **they define the actions that take place when the refered record of a foreign key column gets deleted**.
+
+- These `ON DELETE` options **must be placed inside the table schema that has the foreign key sentence**.
+
+| FK ON DELETE Option     | Description                                                               |
+|-------------------------|---------------------------------------------------------------------------|
+| `ON DELETE NO ACTION`   | **The default option**; raises an error if there are dependent rows.      |
+| `ON DELETE RESTRICT`    | Similar to `NO ACTION`; raises an error if there are dependent rows.      |
+| `ON DELETE CASCADE`     | Deletes all rows that have a foreign key referencing the deleted row.     |
+| `ON DELETE SET NULL`    | Sets the foreign key column in the referencing rows to `NULL`.            |
+| `ON DELETE SET DEFAULT` | Sets the foreign key column in the referencing rows to its default value. |
+
+```SQL
+-- Create photos table
+CREATE TABLE photos (
+    id SERIAL PRIMARY KEY,
+    url VARCHAR(50),
+    -- Set the ON DELETE action for this foreign key column
+    -- If the user_id row gets deleted this record will be deleted as well
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+These delete options are very useful in day-to-day applications like blogs. If you delete a blog post you probably don't want to keep around its comments in your DB (**ON DELETE CASCADE**). In some cases you might want to keep the information, like in Reddit that when a user gets deleted his comments remain there but with a `deleted` user tag (**ON DELETE SET NULL**).
+
+
 ### Joins
 
 ![SQL Joins](https://github.com/CenturySturgeon/Notes/blob/main/images/SQLJoins.png)
-
-### ON DELETE Options
 
 
 
