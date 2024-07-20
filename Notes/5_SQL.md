@@ -1,6 +1,6 @@
 Standard Query Language
 
-![SQL Joins](../images/SQLLogo.png)
+![SQL Logo](../images/SQLLogo.png)
 
 To run PostgreSQL online use [pg-sql](https://pg-sql.com)
 
@@ -38,7 +38,7 @@ case letters.
 
 ### Comparisson Math Operators
 
-Comparisson Math Operators are very useful when filtering out information (I.E when using the `WHERE` key word).
+Comparisson Math Operators are very useful when filtering out information (I.E when using the `WHERE` keyword).
 
 | Operator | Description                  |
 |----------|------------------------------|
@@ -320,11 +320,48 @@ CREATE TABLE photos (
 These delete options are very useful in day-to-day applications like blogs. If you delete a blog post you probably don't want to keep around its comments in your DB (**ON DELETE CASCADE**). In some cases you might want to keep the information, like in Reddit that when a user gets deleted his comments remain there but with a `deleted` user tag (**ON DELETE SET NULL**).
 
 
+
+
 ### Joins
+
+- Produces values by merging together rows from different **related** tables.
+- Use a join **most times** that you're asked to find data that involves multiple resources.
+- Table order between `FROM` and `JOIN` often **matters**.
+- Must provide context if column names colide.
+- Columns can be renamed using the `AS` keyword.
 
 ![SQL Joins](../images/SQLJoins.png)
 
+| Join       | Description                                                                        |
+|------------|------------------------------------------------------------------------------------|
+| INNER JOIN | Returns only the rows that have matching values in both tables.                    |
+| LEFT JOIN  | Returns all rows from the left table and the matched rows from the right table.    |
+| RIGHT JOIN | Returns all rows from the right table and the matched rows from the left table.    |
+| FULL JOIN  | Returns all rows when there is a match in either the left or right table.          |
+| CROSS JOIN | Returns the Cartesian product of the two tables, i.e., all possible pairs of rows. |
 
+
+```SQL
+-- Inner Join (Default)
+SELECT url, username FROM photos INNER JOIN users ON user.id = photos.user_id; -- Either INNER JOIN or just JOIN will work
+
+-- NOTE: For LEFT and RIGHT joins, THE ORDER MATTERS!
+
+--Left Join
+SELECT url, username FROM photos LEFT JOIN users ON user.id = photos.user_id;
+
+-- Right Join
+SELECT url, username FROM photos RIGHT JOIN users ON user.id = photos.user_id;
+
+-- Full Join
+SELECT url, username FROM photos FULL JOIN users ON user.id = photos.user_id;
+```
+
+
+### Aggregations
+
+- Looks at many rows and calculates a single value.
+- Words like `most`, `average`, `least` are a sign you need to use an aggregation.
 
 ---
 
@@ -336,15 +373,15 @@ These delete options are very useful in day-to-day applications like blogs. If y
 
 ```SQL
 CREATE TABLE table_name (
-    column_title COLUMN_TYPE(optional_value)
+    column_title COLUMN_TYPE(optional_value),
+    column_title2 COLUMN_TYPE(optional_value),
 );
 ```
 
 #### Insert Single/Multiple Values Into A Table
 
-To insert a single value just write a single set of parenthesis with column values.
-
 ```SQL
+-- To insert a single value just write a single set of parenthesis with column values
 INSERT INTO table_name (column_name1, column_name2) VALUES 
 (column1_value1, column2_value1)
 (column1_value2, column2_value2)
@@ -354,74 +391,61 @@ INSERT INTO table_name (column_name1, column_name2) VALUES
 
 #### Retrieving Information From A Table
 
-Select all records from table:
+
 ```SQL
+-- Select all records from table
 SELECT * FROM table_name;
-```
 
-Select specific columns from table:
-```SQL
+-- Select specific columns from table
 SELECT column_name, column2_name FROM table_name;
-```
-**Note**: The order of the columns is the order of their printing. You can also print the same column multiple times.
 
-You can perform operations between columns when retrieving information:
-```SQL
+-- You can perform operations between columns when retrieving information
 SELECT column_1, column_2 / column_3 FROM table_name;
 ```
-**Note**: If your operation's result goes beyond what the column can store you will get an error. For example, if you use INTEGER as the column type and the result of a multiplication of two columns goes over its capacity (2,147,483,648) you will get an `Integer out of range` error.
+**Notes**: 
+- The order of the columns is the order of their printing. You can also print the same column multiple times.
+- If your operation's result goes beyond what the column can store you will get an error. For example, if you use INTEGER as the column type and the result of a multiplication of two columns goes over its capacity (2,147,483,648) you will get an `Integer out of range` error.
 
-When performing operations on retrieval, new columns will come out with weird names. To rename the result column:
+
 ```SQL
+-- When performing operations on retrieval, new columns will come out with weird names. 
+-- To rename the result column:
 SELECT column_1, column_2 * column_3 AS result_column_name FROM table_name;
-```
 
-Concatenating column values as strings:
-```SQL
+-- Concatenating column values as strings
 SELECT column_1 || ', ' || column_2  AS concatenated_column_name FROM table_name;
-```
 
-The same as above but using CONCAT() instead of '||':
-```SQL
+-- The same as above but using CONCAT() instead of '||'
 SELECT CONCAT(column_1, ', ', column_2) FROM table_name;
 ```
 
 #### Filtering Out Records
 
-Use the WHERE key word to filter data by using it in pair with comparisson or math operators.
-
 ```SQL
+-- Use the WHERE keyword to filter data by using it in pair with comparisson or math operators.
 SELECT column_1, column_2 WHERE column_1 > 5000 FROM table_name;
-```
 
-
-```SQL
+-- BETWEEEN keyword example
 SELECT column_1, column_2 FROM table_name WHERE column_1 BETWEEN 5 AND 10;
-```
 
-Below you'll find a neat trick; using a list of possible values for an IN check in a query:
-
-```SQL
+-- Using a list of possible values for an 'IN' check in a query
 SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2, ...);
-```
 
-You could also use a negative filter to get all records whose column_1 is not in the list by using the `NOT IN` key words. Note that you can chain as many AND and OR operators as you want.
-
-```SQL
+-- You could also use a negative filter to get all records whose 'column_1' is not in the list by using the 'NOT IN' keywords.
+-- Note that you can chain as many 'AND' and 'OR' operators as you want
 SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2) AND column_2 = 'arbitrary_value';
 ```
 
 #### Updating & Deleting Records
 
-To update records you use the `UPDATE` and `SET` key words.
+- To update records you use the `UPDATE` and `SET` keywords.
+- To delete records you use the `DELETE` keyword. Be sure to **NEVER FORGET THE `FROM` STATEMENT**!
 
 ```SQL
+-- Updating a single column (multiple rows may be updated)
 UPDATE table_name SET column_1 = 5000 WHERE column_2 = 'arbitrary_value';
-```
 
-To delete records you use the `DELETE` key word. Be sure to **NEVER FORGET THE `FROM` STATEMENT**!
-
-```SQL
+-- Deleting one or more records
 DELETE FROM table_name WHERE column_1 = 5;
 ```
 
@@ -447,9 +471,9 @@ SELECT title, box_office FROM movies;
 
 ### Excercises
 
-#### Data
+**Section 4**
 
-##### Section 4
+#### Data
 
 ```SQL
 CREATE TABLE users(
@@ -604,3 +628,54 @@ VALUES
         ('Molestiae officia architecto eius nesciunt.', 5, 4),
         ('Minima dolorem reiciendis excepturi culpa sapiente eos deserunt ut.', 3, 3);
 ```
+
+**Excercises**:
+
+1. For each comment, show the contents of the comment and the username of the user who wrote it.
+
+2. For each comment, list the contents of the comments and the url of the photo the comment was added to.
+
+3. Show each photo url along with the username of the poster (you should show the url even if there is no identifiable poster).
+
+4. Show each user alongside his photos even if he doesn't have photos posted yet.
+
+5. Users can comment on photos that they post. List the url and comment content of all photos/comments where this happened.
+
+3. Find all the comments for the photo with ID=3, along with the username of the comment author.
+
+4. Find the photo with ID = 10 and get the number of comments attached to it.
+
+5. Find the average number of comments per photo.
+
+6. Find the user with the most activity (most comments + most photos).
+
+7. Find the photo with the most comments attached to it.
+
+8. Calculate the average number of characters per comment.
+
+**Answers**
+
+1. Excercise 1:
+    ```SQL
+    SELECT contents, username FROM comments JOIN users ON users.id = comments.user_id;
+    ```
+
+2. Excercise 2:
+    ```SQL
+    SELECT contents, url FROM comments JOIN photos ON comments.photo_id = photos.id;
+    ```
+
+3. Excercise 3:
+    ```SQL
+    SELECT url, username FROM photos LEFT JOIN users ON photos.user_id = users.id;
+    ```
+
+4. Excercise 4:
+    ```SQL
+    SELECT url, username FROM photos RIGHT JOIN users ON photos.user_id = users.id;
+    ```
+
+5. Excercise 5:
+    ```SQL
+    SELECT url, contents FROM comments JOIN photos ON comments.photo_id = photos.id  WHERE comments.user_id = photos.user_id;
+    ```
