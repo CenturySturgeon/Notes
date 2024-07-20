@@ -648,7 +648,6 @@ case letters.
 | `SET NULL`    | Sets the foreign key column in the referencing rows to `NULL`.            |
 | `SET DEFAULT` | Sets the foreign key column in the referencing rows to its default value. |
 
-
 ### Comparisson Math Operators
 
 Comparisson Math Operators are very useful when filtering out information (I.E when using the `WHERE` keyword).
@@ -693,7 +692,37 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 
 ### Agregate Functions
 
+| Function            | Description                                                    |
+|---------------------|----------------------------------------------------------------|
+| `COUNT(expression)` | Counts the number of rows where the expression is not null.    |
+| `SUM(expression)`   | Calculates the sum of the values in the expression.            |
+| `AVG(expression)`   | Calculates the average (mean) of the values in the expression. |
+| `MIN(expression)`   | Finds the minimum value of the expression.                     |
+| `MAX(expression)`   | Finds the maximum value of the expression.                     |
 
+
+### Keyword Hierarchy VS. Execution Order
+
+```mermaid
+graph TD;
+    Select1[SELECT] --> From1[FROM];
+    From1 --> Join1[JOIN];
+    Join1 --> On1[ON];
+    On1 --> Where1[WHERE];
+    Where1 --> GroupBy1[GROUP BY];
+    GroupBy1 --> Having1[HAVING];
+    Having1 --> OrderBy1[ORDER BY];
+    OrderBy1 --> Limit1[LIMIT];
+
+    From2[FROM] --> Join2[JOIN];
+    Join2 --> On2[ON];
+    On2 --> Where2[WHERE];
+    Where2 --> GroupBy2[GROUP BY];
+    GroupBy2 --> Having2[HAVING];
+    Having2 --> Select2[SELECT];
+    Select2 --> OrderBy2[ORDER BY];
+    OrderBy2 --> Limit2[LIMIT];
+```
 
 ---
 
@@ -935,6 +964,8 @@ These delete options are very useful in day-to-day applications like blogs. If y
 
 
 
+
+
 ### Joins
 
 - Produces values by merging together rows from different **related** tables.
@@ -970,13 +1001,197 @@ SELECT url, username FROM photos RIGHT JOIN users ON user.id = photos.user_id;
 SELECT url, username FROM photos FULL JOIN users ON user.id = photos.user_id;
 ```
 
+#### Where With Joins
 
-### Aggregations
+On ocassions joins by themselves may not be enough to filter out the data from two related tables. In these circumstances a `WHERE WITH` join might be necessary. Imagine the following example, you have three tables 'users', 'comments', and 'photos' built with the SQL code below:
+
+```SQL
+CREATE TABLE users(
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50)
+);
+ 
+CREATE TABLE photos (
+  id SERIAL PRIMARY KEY,
+  url VARCHAR(200),
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+);
+ 
+CREATE TABLE comments (
+  id SERIAL PRIMARY KEY,
+  contents VARCHAR(240),
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  photo_id INTEGER REFERENCES photos(id) ON DELETE CASCADE
+);
+```
+
+Now, if you had a scenario where you'd like to filter out all photos where its author commented on it, a simple join statement wouldn't be enough to get this filtered information. This is because the join would only get you the related records, but youd need to additionally verify if the author of the comment is the author of the photo, as shown in the code below:
+
+```SQL
+-- Define the columns to print
+SELECT url, contents
+-- Set left table for join
+FROM comments
+-- Set right table for join and relation condition (comments and the photo it was posted into)
+JOIN photos ON comments.photo_id = photos.id
+-- Set condition that checks wether or not the author of the comment is the author of the photo
+WHERE comments.user_id = photos.user_id;
+```
+
+This is the way to set conditions additional to the join operation.
+
+#### Three-way Joins
+
+Even when applying where filters on join operations there could still be cases where it just isn't enough. This is where `Three-way Joins` come into play as they allow you to use additional related tables.
+
+Using the previous example, just imagine a slight variation where you wan to also be able to tell which users commented on their own photos. You'd need to use an additional join in order to access the `username` value.
+
+```SQL
+SELECT username, url, contents
+FROM comments
+JOIN photos ON comments.photo_id = photos.id
+JOIN users ON comments.user_id = users.id AND photos.user_id = users.id;
+-- Note how the conditions for the second join are more complex than the first one
+```
+
+Another example:
+
+*Write a query that will return the title of each book, along with the name of the author, and the rating of a review. Only show rows where the author of the book is also the author of the review.*
+
+**Authors**
+
+| id | name            |
+|----|-----------------|
+| 1  | Stephen King    |
+| 2  | Agatha Christie |
+| 3  | JK Rowling      |
+
+**Books**
+
+| id | title               | author_id |
+|----|---------------------|-----------|
+| 1  | The Dark Tower      | 1         |
+| 2  | Affair At Styles    | 2         |
+| 3  | Chamber of Secrets  | 3         |
+
+**Reviews**
+
+| id | rating | reviewer_id | book_id |
+|----|--------|-------------|---------|
+| 1  | 3      | 1           | 2       |
+| 2  | 4      | 2           | 1       |
+| 3  | 5      | 3           | 3       |
+
+```SQL
+-- Solution
+SELECT title, name, rating 
+FROM books 
+JOIN authors ON books.author_id = authors.id
+JOIN reviews ON reviews.book_id = books.id AND reviews.reviewer_id = authors.id;
+```
+
+
+
+
+### Aggregations & Grouping
+
+#### Grouping
+
+- Reduces many rows down to fewer rows.
+- Done by using the `GROUP BY` keywords.
+- Visualizing the result is key to use.
+
+Example:
+
+```SQL
+-- gets all records and groups them by the 'column_name' column. Multiple records get reduced (or grouped) to a single group.
+SELECT column FROM table_name GROUP BY column_name;
+```
+
+Now, you just can't select any column you like when grouping them. To understanding, lets use an example. You have the following table.
+
+**Comments table**
+
+| id | contents          | user_id | photo_id |
+|----|-------------------|---------|----------|
+| 1  | Great shot!       | 1       | 1        |
+| 2  | Nice work         | 1       | 2        |
+| 3  | Love this photo   | 2       | 3        |
+| 4  | Awesome capture   | 5       | 5        |
+| 5  | Beautiful scenery | 3       | 4        |
+
+If you were to run this query `SELECT * FROM table GROUP BY user_id` SQL would build something like this in the back:
+
+| Grouped user_id | id   | contents               | photo_id |
+|-----------------|------|------------------------|----------|
+| 1               | 1, 2 | Great shot!, Nice work | 1, 2     |
+| 2               | 3    | Love this photo        | 3        |
+| 3               | 5    | Beautiful scenery      | 4        |
+| 5               | 4    | Awesome capture        | 5        |
+
+As you can see, the contents of user_id 1 got grouped into a single record. This is the reason that you can only select certain rows when using group by as the other column's rows will be pulled into a group. In the example above, the only column you're allowed to select (without using an aggregate function) without throwing an error is the `user_id` column.
+
+- **This is why you want to visualize how your data will look like after grouping**.
+- **If you group records you can only select the grouped column (if you didn't use aggregate functions of course)**.
+
+#### Aggregate Functions
 
 - Looks at many rows and calculates a single value.
 - Words like `most`, `average`, `least` are a sign you need to use an aggregation.
+- Done by using `Aggregate Functions`.
+
+| Function            | Description                                                    |
+|---------------------|----------------------------------------------------------------|
+| `COUNT(expression)` | Counts the number of rows where the expression is not null.    |
+| `SUM(expression)`   | Calculates the sum of the values in the expression.            |
+| `AVG(expression)`   | Calculates the average (mean) of the values in the expression. |
+| `MIN(expression)`   | Finds the minimum value of the expression.                     |
+| `MAX(expression)`   | Finds the maximum value of the expression.                     |
+
+A simple query using an aggregate function on the table below would look as follows:
+
+**Comments table**
+
+| id | contents          | user_id | photo_id |
+|----|-------------------|---------|----------|
+| 1  | Great shot!       | 1       | 1        |
+| 2  | Nice work         | 1       | 2        |
+| 3  | Love this photo   | 2       | 3        |
+| 4  | Awesome capture   | 5       | 5        |
+| 5  | Beautiful scenery | 3       | 4        |
+
+```SQL
+-- Query would return a single value: the sum of all of the ids (15).
+SELECT SUM(id) FROM comments;
+
+-- Note that you can't select a column after an aggregate function as you normally would.
+-- Query would throw an error
+SELECT SUM(id), id FROM comments;
+```
+
+- Aggregate functions are **more commonly used by themselves or as a part of a larger GROUP BY query**.
+- You can not select a column and use an aggregate at the same time.
+
+#### Combining Group By and Aggregate Functions
+
+An aggregate function when using group by **will be applied to each of the individual subgroups**. 
+
+```SQL
+-- gets all records and groups them by the 'user_id' column. 
+-- prints the user_id column and its corresponding maximum id per group.
+SELECT user_id, MAX(id) FROM comments GROUP BY user_id;
+```
+
+**Corner Cases**
+
+
+
+
+
 
 ---
+
+
 
 
 
@@ -1084,7 +1299,7 @@ SELECT title, box_office FROM movies;
 
 ### Excercises
 
-**Section 4**
+**Section 4 & 5**
 
 #### Data
 
