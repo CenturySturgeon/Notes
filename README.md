@@ -1182,12 +1182,38 @@ An aggregate function when using group by **will be applied to each of the indiv
 SELECT user_id, MAX(id) FROM comments GROUP BY user_id;
 ```
 
-**Corner Cases**
+**Count Corner Cases**
+
+*Photos table*
+
+| id | url     | user_id |
+|----|---------|---------|
+| 1  | [url_1] | 1       |
+| 2  | [url_2] | 3       |
+| 3  | [url_3] | 1       |
+| 4  | [url_4] | NULL    |
+
+There are some considerations you might want to keep in mind when using aggregate functions. An example of this whould be `NULL` values. Lets say you have the above photos table and you want to count the number of photos by using the query `SELECT COUNT(user_id) FROM photos;`. Contrary to what you might expect, the result would be 3 instead of 4. This is because **whenever we do COUNT on a column NULL values are not counted**. To avoid this, instead of referencing a specific column you can use `COUNT(*)` instead, which would count the total number of rows and return 4.
+
+A more complex query taking advantage of this would look as follows:
+
+```SQL
+SELECT user_id, COUNT(*) FROM photos GROUP BY user_id;
+```
+
+This query would return the following table:
+
+| user_id | count |
+|---------|-------|
+| 1       | 2     |
+| 3       | 1     |
 
 
+#### Filtering Groups With HAVING
 
+The `HAVING` keyword is similar to `WHERE` in the sense that `WHERE` is going to operate on **filtering out some number of rows** whereas `HAVING` is going to operate on **filtering out some number of groups**.
 
-
+- You're never going to see `HAVING` without a `GROUP BY`.
 
 ---
 
@@ -1469,6 +1495,10 @@ VALUES
 
 5. Users can comment on photos that they post. List the url and comment content of all photos/comments where this happened.
 
+6. Find the number of comments for each photo.
+
+7. Find the number of comments for each photo where the photo_id is less than 3 and the photo has more than two comments.
+
 3. Find all the comments for the photo with ID=3, along with the username of the comment author.
 
 4. Find the photo with ID = 10 and get the number of comments attached to it.
@@ -1506,6 +1536,16 @@ VALUES
 5. Excercise 5:
     ```SQL
     SELECT url, contents FROM comments JOIN photos ON comments.photo_id = photos.id  WHERE comments.user_id = photos.user_id;
+    ```
+
+6. Excercise 5:
+    ```SQL
+    SELECT photo_id, COUNT(*) FROM comments GROUP BY photo_id;
+    ```
+
+6. Excercise 7:
+    ```SQL
+    SELECT photo_id, COUNT(*) FROM comments GROUP BY photo_id;
     ```
 </details>
 <details>
