@@ -2,6 +2,8 @@
 <details>
   <summary><h2 style='display: inline;'> Python </h2></summary>
   
+![Python Logo](https://github.com/CenturySturgeon/Notes/blob/main/images/PythonLogo.png)
+
 ### Decorators
 
 ---
@@ -293,6 +295,8 @@ Lambda functions are particularly useful in functional programming contexts wher
 <details>
   <summary><h2 style='display: inline;'> Django </h2></summary>
   
+![Django Logo](https://github.com/CenturySturgeon/Notes/blob/main/images/DjangoLogo.png)
+
 ### One-to-many Relations
 
 - Use `ForeignKey`
@@ -1549,8 +1553,25 @@ VALUES
     ```
 </details>
 <details>
+  <summary><h2 style='display: inline;'> NoSQL </h2></summary>
+  
+
+</details>
+<details>
+  <summary><h2 style='display: inline;'> Docker </h2></summary>
+  
+
+</details>
+<details>
+  <summary><h2 style='display: inline;'> Linux </h2></summary>
+  
+
+</details>
+<details>
   <summary><h2 style='display: inline;'> Git </h2></summary>
   
+![Git Logo](https://github.com/CenturySturgeon/Notes/blob/main/images/GitLogo.png)
+
 ### Connecting a new PC to your GitHub profile
 
 1. Generate a token using the instructions from [Creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens):
