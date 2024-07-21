@@ -1,3 +1,5 @@
+![Python Logo](../images/PythonLogo.png)
+
 ### Decorators
 
 ---

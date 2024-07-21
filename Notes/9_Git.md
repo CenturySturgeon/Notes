@@ -1,3 +1,5 @@
+![Git Logo](../images/GitLogo.png)
+
 ### Connecting a new PC to your GitHub profile
 
 1. Generate a token using the instructions from [Creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens):

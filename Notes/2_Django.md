@@ -1,3 +1,5 @@
+![Django Logo](../images/DjangoLogo.png)
+
 ### One-to-many Relations
 
 - Use `ForeignKey`
