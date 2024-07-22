@@ -35,59 +35,6 @@ case letters.
 | `SET NULL`    | Sets the foreign key column in the referencing rows to `NULL`.            |
 | `SET DEFAULT` | Sets the foreign key column in the referencing rows to its default value. |
 
-### Comparisson Math Operators
-
-Comparisson Math Operators are very useful when filtering out information (I.E when using the `WHERE` keyword).
-
-| Operator | Description                  |
-|----------|------------------------------|
-| =        | Equal                        |
-| <>       | Not equal                    |
-| >        | Greater than                 |
-| <        | Less than                    |
-| >=       | Greater than or equal        |
-| <=       | Less than or equal           |
-| NOT IN   | Value isn't present          |
-| IN       | Is value present ?           |
-| BETWEEN  | Value in between two others? |
-| AND      | Used to join logical ops     |
-| OR       | Used to join logical ops     |
-
-
-### Functions
-
-Here's a markdown table listing some common PostgreSQL functions formatted in uppercase:
-
-| Function                   | Description                                                            |
-|----------------------------|------------------------------------------------------------------------|
-| ||                         | Concatenates two strings                                               |
-| CONCAT(string1, string2, ...) | Concatenates strings                                                |
-| UPPER(string)              | Converts string to uppercase                                           |
-| LOWER(string)              | Converts string to lowercase                                           |
-| LENGTH(string)             | Returns the length of a string                                         |
-| ABS(expression)            | Absolute value                                                         |
-| AVG(expression)            | Average value of a set of numbers                                      |
-| COUNT(expression)          | Number of rows in a result set or number of times an expression occurs |
-| MAX(expression)            | Maximum value of a set of numbers                                      |
-| MIN(expression)            | Minimum value of a set of numbers                                      |
-| SUM(expression)            | Sum of a set of numbers                                                |
-| ROUND(expression, precision) | Rounds a numeric value to a specified precision                      |
-| COALESCE(expression1, expression2, ...) | Returns the first non-null expression in the list         |
-| SUBSTRING(string FROM start FOR length) | Extracts substring from a string                          |
-| NOW()                      | Current date and time                                                  |
-| DATE_PART('unit', timestamp) | Extracts a specific part (e.g., year, month) from a timestamp        |
-
-### Agregate Functions
-
-| Function            | Description                                                    |
-|---------------------|----------------------------------------------------------------|
-| `COUNT(expression)` | Counts the number of rows where the expression is not null.    |
-| `SUM(expression)`   | Calculates the sum of the values in the expression.            |
-| `AVG(expression)`   | Calculates the average (mean) of the values in the expression. |
-| `MIN(expression)`   | Finds the minimum value of the expression.                     |
-| `MAX(expression)`   | Finds the maximum value of the expression.                     |
-
-
 ### Common Query Keywords
 
 | Keyword      | Description                                                                           |
@@ -121,6 +68,69 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 | `MIN`        | Returns the smallest value in a set of values.                                        |
 | `MAX`        | Returns the largest value in a set of values.                                         |
 
+### Comparisson Math Operators
+
+Comparisson Math Operators are very useful when filtering out information (I.E when using the `WHERE` keyword).
+
+| Operator | Description                  |
+|----------|------------------------------|
+| =        | Equal                        |
+| <>       | Not equal                    |
+| >        | Greater than                 |
+| <        | Less than                    |
+| >=       | Greater than or equal        |
+| <=       | Less than or equal           |
+| ||       | Concatenates two strings     |
+| NOT IN   | Value isn't present          |
+| IN       | Is value present ?           |
+| BETWEEN  | Value in between two others? |
+| AND      | Used to join logical ops     |
+| OR       | Used to join logical ops     |
+
+### Functions
+
+Here's a markdown table listing some common PostgreSQL functions formatted in uppercase:
+
+| Function                                  | Description                                                            |
+|-------------------------------------------|------------------------------------------------------------------------|
+| `CONCAT(string1, string2, ...)`           | Concatenates strings                                                   |
+| `UPPER(string)`                           | Converts string to uppercase                                           |
+| `LOWER(string)`                           | Converts string to lowercase                                           |
+| `LENGTH(string)`                          | Returns the length of a string                                         |
+| `ABS(expression)`                         | Absolute value                                                         |
+| `AVG(expression)`                         | Average value of a set of numbers                                      |
+| `COUNT(expression)`                       | Number of rows in a result set or number of times an expression occurs |
+| `MAX(expression)`                         | Maximum value of a set of numbers                                      |
+| `MIN(expression)`                         | Minimum value of a set of numbers                                      |
+| `SUM(expression)`                         | Sum of a set of numbers                                                |
+| `ROUND(expression, precision)`            | Rounds a numeric value to a specified precision                        |
+| `COALESCE(expression1, expression2, ...)` | Returns the first non-null expression in the list                      |
+| `SUBSTRING(string FROM start FOR length)` | Extracts substring from a string                                       |
+| `NOW()`                                   | Current date and time                                                  |
+| `DATE_PART('unit', timestamp)`            | Extracts a specific part (e.g., year, month) from a timestamp          |
+
+
+### Agregate Functions
+
+| Function            | Description                                                    |
+|---------------------|----------------------------------------------------------------|
+| `COUNT(expression)` | Counts the number of rows where the expression is not null.    |
+| `SUM(expression)`   | Calculates the sum of the values in the expression.            |
+| `AVG(expression)`   | Calculates the average (mean) of the values in the expression. |
+| `MIN(expression)`   | Finds the minimum value of the expression.                     |
+| `MAX(expression)`   | Finds the maximum value of the expression.                     |
+
+
+### Set Operators
+
+| Set Operator    | Description                                                                           |
+|-----------------|---------------------------------------------------------------------------------------|
+| `UNION`         | Join together the results of two queries and remove duplicate rows                    |
+| `UNION ALL`     | Join together results of two queries                                                  |
+| `INTERSECT`     | Find the rows common in the results of two queries. Remove duplicates                 |
+| `INTERSECT ALL` | Find the rows common in the results of two queries                                    |
+| `EXCEPT`        | Find the rows that are present in first query but not second query. Remove duplicates |
+| `EXCEPT ALL`    | Find the rows that are present in first query but not second query                    |
 
 
 ### Keyword Hierarchy VS. Execution Order
@@ -199,100 +209,100 @@ flowchart TD;
 
 #### One-To-One 
 
-One-to-one relationships are the simplest to understand and identify as they express one way roads between to objects.
+- One-to-one relationships are the simplest to understand and identify as they express one way roads between to objects.
 
-- One company `has one` CEO.
-- One country `has one` capitol.
-- One person `has one` drivers license.
+  - One company `has one` CEO.
+  - One country `has one` capitol.
+  - One person `has one` drivers license.
 
-```SQL
--- One person has one passport
-CREATE TABLE person (
-    person_id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
-);
+  ```SQL
+  -- One person has one passport
+  CREATE TABLE person (
+      person_id SERIAL PRIMARY KEY,
+      name VARCHAR(100)
+  );
 
-CREATE TABLE passport (
-    passport_id SERIAL PRIMARY KEY,
-    passport_number VARCHAR(20),
-    person_id INT UNIQUE REFERENCES person(person_id)
-);
-```
+  CREATE TABLE passport (
+      passport_id SERIAL PRIMARY KEY,
+      passport_number VARCHAR(20),
+      person_id INT UNIQUE REFERENCES person(person_id)
+  );
+  ```
 
 #### One-To-Many
 
-One-to-many relationships can be easilly identified by the frase "has many" as in the following examples:
+- One-to-many relationships can be easilly identified by the frase "has many" as in the following examples:
 
-- A classroom `has many` students.
-- An office `has many` workers.
-- A house `has many` people living in it.
+  - A classroom `has many` students.
+  - An office `has many` workers.
+  - A house `has many` people living in it.
 
-```SQL
--- One department has many employees
-CREATE TABLE department (
-    department_id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
-);
+  ```SQL
+  -- One department has many employees
+  CREATE TABLE department (
+      department_id SERIAL PRIMARY KEY,
+      name VARCHAR(100)
+  );
 
-CREATE TABLE employee (
-    employee_id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    department_id INT REFERENCES department(department_id)
-);
-```
+  CREATE TABLE employee (
+      employee_id SERIAL PRIMARY KEY,
+      name VARCHAR(100),
+      department_id INT REFERENCES department(department_id)
+  );
+  ```
 
 #### Many-To-One
 
-Many-to-one relationships are the same as one-to-many, they're just viewed from the other side of the relationship.
+- Many-to-one relationships are the same as one-to-many, they're just viewed from the other side of the relationship.
 
-- Many students `have one` classroom.
-- Many workers `have one` office.
-- Many people live in a house.
+  - Many students `have one` classroom.
+  - Many workers `have one` office.
+  - Many people live in a house.
 
-```SQL
--- Many students have one school
-CREATE TABLE school (
-    school_id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
-);
+  ```SQL
+  -- Many students have one school
+  CREATE TABLE school (
+      school_id SERIAL PRIMARY KEY,
+      name VARCHAR(100)
+  );
 
-CREATE TABLE student (
-    student_id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    school_id INT REFERENCES school(school_id)
-);
-```
+  CREATE TABLE student (
+      student_id SERIAL PRIMARY KEY,
+      name VARCHAR(100),
+      school_id INT REFERENCES school(school_id)
+  );
+  ```
 
 #### Many-To-Many
 
-Many-to-many relationships are the most complex to identify because they imply that multiple records from one entity can be related to multiple records from another entity. These relationships are typically identified by the use of `many-to-many` or `have many` keywords, which must be applied from both perspectives.
+- Many-to-many relationships are the most complex to identify because they imply that multiple records from one entity can be related to multiple records from another entity. These relationships are typically identified by the use of `many-to-many` or `have many` keywords, which must be applied from both perspectives.
 
-- Movies `have many` actors. <-> Many actors `have many` movies.
-- Many conference calls `have many` employees. <-> Many employees `have many` conference calls.
-- A google doc can be edited by `many` users at the same time. <-> A single user can edit `many` different documents.
+  - Movies `have many` actors. <-> Many actors `have many` movies.
+  - Many conference calls `have many` employees. <-> Many employees `have many` conference calls.
+  - A google doc can be edited by `many` users at the same time. <-> A single user can edit `many` different documents.
 
-The last example from Google Docs might be easier to understand, as its opposite would be a one-to-one relationship: `A document can only be edited by a single user. <-> A user can only edit a single document`.
+  ```SQL
+  -- Many courses have many students
+  CREATE TABLE course (
+      course_id SERIAL PRIMARY KEY,
+      name VARCHAR(100)
+  );
+
+  CREATE TABLE student (
+      student_id SERIAL PRIMARY KEY,
+      name VARCHAR(100)
+  );
+
+  CREATE TABLE enrollment (
+      enrollment_id SERIAL PRIMARY KEY,
+      student_id INT REFERENCES student(student_id),
+      course_id INT REFERENCES course(course_id),
+      UNIQUE(student_id, course_id)
+  );
+  ```
+
+- **Note**: The last example from Google Docs might be easier to understand, as its opposite would be a one-to-one relationship: `A document can only be edited by a single user. <-> A user can only edit a single document`.
 Another example is building a database for an E-Commerce application where you need to track which users purchase which product categories. In this context, many-to-many relationships are evident because `Users can purchase products from many different categorys. <-> Each kind of product can be purchased by many different users.`
-
-```SQL
--- Many courses have many students
-CREATE TABLE course (
-    course_id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
-);
-
-CREATE TABLE student (
-    student_id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
-);
-
-CREATE TABLE enrollment (
-    enrollment_id SERIAL PRIMARY KEY,
-    student_id INT REFERENCES student(student_id),
-    course_id INT REFERENCES course(course_id),
-    UNIQUE(student_id, course_id)
-);
-```
 
 
 ---
@@ -302,38 +312,34 @@ CREATE TABLE enrollment (
 ### Primary Keys
 
 - Primary Keys uniquely identify a record in a table, 
-- They are usually an integer or an UUID. 
-- **There can't be two rows with the same primary key in a table**.
-
-Below is an example of how a primary key `PK` looks like in a table.
+  - They are usually an integer or an UUID. 
+  - **There can't be two rows with the same primary key in a table**.
 
 #### Users Table
 
-| id INTEGER, PK | username VARCHAR (50) | email VARCHAR (50) |
-|----------------|-----------------------|--------------------|
-| 1              | user1                 | user1@example.com  |
-| 2              | user2                 | user2@example.com  |
-| 3              | user3                 | user3@example.com  |
-| ...            | ...                   | ...                |
+| id INTEGER (PK) | username VARCHAR (50) | email VARCHAR (50) |
+|-----------------|-----------------------|--------------------|
+| 1               | user1                 | user1@example.com  |
+| 2               | user2                 | user2@example.com  |
+| 3               | user3                 | user3@example.com  |
+| ...             | ...                   | ...                |
 
-As you can see, the `id` field on each table is a **Primary Key**, and the `user_id` field on the `Photos` table is a **Foreign Key**
+As you can see in the example above, the `id` field on each table is a **Primary Key**, and the `user_id` field on the `Photos` table is a **Foreign Key**.
 
-##### Notes:
-- Even when you delete or modify records **the primary key will not change**, which ensures that all records can be consistently accessed using the PK.
-- **Primary Key (PK)**: `id` columns are marked as primary keys ensuring each row has a unique identifier.
+- **Notes**:
+  - Even when you delete or modify records **the primary key will not change**, which ensures that all records can be consistently accessed using the PK.
+  - **Primary Key (PK)**: `id` columns are marked as primary keys ensuring each row has a unique identifier.
 
 
 ### Foreign Keys
 
-Foreign keys in a relational database are columns (or combinations of columns) that establish and enforce a link between data in two tables. They create a parent-child relationship between the tables, where the child table contains values that match values in the primary key column(s) of the parent table.
+- Foreign keys in a relational database are columns (or combinations of columns) that establish and enforce a link between data in two tables. They create a parent-child relationship between the tables, where the child table contains values that match values in the primary key column(s) of the parent table.
 
-- Rows can  **only have this if they belong to another record**.
-- Many rows can have the same foreign key.
-- Name varies, usually called something like **"xyz_id"**.
-- **Exactly equal to the primary key of the referenced row**.
-- Changes if the relationship changes.
-
-You might find it easier to understand by thinking how Instagram handles its comments. Each comment belongs to a photo were it was written, so in the comments table you would have a foreign key for each comment pointing at its photo (the one where the comment was written into).
+  - Rows can  **only have this if they belong to another record**.
+  - Many rows can have the same foreign key.
+  - Name varies, usually called something like **"xyz_id"**.
+  - **Exactly equal to the primary key of the referenced row**.
+  - Changes if the relationship changes.
 
 ```mermaid
 graph TD;
@@ -347,6 +353,7 @@ graph TD;
     A2 -->B
     A3 -->B
 ```
+You might find it easier to understand by thinking how Instagram handles its comments. Each comment belongs to a photo were it was written, so in the comments table you would have a foreign key for each comment pointing at its photo (the one where the comment was written into).
 
 Another great example comes from the tables below, notice how the `photos` table records reference a specific user using it's `id` (the Foreign Key).
 
@@ -370,58 +377,58 @@ Another great example comes from the tables below, notice how the `photos` table
 
 As you can see, the `id` field on each table is a **Primary Key**, and the `user_id` field on the `Photos` table is a **Foreign Key**
 
-##### Notes:
-- Even when you delete or modify records **the primary key will not change**, which ensures that all records can be consistently accessed using the PK.
-- **Primary Key (PK)**: `id` columns are marked as primary keys (`PK`) in both tables, ensuring each row has a unique identifier.
-- **Foreign Key (FK)**: In the `photos` table, `user_id` is a foreign key that references the `id` column in the `users` table, establishing a relationship between photos and users.
-- **Data Types**: `url` and `email` are specified as `varchar(50)`, indicating the expected character limits for these columns.
+- **Notes**:
+  - Even when you delete or modify records **the primary key will not change**, which ensures that all records can be consistently accessed using the PK.
+  - **Primary Key (PK)**: `id` columns are marked as primary keys (`PK`) in both tables, ensuring each row has a unique identifier.
+  - **Foreign Key (FK)**: In the `photos` table, `user_id` is a foreign key that references the `id` column in the `users` table, establishing a relationship between photos and users.
+  - **Data Types**: `url` and `email` are specified as `varchar(50)`, indicating the expected character limits for these columns.
   
-These tables provide a basic structure for modeling photos and users in a database schema, demonstrating the use of primary keys, foreign keys, and column data types as per your requirements. Adjustments can be made based on specific database management system requirements or additional constraints.
+- These tables provide a basic structure for modeling photos and users in a database schema, demonstrating the use of primary keys, foreign keys, and column data types as per your requirements. Adjustments can be made based on specific database management system requirements or additional constraints.
 
-```SQL
--- Create the users table
-CREATE TABLE users (
-  -- Serial means it auto-generates a value when a record is addedALTER
-  -- Primary Key adds special performance benefits when looking for records
-  id SERIAL PRIMARY KEY,
-  user_name VARCHAR(50)
-);
--- Insert some data into the users table
-INSERT INTO users (user_name) VALUES ('Juan'), ('Jose'), ('Luis'), ('x123');
-
--- Create photos table
-CREATE TABLE photos (
+  ```SQL
+  -- Create the users table
+  CREATE TABLE users (
+    -- Serial means it auto-generates a value when a record is addedALTER
+    -- Primary Key adds special performance benefits when looking for records
     id SERIAL PRIMARY KEY,
-    url VARCHAR(50),
-    -- Name the column as 'user_id' which holds the link to the users table
-    -- References keyword is used to specify the table and the column for the Foreign Key relationship
-    user_id INTEGER REFERENCES users(id)
-);
+    user_name VARCHAR(50)
+  );
+  -- Insert some data into the users table
+  INSERT INTO users (user_name) VALUES ('Juan'), ('Jose'), ('Luis'), ('x123');
 
--- Insert values into the photos table using the foregin key
-INSERT INTO photos (url, user_id) VALUES ('http://one.jpg', 4), ('http://tg3223.jpg', 3),
-('http://two.jpg', 2), ('http://on234e.jpg', 1), ('http://o23.jpg', 1);
-```
+  -- Create photos table
+  CREATE TABLE photos (
+      id SERIAL PRIMARY KEY,
+      url VARCHAR(50),
+      -- Name the column as 'user_id' which holds the link to the users table
+      -- References keyword is used to specify the table and the column for the Foreign Key relationship
+      user_id INTEGER REFERENCES users(id)
+  );
 
-Below are some examples of some queries that show how to use the foreign key constraints in a useful way:
+  -- Insert values into the photos table using the foregin key
+  INSERT INTO photos (url, user_id) VALUES ('http://one.jpg', 4), ('http://tg3223.jpg', 3),
+  ('http://two.jpg', 2), ('http://on234e.jpg', 1), ('http://o23.jpg', 1);
+  ```
 
-```SQL
--- Select all photos that were posted by the user whos id is 4.
-SELECT * FROM photos WHERE user_id = 1;
+- Below are some examples of some queries that show how to use the foreign key constraints in a useful way:
 
--- List all photos with details about the associated user for each
-SELECT * FROM photos JOIN users ON users.id = photos.user_id;
+  ```SQL
+  -- Select all photos that were posted by the user whos id is 4.
+  SELECT * FROM photos WHERE user_id = 1;
 
--- Note in this variation of the above query, columns of both tables are available thanks to the JOIN
--- url exists on the photos table while user_name exists on the user table
-SELECT url, user_name FROM photos JOIN users ON users.id = photos.user_id;
-```
+  -- List all photos with details about the associated user for each
+  SELECT * FROM photos JOIN users ON users.id = photos.user_id;
+
+  -- Note in this variation of the above query, columns of both tables are available thanks to the JOIN
+  -- url exists on the photos table while user_name exists on the user table
+  SELECT url, user_name FROM photos JOIN users ON users.id = photos.user_id;
+  ```
 
 #### ON DELETE Options
 
 When deleting records that have children rows pointing at them (via the foreign key), it's necessary to specify the behavior this child row should have as its foreign key value will become inexistent. Here's where `ON DELETE` options come into play; **they define the actions that take place when the refered record of a foreign key column gets deleted**.
 
-- These `ON DELETE` options **must be placed inside the table schema that has the foreign key sentence**.
+- `ON DELETE` options **must be placed inside the table schema that has the foreign key sentence**.
 
 | FK ON DELETE Option     | Description                                                               |
 |-------------------------|---------------------------------------------------------------------------|
@@ -431,18 +438,19 @@ When deleting records that have children rows pointing at them (via the foreign 
 | `ON DELETE SET NULL`    | Sets the foreign key column in the referencing rows to `NULL`.            |
 | `ON DELETE SET DEFAULT` | Sets the foreign key column in the referencing rows to its default value. |
 
-```SQL
--- Create photos table
-CREATE TABLE photos (
-    id SERIAL PRIMARY KEY,
-    url VARCHAR(50),
-    -- Set the ON DELETE action for this foreign key column
-    -- If the user_id row gets deleted this record will be deleted as well
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
-);
-```
 
-These delete options are very useful in day-to-day applications like blogs. If you delete a blog post you probably don't want to keep around its comments in your DB (**ON DELETE CASCADE**). In some cases you might want to keep the information, like in Reddit that when a user gets deleted his comments remain there but with a `deleted` user tag (**ON DELETE SET NULL**).
+- Delete options are very useful in day-to-day applications like blogs. If you delete a blog post you probably don't want to keep around its comments in your DB (**ON DELETE CASCADE**). In some cases you might want to keep the information, like in Reddit that when a user gets deleted his comments remain there but with a `deleted` user tag (**ON DELETE SET NULL**).
+
+  ```SQL
+  -- Create photos table
+  CREATE TABLE photos (
+      id SERIAL PRIMARY KEY,
+      url VARCHAR(50),
+      -- Set the ON DELETE action for this foreign key column
+      -- If the user_id row gets deleted this record will be deleted as well
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+  );
+  ```
 
 
 
@@ -451,11 +459,11 @@ These delete options are very useful in day-to-day applications like blogs. If y
 
 ### Joins
 
-- Produces values by merging together rows from different **related** tables.
-- Use a join **most times** that you're asked to find data that involves multiple resources.
-- Table order between `FROM` and `JOIN` often **matters**.
-- Must provide context if column names colide.
-- Columns can be renamed using the `AS` keyword.
+- Produce values by merging together rows from different **related** tables.
+  - Use a join **most times** that you're asked to find data that involves multiple resources.
+  - Table order between `FROM` and `JOIN` often **matters**.
+  - Must provide context if column names colide.
+  - Columns can be renamed using the `AS` keyword.
 
 ![SQL Joins](../images/SQLJoins.png)
 
@@ -467,111 +475,111 @@ These delete options are very useful in day-to-day applications like blogs. If y
 | FULL JOIN  | Returns all rows when there is a match in either the left or right table.          |
 | CROSS JOIN | Returns the Cartesian product of the two tables, i.e., all possible pairs of rows. |
 
+- The code for the Joins listed above is as follows:
 
-```SQL
--- Inner Join (Default)
-SELECT url, username FROM photos INNER JOIN users ON user.id = photos.user_id; -- Either INNER JOIN or just JOIN will work
+  ```SQL
+  -- Inner Join (Default)
+  SELECT url, username FROM photos INNER JOIN users ON user.id = photos.user_id; -- Either INNER JOIN or just JOIN will work
 
--- NOTE: For LEFT and RIGHT joins, THE ORDER MATTERS!
+  -- NOTE: For LEFT and RIGHT joins, THE ORDER MATTERS!
 
---Left Join
-SELECT url, username FROM photos LEFT JOIN users ON user.id = photos.user_id;
+  --Left Join
+  SELECT url, username FROM photos LEFT JOIN users ON user.id = photos.user_id;
 
--- Right Join
-SELECT url, username FROM photos RIGHT JOIN users ON user.id = photos.user_id;
+  -- Right Join
+  SELECT url, username FROM photos RIGHT JOIN users ON user.id = photos.user_id;
 
--- Full Join
-SELECT url, username FROM photos FULL JOIN users ON user.id = photos.user_id;
-```
+  -- Full Join
+  SELECT url, username FROM photos FULL JOIN users ON user.id = photos.user_id;
+  ```
 
-#### Where With Joins
+- **`Where With` Joins**
 
-On ocassions joins by themselves may not be enough to filter out the data from two related tables. In these circumstances a `WHERE WITH` join might be necessary. Imagine the following example, you have three tables 'users', 'comments', and 'photos' built with the SQL code below:
+  - On ocassions joins by themselves may not be enough to filter out the data from two related tables. In these circumstances a `WHERE WITH` join might be necessary. Imagine the following example, you have three tables 'users', 'comments', and 'photos' built with the SQL code below.
 
-```SQL
-CREATE TABLE users(
-  id SERIAL PRIMARY KEY,
-  username VARCHAR(50)
-);
- 
-CREATE TABLE photos (
-  id SERIAL PRIMARY KEY,
-  url VARCHAR(200),
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
-);
- 
-CREATE TABLE comments (
-  id SERIAL PRIMARY KEY,
-  contents VARCHAR(240),
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  photo_id INTEGER REFERENCES photos(id) ON DELETE CASCADE
-);
-```
+  ```SQL
+  CREATE TABLE users(
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50)
+  );
+  
+  CREATE TABLE photos (
+    id SERIAL PRIMARY KEY,
+    url VARCHAR(200),
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+  );
+  
+  CREATE TABLE comments (
+    id SERIAL PRIMARY KEY,
+    contents VARCHAR(240),
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    photo_id INTEGER REFERENCES photos(id) ON DELETE CASCADE
+  );
+  ```
 
-Now, if you had a scenario where you'd like to filter out all photos where its author commented on it, a simple join statement wouldn't be enough to get this filtered information. This is because the join would only get you the related records, but youd need to additionally verify if the author of the comment is the author of the photo, as shown in the code below:
+- Now, if you had a scenario where you'd like to filter out all photos where its author commented on it, a simple join statement wouldn't be enough to get this filtered information. This is because the join would only get you the related records, but youd need to additionally verify if the author of the comment is the author of the photo, as shown in the code below. 
+  - This is the way to set conditions additional to the join operation.
 
-```SQL
--- Define the columns to print
-SELECT url, contents
--- Set left table for join
-FROM comments
--- Set right table for join and relation condition (comments and the photo it was posted into)
-JOIN photos ON comments.photo_id = photos.id
--- Set condition that checks wether or not the author of the comment is the author of the photo
-WHERE comments.user_id = photos.user_id;
-```
+  ```SQL
+  -- Define the columns to print
+  SELECT url, contents
+  -- Set left table for join
+  FROM comments
+  -- Set right table for join and relation condition (comments and the photo it was posted into)
+  JOIN photos ON comments.photo_id = photos.id
+  -- Set condition that checks wether or not the author of the comment is the author of the photo
+  WHERE comments.user_id = photos.user_id;
+  ```
 
-This is the way to set conditions additional to the join operation.
+- **Three-way Joins**
 
-#### Three-way Joins
+  - Even when applying where filters on join operations there could still be cases where it just isn't enough. This is where `Three-way Joins` come into play as they allow you to use additional related tables.
 
-Even when applying where filters on join operations there could still be cases where it just isn't enough. This is where `Three-way Joins` come into play as they allow you to use additional related tables.
+  - Using the previous example, just imagine a slight variation where you wan to also be able to tell which users commented on their own photos. You'd need to use an additional join in order to access the `username` value.
 
-Using the previous example, just imagine a slight variation where you wan to also be able to tell which users commented on their own photos. You'd need to use an additional join in order to access the `username` value.
+    ```SQL
+    SELECT username, url, contents
+    FROM comments
+    JOIN photos ON comments.photo_id = photos.id
+    JOIN users ON comments.user_id = users.id AND photos.user_id = users.id;
+    -- Note how the conditions for the second join are more complex than the first one
+    ```
 
-```SQL
-SELECT username, url, contents
-FROM comments
-JOIN photos ON comments.photo_id = photos.id
-JOIN users ON comments.user_id = users.id AND photos.user_id = users.id;
--- Note how the conditions for the second join are more complex than the first one
-```
+  - Another example:
 
-Another example:
+      **Authors**
 
-*Write a query that will return the title of each book, along with the name of the author, and the rating of a review. Only show rows where the author of the book is also the author of the review.*
+      | id | name            |
+      |----|-----------------|
+      | 1  | Stephen King    |
+      | 2  | Agatha Christie |
+      | 3  | JK Rowling      |
 
-**Authors**
+      **Books**
 
-| id | name            |
-|----|-----------------|
-| 1  | Stephen King    |
-| 2  | Agatha Christie |
-| 3  | JK Rowling      |
+      | id | title               | author_id |
+      |----|---------------------|-----------|
+      | 1  | The Dark Tower      | 1         |
+      | 2  | Affair At Styles    | 2         |
+      | 3  | Chamber of Secrets  | 3         |
 
-**Books**
+      **Reviews**
 
-| id | title               | author_id |
-|----|---------------------|-----------|
-| 1  | The Dark Tower      | 1         |
-| 2  | Affair At Styles    | 2         |
-| 3  | Chamber of Secrets  | 3         |
+      | id | rating | reviewer_id | book_id |
+      |----|--------|-------------|---------|
+      | 1  | 3      | 1           | 2       |
+      | 2  | 4      | 2           | 1       |
+      | 3  | 5      | 3           | 3       |
 
-**Reviews**
+    - *Write a query that will return the title of each book, along with the name of the author, and the rating of a review. Only show rows where the author of the book is also the author of the review.*
 
-| id | rating | reviewer_id | book_id |
-|----|--------|-------------|---------|
-| 1  | 3      | 1           | 2       |
-| 2  | 4      | 2           | 1       |
-| 3  | 5      | 3           | 3       |
-
-```SQL
--- Solution
-SELECT title, name, rating 
-FROM books 
-JOIN authors ON books.author_id = authors.id
-JOIN reviews ON reviews.book_id = books.id AND reviews.reviewer_id = authors.id;
-```
+      ```SQL
+      -- Solution
+      SELECT title, name, rating 
+      FROM books 
+      JOIN authors ON books.author_id = authors.id
+      JOIN reviews ON reviews.book_id = books.id AND reviews.reviewer_id = authors.id;
+      ```
 
 
 
@@ -767,7 +775,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 - **Single Column Sorting:** You can specify a single column after `ORDER BY` to sort results based on that column's values.
   
   Example:
-  ```sql
+  ```SQL
   SELECT * FROM employees
   ORDER BY last_name;
   ```
@@ -776,7 +784,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 - **Multiple Column Sorting:** You can sort by multiple columns. Rows are sorted by the first column specified. **By default, it orders them by ascending order**. If values in that column are the same, sorting continues with the next column(s) specified.
   
   Example:
-  ```sql
+  ```SQL
   SELECT * FROM employees
   ORDER BY department_id ASC, last_name DESC;
   ```
@@ -794,7 +802,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 - **Sorting NULL Values:** By default, NULL values are treated as the smallest possible values when sorting in ascending order and the largest possible values when sorting in descending order. You can control this behavior using `NULLS FIRST` or `NULLS LAST` keywords.
 
   Example:
-  ```sql
+  ```SQL
   SELECT * FROM employees
   ORDER BY hire_date ASC NULLS LAST;
   ```
@@ -805,7 +813,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 
 - **Pagination:** `OFFSET` and `LIMIT` are used together to paginate query results, allowing you to retrieve a subset of rows from a result set.
 
-  ```sql
+  ```SQL
   SELECT column1, column2, ...
   FROM table_name
   ORDER BY column1 [ASC | DESC], column2 [ASC | DESC], ...
@@ -821,7 +829,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   - Use `LIMIT` to restrict the number of rows returned by a query.
   
   Example:
-  ```sql
+  ```SQL
   SELECT * FROM products
   ORDER BY product_id
   LIMIT 10;
@@ -832,7 +840,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   - Use `OFFSET` to skip a specified number of rows before beginning to return rows.
   
   Example:
-  ```sql
+  ```SQL
   SELECT * FROM products
   ORDER BY product_id
   LIMIT 10 OFFSET 20;
@@ -843,7 +851,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   - Use both `OFFSET` and `LIMIT` together to paginate through large result sets.
   
   Example:
-  ```sql
+  ```SQL
   SELECT * FROM employees
   ORDER BY hire_date DESC
   LIMIT 20 OFFSET 40;
@@ -854,6 +862,75 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   - Be mindful of the performance implications when using `OFFSET` and `LIMIT` with large result sets. For very large offsets, the database might need to scan and skip a large number of rows, which could impact query performance.
 
 
+### Union
+
+- **Combining Results:** `UNION` is used to combine the result sets of two or more `SELECT` statements into a single result set.
+
+  ```SQL
+  (SELECT column1, column2, ...
+  FROM table_name1
+  WHERE condition)
+  UNION [ALL]
+  (SELECT column1, column2, ...
+  FROM table_name2
+  WHERE condition);
+  ```
+
+- `UNION`: Combines the result sets of the two `SELECT` statements and removes any duplicate rows from the final result set.
+- `UNION ALL`: Combines the result sets of the two `SELECT` statements, including all duplicate rows.
+- Parenthesis (mostly optional): Lets the DB client know the scope of a specific keywor. For example, if you were to use an `ORDER BY` statement in the second query, your client might have trouble determining wether it just applies to the second query of the union or to the result itself.
+- For `UNION` to work, the result columns of both queries **must** have both the same name and data type. Renaming columns is futile.
+
+#### Key Points:
+
+- **Basic Usage of `UNION`:**
+  - Use `UNION` to combine result sets from two or more `SELECT` statements that have the same number of columns and compatible data types.
+  
+  Example:
+  ```SQL
+  SELECT product_id, product_name
+  FROM products
+  WHERE category_id = 1
+  UNION
+  SELECT product_id, product_name
+  FROM products
+  WHERE category_id = 2;
+  ```
+  This query combines products from two different categories into a single result set, removing any duplicate products.
+
+- **Usage of `UNION ALL`:**
+  - Use `UNION ALL` to combine result sets including duplicate rows from the `SELECT` statements.
+  
+  Example:
+  ```SQL
+  SELECT customer_id, order_id
+  FROM orders
+  WHERE order_status = 'completed'
+  UNION ALL
+  SELECT customer_id, order_id
+  FROM orders
+  WHERE order_status = 'pending';
+  ```
+  This query combines orders that are completed and pending into a single result set, including duplicate orders if they exist.
+
+- **Column Compatibility:**
+  - Ensure that the number of columns and their data types match between the `SELECT` statements used with `UNION` or `UNION ALL`.
+
+- **Ordering and Filtering with `UNION`:**
+  - You can apply `ORDER BY`, `LIMIT`, and `OFFSET` clauses to the final `UNION` result set to control the order and limit the number of rows returned.
+
+  Example:
+  ```SQL
+  SELECT product_id, product_name
+  FROM products
+  WHERE category_id = 1
+  UNION
+  SELECT product_id, product_name
+  FROM products
+  WHERE category_id = 2
+  ORDER BY product_name;
+  ```
+  This query combines products from two categories and orders them alphabetically by `product_name` in the final result set.
 
 ---
 
@@ -1980,5 +2057,17 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 
   ```SQL
   SELECT * FROM products ORDER BY price LIMIT 5;
+  ```
+</details>
+
+<details>
+  <summary>5. Find the 4 products with the highest price and the 4 products with the highes price/weight ratio.</summary>
+
+  ```SQL
+  -- Divide and conquer: write the queries separately and then union them
+  (SELECT * FROM products ORDER BY price LIMIT 4)
+  -- If you want the query to show rows that showed up in both queries use 'UNION ALL'
+  UNION
+  (SELECT * FROM products ORDER BY price / weight LIMIT 4);
   ```
 </details>
