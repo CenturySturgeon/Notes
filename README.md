@@ -709,23 +709,23 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 
 ```mermaid
 graph TD;
-    Select1[SELECT] --> From1[FROM];
-    From1 --> Join1[JOIN];
-    Join1 --> On1[ON];
-    On1 --> Where1[WHERE];
-    Where1 --> GroupBy1[GROUP BY];
-    GroupBy1 --> Having1[HAVING];
-    Having1 --> OrderBy1[ORDER BY];
-    OrderBy1 --> Limit1[LIMIT];
+  Select1[SELECT] --> From1[FROM];
+  From1 --> Join1[JOIN];
+  Join1 --> On1[ON];
+  On1 --> Where1[WHERE];
+  Where1 --> GroupBy1[GROUP BY];
+  GroupBy1 --> Having1[HAVING];
+  Having1 --> OrderBy1[ORDER BY];
+  OrderBy1 --> Limit1[LIMIT];
 
-    From2[FROM] --> Join2[JOIN];
-    Join2 --> On2[ON];
-    On2 --> Where2[WHERE];
-    Where2 --> GroupBy2[GROUP BY];
-    GroupBy2 --> Having2[HAVING];
-    Having2 --> Select2[SELECT];
-    Select2 --> OrderBy2[ORDER BY];
-    OrderBy2 --> Limit2[LIMIT];
+  From2[FROM] --> Join2[JOIN];
+  Join2 --> On2[ON];
+  On2 --> Where2[WHERE];
+  Where2 --> GroupBy2[GROUP BY];
+  GroupBy2 --> Having2[HAVING];
+  Having2 --> Select2[SELECT];
+  Select2 --> OrderBy2[ORDER BY];
+  OrderBy2 --> Limit2[LIMIT];
 ```
 
 ---
