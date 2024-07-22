@@ -88,6 +88,41 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 | `MAX(expression)`   | Finds the maximum value of the expression.                     |
 
 
+### Common Query Keywords
+
+| Keyword      | Description                                                                           |
+|--------------|---------------------------------------------------------------------------------------|
+| `SELECT`     | Retrieves data from one or more tables.                                               |
+| `FROM`       | Specifies the table(s) from which to retrieve data.                                   |
+| `WHERE`      | Filters rows based on a specified condition.                                          |
+| `GROUP BY`   | Groups rows that have the same values into summary rows.                              |
+| `HAVING`     | Filters group rows after the `GROUP BY` clause.                                       |
+| `ORDER BY`   | Sorts the result set in ascending or descending order.                                |
+| `JOIN`       | Retrieves data from multiple tables based on a related column between them.           |
+| `INNER JOIN` | Returns records that have matching values in both tables.                             |
+| `LEFT JOIN`  | Returns all records from the left table and matching records from the right table.    |
+| `RIGHT JOIN` | Returns all records from the right table and matching records from the left table.    |
+| `FULL JOIN`  | Returns all records when there is a match in either left or right table.              |
+| `UNION`      | Combines the result set of two or more `SELECT` statements.                           |
+| `INTERSECT`  | Returns the intersection of the result sets of two `SELECT` statements.               |
+| `EXCEPT`     | Returns the difference between the result sets of two `SELECT` statements.            |
+| `DISTINCT`   | Returns unique rows in the result set.                                                |
+| `LIMIT`      | Limits the number of rows returned in the result set.                                 |
+| `OFFSET`     | Skips a specified number of rows before returning the result set.                     |
+| `FETCH`      | Retrieves a limited number of rows from a result set, with optional `OFFSET`.         |
+| `CASE`       | Evaluates a set of conditions and returns a result.                                   |
+| `COALESCE`   | Returns the first non-null expression in a list.                                      |
+| `NULLIF`     | Returns `null` if the two arguments are equal; otherwise, returns the first argument. |
+| `EXISTS`     | Tests for the existence of any rows in a subquery.                                    |
+| `NOT EXISTS` | Tests for the non-existence of any rows in a subquery.                                |
+| `COUNT`      | Returns the number of rows that match a specified criteria.                           |
+| `SUM`        | Calculates the sum of a set of values.                                                |
+| `AVG`        | Calculates the average value of a set of values.                                      |
+| `MIN`        | Returns the smallest value in a set of values.                                        |
+| `MAX`        | Returns the largest value in a set of values.                                         |
+
+
+
 ### Keyword Hierarchy VS. Execution Order
 
 ```mermaid
@@ -162,6 +197,28 @@ flowchart TD;
 
 ### Relationship Types
 
+#### One-To-One 
+
+One-to-one relationships are the simplest to understand and identify as they express one way roads between to objects.
+
+- One company `has one` CEO.
+- One country `has one` capitol.
+- One person `has one` drivers license.
+
+```SQL
+-- One person has one passport
+CREATE TABLE person (
+    person_id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE passport (
+    passport_id SERIAL PRIMARY KEY,
+    passport_number VARCHAR(20),
+    person_id INT UNIQUE REFERENCES person(person_id)
+);
+```
+
 #### One-To-Many
 
 One-to-many relationships can be easilly identified by the frase "has many" as in the following examples:
@@ -169,6 +226,20 @@ One-to-many relationships can be easilly identified by the frase "has many" as i
 - A classroom `has many` students.
 - An office `has many` workers.
 - A house `has many` people living in it.
+
+```SQL
+-- One department has many employees
+CREATE TABLE department (
+    department_id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE employee (
+    employee_id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    department_id INT REFERENCES department(department_id)
+);
+```
 
 #### Many-To-One
 
@@ -178,13 +249,19 @@ Many-to-one relationships are the same as one-to-many, they're just viewed from 
 - Many workers `have one` office.
 - Many people live in a house.
 
-#### One-To-One 
+```SQL
+-- Many students have one school
+CREATE TABLE school (
+    school_id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
 
-One-to-one relationships are the simplest to understand and identify as they express one way roads between to objects.
-
-- One company `has one` CEO.
-- One country `has one` capitol.
-- One person `has one` drivers license.
+CREATE TABLE student (
+    student_id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    school_id INT REFERENCES school(school_id)
+);
+```
 
 #### Many-To-Many
 
@@ -197,6 +274,25 @@ Many-to-many relationships are the most complex to identify because they imply t
 The last example from Google Docs might be easier to understand, as its opposite would be a one-to-one relationship: `A document can only be edited by a single user. <-> A user can only edit a single document`.
 Another example is building a database for an E-Commerce application where you need to track which users purchase which product categories. In this context, many-to-many relationships are evident because `Users can purchase products from many different categorys. <-> Each kind of product can be purchased by many different users.`
 
+```SQL
+-- Many courses have many students
+CREATE TABLE course (
+    course_id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE student (
+    student_id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE enrollment (
+    enrollment_id SERIAL PRIMARY KEY,
+    student_id INT REFERENCES student(student_id),
+    course_id INT REFERENCES course(course_id),
+    UNIQUE(student_id, course_id)
+);
+```
 
 
 ---
@@ -488,12 +584,12 @@ JOIN reviews ON reviews.book_id = books.id AND reviews.reviewer_id = authors.id;
 - Done by using the `GROUP BY` keywords.
 - Visualizing the result is key to use.
 
-Example:
+  Example:
 
-```SQL
--- gets all records and groups them by the 'column_name' column. Multiple records get reduced (or grouped) to a single group.
-SELECT column FROM table_name GROUP BY column_name;
-```
+  ```SQL
+  -- Gets all records and groups them by the 'column_name' column. Multiple records get reduced (or grouped) to a single group.
+  SELECT column FROM table_name GROUP BY column_name;
+  ```
 
 Now, you just can't select any column you like when grouping them. To understanding, lets use an example. You have the following table.
 
@@ -521,11 +617,11 @@ As you can see, the contents of user_id 1 got grouped into a single record. This
 - **This is why you want to visualize how your data will look like after grouping**.
 - **If you group records you can only select the grouped column (if you didn't use aggregate functions of course)**.
 
-#### Aggregate Functions
+#### Aggregates
 
 - Looks at many rows and calculates a single value.
 - Words like `most`, `average`, `least` are a sign you need to use an aggregation.
-- Done by using `Aggregate Functions`.
+- Done by using Aggregate Functions.
 
 | Function            | Description                                                    |
 |---------------------|----------------------------------------------------------------|
@@ -582,11 +678,11 @@ SELECT user_id, MAX(id) FROM comments GROUP BY user_id;
 
 There are some considerations you might want to keep in mind when using aggregate functions. An example of this whould be `NULL` values. Lets say you have the above photos table and you want to count the number of photos by using the query `SELECT COUNT(user_id) FROM photos;`. Contrary to what you might expect, the result would be 3 instead of 4. This is because **whenever we do COUNT on a column NULL values are not counted**. To avoid this, instead of referencing a specific column you can use `COUNT(*)` instead, which would count the total number of rows and return 4.
 
-A more complex query taking advantage of this would look as follows:
+- A more complex query taking advantage of this would look as follows:
 
-```SQL
-SELECT user_id, COUNT(*) FROM photos GROUP BY user_id;
-```
+  ```SQL
+  SELECT user_id, COUNT(*) FROM photos GROUP BY user_id;
+  ```
 
 This query would return the following table:
 
@@ -621,13 +717,13 @@ Now, suppose you want to *find the number of comments for each photo where the p
 2. Check the photo_id is less than 3.
 3. Check the photo has more than 2 comments, 
 
-```SQL
-SELECT photo_id, COUNT(*) 
-FROM comments 
-WHERE photo_id < 3 
-GROUP BY photo_id
-HAVING COUNT(*) > 2;
-```
+  ```SQL
+  SELECT photo_id, COUNT(*) 
+  FROM comments 
+  WHERE photo_id < 3 
+  GROUP BY photo_id
+  HAVING COUNT(*) > 2;
+  ```
 
 A little more complex example: Suppose we have the table below and you want to print the names of manufacturers and total revenue (price * units_sold) for all phones.  Only print the manufacturers who have revenue greater than 2,000,000 for all the phones they sold.
 
@@ -648,7 +744,122 @@ A little more complex example: Suppose we have the table below and you want to p
 SELECT manufacturer, SUM(price * units_sold) FROM phones GROUP BY manufacturer HAVING SUM(price * units_sold) > 2000000;
 ```
 
+
+
+
+
+
+
+### Sorting
+
+The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` statement. Here's a brief overview of how `ORDER BY` works and its key features:
+
+- **Sorting Results:** `ORDER BY` arranges the rows of the query result in a specified order based on one or more columns.
+
+  ```SQL
+  SELECT column1, column2, ...
+  FROM table_name
+  ORDER BY column1 [ASC | DESC], column2 [ASC | DESC], ...;
+  ```
+- `column1`, `column2`, etc.: Columns by which the result set should be sorted.
+- `ASC` (default) or `DESC`: Specifies ascending or descending order for each column.
+
+- **Single Column Sorting:** You can specify a single column after `ORDER BY` to sort results based on that column's values.
+  
+  Example:
+  ```sql
+  SELECT * FROM employees
+  ORDER BY last_name;
+  ```
+  This sorts employees alphabetically by their last names in ascending order (default).
+
+- **Multiple Column Sorting:** You can sort by multiple columns. Rows are sorted by the first column specified. **By default, it orders them by ascending order**. If values in that column are the same, sorting continues with the next column(s) specified.
+  
+  Example:
+  ```sql
+  SELECT * FROM employees
+  ORDER BY department_id ASC, last_name DESC;
+  ```
+  This sorts employees first by `department_id` in ascending order. If departments are the same, it then sorts by `last_name` in descending order.
+
+- **Sorting by Expressions:** You can also sort by expressions, not just column names. These expressions could involve calculations, functions, or operations on columns.
+
+  Example:
+  ```SQL
+  SELECT * FROM products
+  ORDER BY unit_price * quantity DESC;
+  ```
+  This sorts products based on the total price (`unit_price * quantity`) in descending order.
+
+- **Sorting NULL Values:** By default, NULL values are treated as the smallest possible values when sorting in ascending order and the largest possible values when sorting in descending order. You can control this behavior using `NULLS FIRST` or `NULLS LAST` keywords.
+
+  Example:
+  ```sql
+  SELECT * FROM employees
+  ORDER BY hire_date ASC NULLS LAST;
+  ```
+  This sorts employees by `hire_date` in ascending order, placing rows with NULL `hire_date` values at the end.
+
+
+### Offset & Limit
+
+- **Pagination:** `OFFSET` and `LIMIT` are used together to paginate query results, allowing you to retrieve a subset of rows from a result set.
+
+  ```sql
+  SELECT column1, column2, ...
+  FROM table_name
+  ORDER BY column1 [ASC | DESC], column2 [ASC | DESC], ...
+  LIMIT number_of_rows_to_return OFFSET offset_value;
+  ```
+
+- `LIMIT`: Specifies the maximum number of rows to return in the result set.
+- `OFFSET`: Specifies the number of rows to skip before starting to return rows from the result set.
+
+#### Key Points:
+
+- **Usage of `LIMIT`:**
+  - Use `LIMIT` to restrict the number of rows returned by a query.
+  
+  Example:
+  ```sql
+  SELECT * FROM products
+  ORDER BY product_id
+  LIMIT 10;
+  ```
+  This query returns the first 10 rows from the `products` table, ordered by `product_id`.
+
+- **Usage of `OFFSET`:**
+  - Use `OFFSET` to skip a specified number of rows before beginning to return rows.
+  
+  Example:
+  ```sql
+  SELECT * FROM products
+  ORDER BY product_id
+  LIMIT 10 OFFSET 20;
+  ```
+  This query skips the first 20 rows from the `products` table and then returns the next 10 rows, ordered by `product_id`. This is useful for implementing pagination.
+
+- **Combining `OFFSET` and `LIMIT`:**
+  - Use both `OFFSET` and `LIMIT` together to paginate through large result sets.
+  
+  Example:
+  ```sql
+  SELECT * FROM employees
+  ORDER BY hire_date DESC
+  LIMIT 20 OFFSET 40;
+  ```
+  This query retrieves 20 rows from the `employees` table, starting from the 41st row (offset 40), and orders them by `hire_date` in descending order.
+
+- **Performance Considerations:**
+  - Be mindful of the performance implications when using `OFFSET` and `LIMIT` with large result sets. For very large offsets, the database might need to scan and skip a large number of rows, which could impact query performance.
+
+
+
 ---
+
+
+
+
 
 
 
@@ -656,105 +867,84 @@ SELECT manufacturer, SUM(price * units_sold) FROM phones GROUP BY manufacturer H
 
 ### Common Queries
 
-#### Create Table
+- Create Table
+  ```SQL
+  CREATE TABLE table_name (
+      column_title COLUMN_TYPE(optional_value),
+      column_title2 COLUMN_TYPE(optional_value),
+  );
+  ```
 
-```SQL
-CREATE TABLE table_name (
-    column_title COLUMN_TYPE(optional_value),
-    column_title2 COLUMN_TYPE(optional_value),
-);
-```
+- Insert Single/Multiple Values Into A Table
 
-#### Insert Single/Multiple Values Into A Table
+  ```SQL
+  -- To insert a single value just write a single set of parenthesis with column values
+  INSERT INTO table_name (column_name1, column_name2) VALUES 
+  (column1_value1, column2_value1)
+  (column1_value2, column2_value2)
+  (column1_value3, column2_value3),
+  ;
+  ```
 
-```SQL
--- To insert a single value just write a single set of parenthesis with column values
-INSERT INTO table_name (column_name1, column_name2) VALUES 
-(column1_value1, column2_value1)
-(column1_value2, column2_value2)
-(column1_value3, column2_value3),
-;
-```
-
-#### Retrieving Information From A Table
-
-
-```SQL
--- Select all records from table
-SELECT * FROM table_name;
-
--- Select specific columns from table
-SELECT column_name, column2_name FROM table_name;
-
--- You can perform operations between columns when retrieving information
-SELECT column_1, column_2 / column_3 FROM table_name;
-```
-**Notes**: 
-- The order of the columns is the order of their printing. You can also print the same column multiple times.
-- If your operation's result goes beyond what the column can store you will get an error. For example, if you use INTEGER as the column type and the result of a multiplication of two columns goes over its capacity (2,147,483,648) you will get an `Integer out of range` error.
+- Retrieving Information From A Table
 
 
-```SQL
--- When performing operations on retrieval, new columns will come out with weird names. 
--- To rename the result column:
-SELECT column_1, column_2 * column_3 AS result_column_name FROM table_name;
+  ```SQL
+  -- Select all records from table
+  SELECT * FROM table_name;
 
--- Concatenating column values as strings
-SELECT column_1 || ', ' || column_2  AS concatenated_column_name FROM table_name;
+  -- Select specific columns from table
+  SELECT column_name, column2_name FROM table_name;
 
--- The same as above but using CONCAT() instead of '||'
-SELECT CONCAT(column_1, ', ', column_2) FROM table_name;
-```
+  -- You can perform operations between columns when retrieving information
+  SELECT column_1, column_2 / column_3 FROM table_name;
+  ```
+  **Notes**: 
+  - The order of the columns is the order of their printing. You can also print the same column multiple times.
+  - If your operation's result goes beyond what the column can store you will get an error. For example, if you use INTEGER as the column type and the result of a multiplication of two columns goes over its capacity (2,147,483,648) you will get an `Integer out of range` error.
 
-#### Filtering Out Records
 
-```SQL
--- Use the WHERE keyword to filter data by using it in pair with comparisson or math operators.
-SELECT column_1, column_2 WHERE column_1 > 5000 FROM table_name;
+  ```SQL
+  -- When performing operations on retrieval, new columns will come out with weird names. 
+  -- To rename the result column use the 'AS' keyword
+  SELECT column_1, column_2 * column_3 AS result_column_name FROM table_name;
 
--- BETWEEEN keyword example
-SELECT column_1, column_2 FROM table_name WHERE column_1 BETWEEN 5 AND 10;
+  -- Concatenating column values as strings
+  SELECT column_1 || ', ' || column_2  AS concatenated_column_name FROM table_name;
 
--- Using a list of possible values for an 'IN' check in a query
-SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2, ...);
+  -- The same as above but using CONCAT() instead of '||'
+  SELECT CONCAT(column_1, ', ', column_2) FROM table_name;
+  ```
 
--- You could also use a negative filter to get all records whose 'column_1' is not in the list by using the 'NOT IN' keywords.
--- Note that you can chain as many 'AND' and 'OR' operators as you want
-SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2) AND column_2 = 'arbitrary_value';
-```
+- Filtering Out Records
 
-#### Updating & Deleting Records
+  ```SQL
+  -- Use the WHERE keyword to filter data by using it in pair with comparisson or math operators.
+  SELECT column_1, column_2 WHERE column_1 > 5000 FROM table_name;
 
-- To update records you use the `UPDATE` and `SET` keywords.
-- To delete records you use the `DELETE` keyword. Be sure to **NEVER FORGET THE `FROM` STATEMENT**!
+  -- BETWEEEN keyword example
+  SELECT column_1, column_2 FROM table_name WHERE column_1 BETWEEN 5 AND 10;
 
-```SQL
--- Updating a single column (multiple rows may be updated)
-UPDATE table_name SET column_1 = 5000 WHERE column_2 = 'arbitrary_value';
+  -- Using a list of possible values for an 'IN' check in a query
+  SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2, ...);
 
--- Deleting one or more records
-DELETE FROM table_name WHERE column_1 = 5;
-```
+  -- You could also use a negative filter to get all records whose 'column_1' is not in the list by using the 'NOT IN' keywords.
+  -- Note that you can chain as many 'AND' and 'OR' operators as you want
+  SELECT column_1, column_2 FROM table_name WHERE column_1 IN (possible_value_1, possible_value_2) AND column_2 = 'arbitrary_value';
+  ```
 
-### Query Examples
+- Updating & Deleting Records
 
-```SQL
-CREATE TABLE movies (
-    title VARCHAR(60),
-    box_office INTEGER
-);
-```
+  - To update records you use the `UPDATE` and `SET` keywords.
+  - To delete records you use the `DELETE` keyword. Be sure to **NEVER FORGET THE `FROM` STATEMENT**!
 
-```SQL
-INSERT INTO movies (title, box_office)
-VALUES 
-    ('The Avengers', 1500000000),
-    ('Batman v Superman', 873000000);
-```
+  ```SQL
+  -- Updating a single column (multiple rows may be updated)
+  UPDATE table_name SET column_1 = 5000 WHERE column_2 = 'arbitrary_value';
 
-```SQL
-SELECT title, box_office FROM movies;
-```
+  -- Deleting one or more records
+  DELETE FROM table_name WHERE column_1 = 5;
+  ```
 
 ### Excercises
 
@@ -1022,7 +1212,7 @@ SELECT title, box_office FROM movies;
   <summary>14. Calculate the average number of characters per comment.</summary>
 </details>
     
-#### Section 6
+#### Section 6 & 7
 
 <details>
   <summary>Data</summary>
@@ -1761,3 +1951,34 @@ SELECT title, box_office FROM movies;
   ```
 </details>
 
+<details>
+  <summary>1. Return a list of products sorted by price.</summary>
+
+  ```SQL
+  SELECT * FROM products ORDER BY price;
+  ```
+</details>
+
+<details>
+  <summary>2. Return a list of the last 10 users (there are 50 in total).</summary>
+
+  ```SQL
+  SELECT * FROM users OFFSET 40;
+  ```
+</details>
+
+<details>
+  <summary>3. Return a list of the last 10 users (there are 50 in total) and of those last 10 return only the first 5.</summary>
+
+  ```SQL
+  SELECT * FROM users OFFSET 40 LIMIT 5;
+  ```
+</details>
+
+<details>
+  <summary>4. Return a list of the 5 cheapest products.</summary>
+
+  ```SQL
+  SELECT * FROM products ORDER BY price LIMIT 5;
+  ```
+</details>
