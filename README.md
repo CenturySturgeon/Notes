@@ -708,7 +708,7 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 ### Keyword Hierarchy VS. Execution Order
 
 ```mermaid
-graph TD;
+flowchart TD;
   Select1[SELECT] --> From1[FROM];
   From1 --> Join1[JOIN];
   Join1 --> On1[ON];
