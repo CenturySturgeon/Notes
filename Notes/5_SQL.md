@@ -19,6 +19,9 @@ To run PostgreSQL online use [pg-sql](https://pg-sql.com)
 - **Keywords**: Tell the database that we want to do something. Always written in capital letters (`CREATE TABLE` are some examples).
 - **Identifiers**: Tell the database what thing we want to act on. Always written in lower 
 case letters.
+- **Scalar Subqueries:** Subqueries that return a single value and can be used in conditional expressions.
+- **Row Subqueries:** Subqueries that return multiple rows and can be used with operators like `IN`, `ANY`, `ALL`.
+- **Table Subqueries:** Subqueries that return entire result sets and are used in place of a table in `FROM` clause.
 
 | Relationship | Hint                                                                     |
 |--------------|--------------------------------------------------------------------------|
@@ -1080,7 +1083,10 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 
 - **Correlated Subqueries:** Correlated subqueries depend on the outer query, executing once for each row processed by the outer query. Be cautious of their performance implications.
 
-
+- **Additional Notes**
+  - Subqueries used in `SELECT` statements **must be of scalar type**.
+  - Subqueries used in `FROM` statements are allowed to be **any subquery as long as the outer selects/wheres/etc are compatible**.
+    - Gotcha: **The subquery must have an alias applied to it**.
 
 
 
@@ -2232,5 +2238,14 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   ```SQL
   -- Using a subquery
   SELECT name, price FROM products WHERE price > (SELECT MAX(price) FROM products WHERE department = 'Toys');
+  ```
+</details>
+
+<details>
+  <summary>7. Write a query that prints the name and price for each phone.  In addition, print out the ratio of the phones price against max price of all phones (so price / max price).  Rename this third column to price_ratio.</summary>
+
+  ```SQL
+  -- Using a subquery
+  SELECT name, price, price / (SELECT MAX(price) FROM phones) AS price_ratio FROM phones;
   ```
 </details>
