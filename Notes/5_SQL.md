@@ -932,6 +932,160 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   ```
   This query combines products from two categories and orders them alphabetically by `product_name` in the final result set.
 
+### Intersect
+
+- **Finding Common Rows:** `INTERSECT` is used to retrieve the common rows that appear in the result sets of two or more `SELECT` statements.
+
+  ```SQL
+  SELECT column1, column2, ...
+  FROM table_name1
+  INTERSECT
+  SELECT column1, column2, ...
+  FROM table_name2;
+  ```
+
+#### Key Points:
+
+- **Basic Usage of `INTERSECT`:**
+  - Use `INTERSECT` to retrieve rows that are common between the result sets of two `SELECT` statements.
+  
+  Example:
+  ```sql
+  SELECT customer_id
+  FROM orders
+  WHERE order_status = 'completed'
+  INTERSECT
+  SELECT customer_id
+  FROM orders
+  WHERE order_status = 'pending';
+  ```
+  This query retrieves customer IDs that have both completed and pending orders.
+
+- **Column Compatibility:**
+  - Similar to `UNION`, ensure that the number of columns and their data types match between the `SELECT` statements used with `INTERSECT`.
+
+- **Ordering and Filtering with `INTERSECT`:**
+  - You can apply `ORDER BY`, `LIMIT`, and `OFFSET` clauses to the final `INTERSECT` result set to control the order and limit the number of rows returned.
+
+  Example:
+  ```sql
+  SELECT customer_id
+  FROM orders
+  WHERE order_status = 'completed'
+  INTERSECT
+  SELECT customer_id
+  FROM orders
+  WHERE order_status = 'pending'
+  ORDER BY customer_id;
+  ```
+  This query retrieves and orders customer IDs that have both completed and pending orders alphabetically by `customer_id`.
+
+#### Considerations:
+
+- **Performance:** `INTERSECT` typically involves finding common rows between large result sets, so it's important to consider its performance implications, especially when dealing with large datasets.
+
+
+### Except
+
+- **Finding Unique Rows:** `EXCEPT` is used to retrieve rows from the result set of the first `SELECT` statement that are not present in the result set of the second `SELECT` statement.
+
+  ```sql
+  SELECT column1, column2, ...
+  FROM table_name1
+  EXCEPT
+  SELECT column1, column2, ...
+  FROM table_name2;
+  ```
+
+#### Key Points:
+
+- **Basic Usage of `EXCEPT`:**
+  - Use `EXCEPT` to retrieve rows that are present in the result set of the first `SELECT` statement but not in the result set of the second `SELECT` statement.
+  
+  Example:
+  ```sql
+  SELECT product_id, product_name
+  FROM products
+  WHERE category_id = 1
+  EXCEPT
+  SELECT product_id, product_name
+  FROM products
+  WHERE category_id = 2;
+  ```
+  This query retrieves products that belong to category 1 but do not belong to category 2.
+
+- **Column Compatibility:**
+  - Ensure that the number of columns and their data types match between the `SELECT` statements used with `EXCEPT`.
+
+- **Ordering and Filtering with `EXCEPT`:**
+  - You can apply `ORDER BY`, `LIMIT`, and `OFFSET` clauses to the final `EXCEPT` result set to control the order and limit the number of rows returned.
+  - Changing query order changes results!
+
+  Example:
+  ```sql
+  SELECT customer_id
+  FROM orders
+  WHERE order_status = 'completed'
+  EXCEPT
+  SELECT customer_id
+  FROM orders
+  WHERE order_status = 'pending'
+  ORDER BY customer_id;
+  ```
+  This query retrieves and orders customer IDs that have completed orders but do not have pending orders, ordered alphabetically by `customer_id`.
+
+#### Considerations:
+
+- **Performance:** `EXCEPT` involves comparing and finding differences between result sets, so consider its performance implications, especially with large datasets.
+
+- **Handling NULL Values:** `EXCEPT` treats `NULL` values as equal, so rows with `NULL` values in corresponding columns will be considered duplicates and excluded from the result.
+
+
+### SubQueries
+
+- A subquery (or inner query) is **a query nested within another SQL statement** (outer query). It allows you to perform operations such as filtering, retrieving data conditionally, or using the result of one query as input for another.
+
+  ```sql
+  SELECT column1, column2, ...
+  FROM table_name
+  WHERE column1 = (SELECT column1 FROM another_table WHERE condition);
+  ```
+
+#### Key Points:
+
+- **Basic Usage of Subqueries:**
+  - Use subqueries to retrieve data based on conditions that depend on the result of another query.
+
+  Example:
+  ```sql
+  SELECT product_name
+  FROM products
+  WHERE product_id IN (SELECT product_id FROM order_items WHERE order_id = 123);
+  ```
+  This query retrieves product names that are part of order 123.
+
+- **Column Compatibility:**
+  - Ensure that the subquery returns a single column or a single value when used in a condition.
+
+- **Types of Subqueries:**
+  - **Scalar Subqueries:** Subqueries that return a single value and can be used in conditional expressions.
+  - **Row Subqueries:** Subqueries that return multiple rows and can be used with operators like `IN`, `ANY`, `ALL`.
+  - **Table Subqueries:** Subqueries that return entire result sets and are used in place of a table in `FROM` clause.
+
+#### Considerations:
+
+- **Performance:** Subqueries can impact performance, especially if they return large result sets or are nested deeply. Consider optimizing queries or using alternative methods like joins where appropriate.
+
+- **Nested Subqueries:** Avoid excessively nested subqueries for readability and maintainability of SQL queries.
+
+- **Correlated Subqueries:** Correlated subqueries depend on the outer query, executing once for each row processed by the outer query. Be cautious of their performance implications.
+
+
+
+
+
+
+
 ---
 
 
@@ -2069,5 +2223,14 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   -- If you want the query to show rows that showed up in both queries use 'UNION ALL'
   UNION
   (SELECT * FROM products ORDER BY price / weight LIMIT 4);
+  ```
+</details>
+
+<details>
+  <summary>6. List the name and price of all the products that are more expensive than all the products on the toys deparment.</summary>
+
+  ```SQL
+  -- Using a subquery
+  SELECT name, price FROM products WHERE price > (SELECT MAX(price) FROM products WHERE department = 'Toys');
   ```
 </details>
