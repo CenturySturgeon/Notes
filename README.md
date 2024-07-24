@@ -1353,24 +1353,24 @@ Now, suppose you want to *find the number of comments for each photo where the p
   HAVING COUNT(*) > 2;
   ```
 
-A little more complex example: Suppose we have the table below and you want to print the names of manufacturers and total revenue (price * units_sold) for all phones.  Only print the manufacturers who have revenue greater than 2,000,000 for all the phones they sold.
+- A little more complex example: Suppose we have the table below and you want to print the names of manufacturers and total revenue (price * units_sold) for all phones.  Only print the manufacturers who have revenue greater than 2,000,000 for all the phones they sold.
 
-**Phones table**
+  - **Phones table**
 
-| name        | manufacturer | price | units_sold |
-|-------------|--------------|-------|------------|
-| N1280       | Nokia        | 199   | 1925       |
-| Iphone 4    | Apple        | 399   | 9436       |
-| Galaxy S    | Samsung      | 299   | 2359       |
-| S5620 Monte | Samsung      | 250   | 2385       |
-| N8          | Nokia        | 150   | 7543       |
-| Droid       | Motorola     | 150   | 8395       |
-| Wave S8500  | Samsung      | 175   | 9259       |
+    | name        | manufacturer | price | units_sold |
+    |-------------|--------------|-------|------------|
+    | N1280       | Nokia        | 199   | 1925       |
+    | Iphone 4    | Apple        | 399   | 9436       |
+    | Galaxy S    | Samsung      | 299   | 2359       |
+    | S5620 Monte | Samsung      | 250   | 2385       |
+    | N8          | Nokia        | 150   | 7543       |
+    | Droid       | Motorola     | 150   | 8395       |
+    | Wave S8500  | Samsung      | 175   | 9259       |
 
 
-```SQL
-SELECT manufacturer, SUM(price * units_sold) FROM phones GROUP BY manufacturer HAVING SUM(price * units_sold) > 2000000;
-```
+    ```SQL
+    SELECT manufacturer, SUM(price * units_sold) FROM phones GROUP BY manufacturer HAVING SUM(price * units_sold) > 2000000;
+    ```
 
 
 
@@ -1705,6 +1705,39 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   - Subqueries used in `FROM` statements are allowed to be **any subquery as long as the outer selects/wheres/etc are compatible**.
     - Gotcha: **The subquery must have an alias applied to it**.
   - Subqueries used in `JOIN` statements are allowed to be **any subquery that returns data compatible with the `ON` clause**.
+  - The structure of the data allowed to be returned by **Subqueries used in `WHERE` statements** changes depending on the comparisson operator.
+    ```SQL
+    -- Using Section 9 Data
+    -- Show the id of the orders that involve a product with a price/weight ratio greater than 5
+    SELECT id FROM orders WHERE product_id IN (SELECT id FROM products WHERE price/ weight > 5);
+    ```
+
+
+    | Operator in the WHERE clause | Structure of the data the subquery must return |
+    |------------------------------|------------------------------------------------|
+    | =                            | Single Value                                   |
+    | != or <>                     | Single Value                                   |
+    | >                            | Single Value                                   |
+    | <                            | Single Value                                   |
+    | >=                           | Single Value                                   |
+    | <=                           | Single Value                                   |
+    | IN                           | Set of Values (Single Column)                  |
+    | NOT IN                       | Set of Values (Single Column)                  |
+    | EXISTS                       | Result Set (One or More Columns)               |
+    | NOT EXISTS                   | Result Set (One or More Columns)               |
+    | = ALL/SOME/ANY               | Single Value                                   |
+    | <> ALL/SOME/ANY              | Single Value                                   |
+    | > ALL/SOME/ANY               | Single Value                                   |
+    | < ALL/SOME/ANY               | Single Value                                   |
+    | >= ALL/SOME/ANY              | Single Value                                   |
+    | <= ALL/SOME/ANY              | Single Value                                   |
+
+  - **NOTE**: `SOME` and `ANY` mean exactly the same thing.
+
+    ```SQL
+    -- Show the name and price of the products with a price greater than the average product price
+    SELECT name, price FROM products WHERE price > (SELECT AVG(PRICE) FROM products);
+    ```
 
 
 
@@ -2101,7 +2134,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   <summary>14. Calculate the average number of characters per comment.</summary>
 </details>
     
-#### Section 6 & 7
+#### Section 6, 7 ,8 & 9
 
 <details>
   <summary>Data</summary>
@@ -2919,6 +2952,35 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   FROM users
   JOIN (SELECT user_id FROM orders WHERE product_id = 3) AS ords 
   ON ords.user_id = users.id;
+  ```
+</details>
+
+<details>
+  <summary>10. Show the name of all prodcuts that are not in the same department as products with a price less than 100.</summary>
+
+  ```SQL
+  SELECT name FROM products WHERE department NOT IN (SELECT department FROM products WHERE price < 100);
+  ```
+</details>
+
+<details>
+  <summary>11. Show the department, name, and price of products that are more expensive than products in the 'Industrial' department.</summary>
+
+  ```SQL
+  -- My Answer
+  -- SELECT department, name, price FROM products WHERE price > (SELECT MAX(price) FROM products WHERE department = 'Industrial');
+
+  -- Using Greater-Than-All
+  SELECT department, name, price FROM products WHERE price > ALL (SELECT price FROM products WHERE department = 'Industrial');
+  ```
+</details>
+
+<details>
+  <summary>12. Show the name of the products that are more expensive than at least one product in the 'Industrial' department.</summary>
+
+  ```SQL
+  -- You can replace ANY with SOME and the result would be the same
+  SELECT name FROM products WHERE price > ANY (SELECT price FROM products WHERE department = 'Industrial');
   ```
 </details>
 </details>
