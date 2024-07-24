@@ -1435,7 +1435,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 </details>
 
 <details>
-  <summary>10. Find the photo with ID = 3 and get the number of comments attached to it.
+  <summary>10. Find the photo with ID = 3 and get the number of comments attached to it.</summary>
 
   ```SQL
   SELECT url, COUNT(*) AS comment_count
@@ -1444,7 +1444,6 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   WHERE photo_id = 3 
   GROUP BY url;
   ```
-</summary>
 </details>
 
 
