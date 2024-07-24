@@ -1087,6 +1087,7 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   - Subqueries used in `SELECT` statements **must be of scalar type**.
   - Subqueries used in `FROM` statements are allowed to be **any subquery as long as the outer selects/wheres/etc are compatible**.
     - Gotcha: **The subquery must have an alias applied to it**.
+  - Subqueries used in `JOIN` statements are allowed to be **any subquery that returns data compatible with the `ON` clause**.
 
 
 
@@ -1425,20 +1426,55 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 
 <details>
   <summary>9. Find all the comments for the photo with ID=3, along with the username of the comment author.</summary>
+
+  ```SQL
+  SELECT contents, username
+  FROM comments JOIN users ON comments.user_id = users.id
+  WHERE photo_id = 3;
+  ```
 </details>
 
 <details>
-  <summary>10. Find the photo with ID = 10 and get the number of comments attached to it.
+  <summary>10. Find the photo with ID = 3 and get the number of comments attached to it.
+
+  ```SQL
+  SELECT url, COUNT(*) AS comment_count
+  FROM comments JOIN photos 
+  ON comments.photo_id = photos.id 
+  WHERE photo_id = 3 
+  GROUP BY url;
+  ```
 </summary>
 </details>
 
 
 <details>
   <summary>11. Find the average number of comments per photo.</summary>
+
+  ```SQL
+  SELECT AVG(photo_comments) AS avg_comments_per_photo
+  FROM (SELECT photo_id, COUNT(*) AS photo_comments
+  FROM comments GROUP BY photo_id) AS mandatory_alias;
+  ```
 </details>
 
 <details>
   <summary>12. Find the user with the most activity (most comments + most photos).</summary>
+
+  ```SQL
+  -- Most comments
+  -- SELECT user_id, COUNT(*) AS comment_count FROM comments GROUP BY user_id;
+  -- Most photos 
+  -- SELECT user_id, COUNT(*) AS photo_count FROM photos GROUP BY user_id;
+
+  SELECT user_comments.user_id, 
+  user_comments.comment_count + user_photos.photo_count AS activity
+  FROM (SELECT user_id, COUNT(*) AS comment_count FROM comments GROUP BY user_id) AS user_comments
+  JOIN (SELECT user_id, COUNT(*) AS photo_count FROM photos GROUP BY user_id) AS user_photos 
+  ON user_comments.user_id = user_photos.user_id
+  ORDER BY activity DESC
+  LIMIT 1;
+  ```
 </details>
 
 <details>
@@ -2247,5 +2283,25 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   ```SQL
   -- Using a subquery
   SELECT name, price, price / (SELECT MAX(price) FROM phones) AS price_ratio FROM phones;
+  ```
+</details>
+
+<details>
+  <summary>8. Find the average number of orders for all users.</summary>
+
+  ```SQL
+  SELECT AVG(orders_per_user) FROM (SELECT COUNT(*) as orders_per_user FROM orders GROUP BY user_id) as p;
+  ```
+</details>
+
+<details>
+  <summary>9. Simple example of a subquery in a 'JOIN' stament.</summary>
+
+  ```SQL
+  -- JOIN example: A join that gets the name of the users who ordered product with id=3
+  SELECT first_name 
+  FROM users
+  JOIN (SELECT user_id FROM orders WHERE product_id = 3) AS ords 
+  ON ords.user_id = users.id;
   ```
 </details>
