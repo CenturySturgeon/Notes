@@ -2366,3 +2366,15 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   SELECT name FROM products WHERE price > ANY (SELECT price FROM products WHERE department = 'Industrial');
   ```
 </details>
+
+<details>
+  <summary>13. Show the name, department and price of the most expensive product of each department.</summary>
+
+  ```SQL
+  -- 1) First iteration
+  -- SELECT name, department, price FROM products as p1 WHERE p1.price > (SELECT MAX(price) FROM products AS p2 WHERE p2.department = 'Industrial');
+
+  -- 2) Second iteration (creates the For loop by correlation)
+  -- SELECT name, department, price FROM products as p1 WHERE p1.price > (SELECT MAX(price) FROM products AS p2 WHERE p2.department = p1.department;
+  ```
+</details>
