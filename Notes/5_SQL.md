@@ -1115,12 +1115,41 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
     | >= ALL/SOME/ANY              | Single Value                                   |
     | <= ALL/SOME/ANY              | Single Value                                   |
 
-  - **NOTE**: `SOME` and `ANY` mean exactly the same thing.
+    - **NOTE**: `SOME` and `ANY` mean exactly the same thing.
 
-    ```SQL
-    -- Show the name and price of the products with a price greater than the average product price
-    SELECT name, price FROM products WHERE price > (SELECT AVG(PRICE) FROM products);
-    ```
+      ```SQL
+      -- Show the name and price of the products with a price greater than the average product price
+      SELECT name, price FROM products WHERE price > (SELECT AVG(PRICE) FROM products);
+      ```
+  - **Correlated Subqueries** are subquieries where you're referring to some row from the outside query in the inner query  (or subquery).
+    - You can imagine this type of subquery as a **nested FOR loop**.
+    - You can almost always expect to use an alias somewhere when using correlated subqueries.
+    - Examples:
+      ```SQL
+      -- Using Section 6 Data
+
+      -- Subquery in WHERE clause
+      SELECT name, department, price
+      FROM products as p1 
+      WHERE p1.price = (SELECT MAX(price) FROM products AS p2 WHERE p2.department = p1.department);
+
+      -- Subquery as column
+      SELECT name, (SELECT COUNT(*) FROM orders AS o1 WHERE o1.product_id = p1.id) 
+      FROM products as p1;
+      ```
+    - You can use subqueries after a `SELECT` **without a `FROM` clause** as long as the subquery returns a single value.
+      - This is very useful when trying to calculate a single value that is the result of several other values.
+        ```SQL
+        -- Using Section 6 Data
+        SELECT (SELECT MAX(price) FROM products);
+
+        -- Find the ratio from the maximum priced item to the average price of all items
+        SELECT (SELECT MAX(price) FROM products / SELECT AVG(price) FROM products);
+
+        -- Find the max price and the average price, printing them side to side
+        SELECT (SELECT MAX(price) FROM products), (SELECT AVG(price) FROM products);
+        ```
+      
 
 
 
@@ -2371,10 +2400,19 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   <summary>13. Show the name, department and price of the most expensive product of each department.</summary>
 
   ```SQL
-  -- 1) First iteration
-  -- SELECT name, department, price FROM products as p1 WHERE p1.price > (SELECT MAX(price) FROM products AS p2 WHERE p2.department = 'Industrial');
+  -- 1) First iteration, hard coded department
+  -- SELECT name, department, price FROM products as p1 WHERE p1.price = (SELECT MAX(price) FROM products AS p2 WHERE p2.department = 'Industrial');
 
   -- 2) Second iteration (creates the For loop by correlation)
-  -- SELECT name, department, price FROM products as p1 WHERE p1.price > (SELECT MAX(price) FROM products AS p2 WHERE p2.department = p1.department;
+  SELECT name, department, price FROM products as p1 WHERE p1.price = (SELECT MAX(price) FROM products AS p2 WHERE p2.department = p1.department);
+  ```
+</details>
+
+<details>
+  <summary>14. Without using a join or a group by, prin the number of orders for each product.</summary>
+
+  ```SQL
+  SELECT name, (SELECT COUNT(*) FROM orders AS o1 WHERE o1.product_id = p1.id) 
+  FROM products as p1;
   ```
 </details>
