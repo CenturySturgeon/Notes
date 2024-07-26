@@ -673,7 +673,7 @@ case letters.
 | `UNION`      | Combines the result set of two or more `SELECT` statements.                           |
 | `INTERSECT`  | Returns the intersection of the result sets of two `SELECT` statements.               |
 | `EXCEPT`     | Returns the difference between the result sets of two `SELECT` statements.            |
-| `DISTINCT`   | Returns unique rows in the result set.                                                |
+| `DISTINCT`   | Returns unique rows in the result set (**always** placed after `SELECT`).             |
 | `LIMIT`      | Limits the number of rows returned in the result set.                                 |
 | `OFFSET`     | Skips a specified number of rows before returning the result set.                     |
 | `FETCH`      | Retrieves a limited number of rows from a result set, with optional `OFFSET`.         |
@@ -709,8 +709,6 @@ Comparisson Math Operators are very useful when filtering out information (I.E w
 
 ### Functions
 
-Here's a markdown table listing some common PostgreSQL functions formatted in uppercase:
-
 | Function                                  | Description                                                            |
 |-------------------------------------------|------------------------------------------------------------------------|
 | `CONCAT(string1, string2, ...)`           | Concatenates strings                                                   |
@@ -718,11 +716,6 @@ Here's a markdown table listing some common PostgreSQL functions formatted in up
 | `LOWER(string)`                           | Converts string to lowercase                                           |
 | `LENGTH(string)`                          | Returns the length of a string                                         |
 | `ABS(expression)`                         | Absolute value                                                         |
-| `AVG(expression)`                         | Average value of a set of numbers                                      |
-| `COUNT(expression)`                       | Number of rows in a result set or number of times an expression occurs |
-| `MAX(expression)`                         | Maximum value of a set of numbers                                      |
-| `MIN(expression)`                         | Minimum value of a set of numbers                                      |
-| `SUM(expression)`                         | Sum of a set of numbers                                                |
 | `ROUND(expression, precision)`            | Rounds a numeric value to a specified precision                        |
 | `COALESCE(expression1, expression2, ...)` | Returns the first non-null expression in the list                      |
 | `SUBSTRING(string FROM start FOR length)` | Extracts substring from a string                                       |
@@ -3031,6 +3024,63 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
   ```SQL
   SELECT name, (SELECT COUNT(*) FROM orders AS o1 WHERE o1.product_id = p1.id) 
   FROM products as p1;
+  ```
+</details>
+
+<details>
+  <summary>15. List all unique departments and make another query that returns the number of unique departments.</summary>
+
+  ```SQL
+  -- REMEMBER: `DISTINCT` is always placed after SELECT
+  SELECT DISTINCT department FROM products;
+
+  -- Counting all the unique departments
+  SELECT COUNT(DISTINCT department) FROM products;
+  ```
+</details>
+
+<details>
+  <summary>16. List all unique combinations of department and product names.</summary>
+
+  ```SQL
+  -- REMEMBER: If you use `DISTINCT` on more than one column you can no longer use a count on them.
+  SELECT DISTINCT department, name FROM products;
+
+  -- To count them you would need a subquery
+  -- SELECT COUNT(*) AS count_distinct_pairs FROM (SELECT DISTINCT department, name FROM products) AS distinct_pairs;
+  ```
+</details>
+
+<details>
+  <summary>17. Compute the cost to ship each item inside of the products table. Where the shipping cost is the greatest value between (weight * 2$) or 30$</summary>
+
+  ```SQL
+  -- EXAMPLE: SELECT GREATEST(1, 200, 3, 4, 5).
+  SELECT name, weight, GREATEST(2 * weight, 30) FROM products;
+  ```
+</details>
+
+<details>
+  <summary>18. All products are on sale! To calculate the sale price of a product, use the least value between (product's price * 0.5$) or 400$</summary>
+
+  ```SQL
+  -- EXAMPLE: SELECT LEAST(1, 200, 3, 4, 5).
+  SELECT name, price, LEAST(0.5 * price, 400) FROM products;
+  ```
+</details>
+
+<details>
+  <summary>19. Print each product and its price. Also print a description of the price: If the price > 600 then 'high', if price > 300 then 'medium' else print 'cheap'.</summary>
+
+  ```SQL
+  SELECT
+    name, price,
+    CASE 
+      WHEN price > 600 THEN 'high'
+      WHEN price > 300 THEN 'medium'
+      ELSE 'cheap'
+    END
+  FROM products;
   ```
 </details>
 </details>
