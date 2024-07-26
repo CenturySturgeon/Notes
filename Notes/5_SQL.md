@@ -156,7 +156,7 @@ flowchart TD;
 
 
 
-### PostgreSQL Column Types
+### PostgreSQL Data Types
 
 | Data Type                  | Description                            | Capacity/Range                                                                                     |
 |----------------------------|----------------------------------------|----------------------------------------------------------------------------------------------------|
@@ -1143,13 +1143,218 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
         SELECT (SELECT MAX(price) FROM products), (SELECT AVG(price) FROM products);
         ```
       
-
-
-
-
-
 ---
 
+### PostgreSQL Data Types
+
+- **Numbers**
+
+  - Fast Rules
+    ```mermaid
+      flowchart TD
+        A[Fast Rules] --> B[Id column of any table]
+        A --> C[Need to store a number without a decimal]
+        A --> D[Bank balance, grams of gold, scientific calculations]
+        A --> E[Kilograms of trash in a landfill, liters of water in a lake, air pressure in a tire]
+
+        B --> F[Mark the column as serial]
+        C --> G[Mark the column as integer]
+        D --> H[Need to store a number with a decimal and this data needs to be very accurate]
+        E --> I[Need to store a number with a decimal and the decimal doesn't make a big difference]
+
+        H --> J[Mark the column as numeric]
+        I --> K[Mark the column as double precision]
+
+        F -->|Serial| B
+        G -->|Integer| C
+        H -->|Numeric| D
+        I -->|Double Precision| E
+        classDef critical fill:#e67049;
+        class H,I critical;
+    ```
+  - Without any decimal points
+
+    | Data Type  | Range/Precision                              |
+    |------------|----------------------------------------------|
+    | `smallint` | -32768 to +32767                             |
+    | `integer`  | -2147483648 to 2147483647                    |
+    | `bigint`   | -9223372036854775808 to +9223372036854775807 |
+
+
+  - No decimal point, **autoincrement**
+
+    | Data Type     | Range/Precision          |
+    |---------------|--------------------------|
+    | `smallserial` | 1 to 32767               |
+    | `serial`      | 1 to 2147483647          |
+    | `bigserial`   | 1 to 9223372036854775807 |
+
+
+  - With decimal points
+
+    | Data Type          | Range/Precision                                   |
+    |--------------------|---------------------------------------------------|
+    | `decimal`          | 131072 digits before decimal point, 16383 after   |
+    | `numeric`          | 131072 digits before decimal point, 16383 after   |
+    | `real`             | 1E-37 to 1E37 with at least 6 places precision    |
+    | `double precision` | 1E-307 to 1E308 with at least 15 places precision |
+    | `float`            | Same as real or double precision                  |
+
+    - **NOTES**
+      - In PostgreSQL, the `real`, `double precision`, and `float` types are treated with **floating point** math. This kind of calculations are notorious for being somewhat off (the ones that usually have a very small offset from the true value like 0.0000003).
+        - The reason to use them if they're not precise is because **they're way more eficient**.
+
+- Currency
+- Binary
+- Date/Time
+  - **Dates**
+    - PostgreSQL is **very** flexible when it comes to handling dates. You can provide any date as a string and Postgre will **automatically convert it into a fixed date value**.
+      ```mermaid
+        flowchart TD
+          A[1980-11-20] --> B[1980-11-20]
+          C[Nov-20-1980] --> B
+          D[20-Nov-1980] --> B
+          E[1980-November-20] --> B
+          F[November 20, 1980] --> B
+
+          %% Style for clarity
+          classDef standard fill:#358bcc;
+          class B standard;
+      ```
+
+      - The diagram above would translate into the following SQL code:
+        ```SQL
+        SELECT ('1980-11-20'::DATE);
+        -- Or
+        SELECT ('[Nov-20-1980'::DATE);
+        -- Or
+        SELECT ('20-Nov-1980'::DATE);
+        -- Or
+        SELECT ('1980-November-20'::DATE);
+        -- Or
+        SELECT ('November 20, 1980'::DATE);
+        -- All result in 1980-11-20 (Year, Month, Day)
+        ```
+  - **Time**
+    - Time can be stored with or **without a time zone**.
+
+      | Time     | Time without zone   |
+      |----------|---------------------|
+      | 01:23 AM | 01:23, no time zone |
+      | 05:23 PM | 17:23, no time zone |
+      | 20:34    | 20:34, no time zone |
+
+      - Example:
+        ```SQL
+        SELECT ('01:23:23 PM'::TIME WITHOUT TIME ZONE);
+        -- Results in 13:23:23
+        ```
+    - When storing time **with a time zone**, any value you put in will be **converted into the corresponding UTC value**.
+
+      | Time Format       | Converted Format |
+      |-------------------|------------------|
+      | 01:23 AM EST      | 01:23-05:00      |
+      | 05:23 PM PST      | 17:23-08:00      |
+      | 05:23 PM UTC      | 17:23+00:00      |
+      | 05:23 PM UTC      | 17:23+00:00      |
+
+      - Example:
+        ```SQL
+        SELECT ('01:23:23 PM EST'::TIME WITH TIME ZONE);
+        -- Results in 13:23:23-05:00
+        ```
+
+    - You can also store **Timestamps** with or without a time zone.
+
+      | Time Format             | Converted Format       |
+      |-------------------------|------------------------|
+      | Nov-20-1980 5:23 PM PST | 1980-11-20 18:23:00-07 |
+
+      - Example:
+        ```SQL
+        SELECT ('NOV-20-1980 1:23 AM PST'::TIMESTAMP WITH TIME ZONE);
+        -- Results in 1980-11-20 02:23:00-07
+        ```
+
+    - Lastly **Intervals**. Think of Intervals as **a duration of time**.
+
+      | Time Format | Converted Format        |
+      |-------------|-------------------------|
+      | 1 day       | 1 day                   |
+      | 1 D         | 1 day                   |
+      | 1 D 1 M 1 S | 1 day 1 minute 1 second |
+
+      - Example:
+        ```SQL
+        SELECT ('1 day'::INTERVAL);
+        -- Results in 1 day
+        ```
+
+      - Intervals are very useful since you can use them for numeric operations.
+        ```SQL
+        SELECT ('1D 20 H 30 M 45 S'::INTERVAL) - ('1D'::INTERVAL);
+        -- Results in 20:30:45
+        ```
+      
+      - You can also make use of intervals to add or substract time from dates as well. Not only dates but also times and timestamps.
+        ```SQL
+        SELECT ('NOV-20-1980 1:23 AM EST'::TIMESTAMP WITH TIME ZONE) - 
+        ('1 D'::INTERVAL);
+        -- Results in 1980-11-18 23:23:00-07
+
+        SELECT ('NOV-20-1980 1:23 AM EST'::TIMESTAMP WITH TIME ZONE) - 
+        ('4 D'::INTERVAL);
+        -- Results in 1980-11-15 23:23:00-07
+
+        SELECT ('NOV-20-1980 1:23 AM EST'::TIMESTAMP WITH TIME ZONE) - 
+        ('NOV-10-1980 1:23 AM EST'::TIMESTAMP WITH TIME ZONE);
+        -- Finds the number of days between Nov-20 and Nov-10. Results in 10 days
+
+        -- You can also mix in different times and time zones as well
+        SELECT ('NOV-20-1980 1:23 AM EST'::TIMESTAMP WITH TIME ZONE) - 
+        ('NOV-10-1980 5:23 AM PST'::TIMESTAMP WITH TIME ZONE);
+        -- Results in 9 days 16:40:00
+        ```
+
+      - Now, storing intervals is not very useful. What is useful however, is having the ability to perform validations in the Database as oposed to the server. This leads us to the next section `Database-Side Validations And Constraints`.
+        - **Note**: Remember that System Design *rules* in the DB topic? Well I think this is it. Basically you can perform a database-side validation to check when the user last requested a resource and then perform your sliding window algorithm to check if he should be allowed to send yet another request.
+
+
+
+
+- Character
+
+  | Data Type    | Description                                                                      |
+  |--------------|----------------------------------------------------------------------------------|
+  | `CHAR(n)`    | Store some characters, length will always be `n` even if PG has to insert spaces |
+  | `VARCHAR`    | Store any length of string                                                       |
+  | `VARCHAR(n)` | Store a string up to `n` characters, automatically remove extra characters       |
+  | `TEXT`       | Store any length of string                                                       |
+
+
+- JSON
+- Geometric
+- Range
+- Arrays
+- Boolean
+  - PostgreSQL has the capability of transforming certain values into a boolean (`TRUE|FALSE`).
+
+    | Data Type               | Description |
+    |-------------------------|-------------|
+    | true, yes, on, 1, t, y  | TRUE        |
+    | false, no, off, 0, f, n | FALSE       |
+    | null                    | NULL        |
+
+    - For example:
+      ```SQL
+      SELECT ('yes'::BOOLEAN);
+      -- OR
+      SELECT (1::BOOLEAN);
+      -- Result in TRUE
+      ```
+
+- XML
+- UUID
 
 
 
