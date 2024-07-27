@@ -1773,19 +1773,18 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
         A --> C[Need to store a number without a decimal]
         A --> D[Bank balance, grams of gold, scientific calculations]
         A --> E[Kilograms of trash in a landfill, liters of water in a lake, air pressure in a tire]
-
         B --> F[Mark the column as serial]
         C --> G[Mark the column as integer]
         D --> H[Need to store a number with a decimal and this data needs to be very accurate]
         E --> I[Need to store a number with a decimal and the decimal doesn't make a big difference]
-
         H --> J[Mark the column as numeric]
         I --> K[Mark the column as double precision]
-
         F -->|Serial| B
         G -->|Integer| C
         H -->|Numeric| D
         I -->|Double Precision| E
+
+        %% Style for clarity
         classDef critical fill:#e67049;
         class H,I critical;
     ```
