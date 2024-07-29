@@ -1972,9 +1972,43 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 - XML
 - UUID
 
+### Database-Side Validation
 
+- Row level validation (things we can check when a row is being inserted/updated)
+  - Is a given value defined ?
+  - Is a value unique in its column ?
+  - Is a value <, >, >=, <=, =, some other value ?
 
+  - Null constraints: Define the behavior of the insertions when a value is `NULL`.
+    
+    - Setting constraints on table creation:
 
+      ```SQL
+      CREATE TABLE products (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(40),
+        department VARCHAR(40),
+        price INTEGER NOT NULL,
+        weight INTEGER,
+      );
+      ```
+
+    - Setting constraints **after** table creation:
+
+      ```SQL
+      ALTER TABLE products
+      ALTER COLUMN price
+      SET NOT NULL;
+      ```
+      
+        - **Note**: If your table already has `NULL` values an error will be thrown. To fix this, you have to deal with all the `NULL` values first (by deleting them, modifying their values, etc.).
+
+          ```SQL
+          -- Solving the error by setting a price
+          UPDATE products SET price = 999 WHERE price is NULL;
+
+          -- Solving the error by deleting the rows
+          ```
 
 
 
