@@ -1357,44 +1357,182 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 
 ### Database-Side Validation
 
-- Row level validation (things we can check when a row is being inserted/updated)
-  - Is a given value defined ?
-  - Is a value unique in its column ?
-  - Is a value <, >, >=, <=, =, some other value ?
+Row level validation (things we can check when a row is being inserted/updated)
+- Is a given value defined ?
+- Is a value unique in its column ?
+- Is a value <, >, >=, <=, =, some other value ?
 
-  - Null constraints: Define the behavior of the insertions when a value is `NULL`.
+There are many types of constraints, knowing when and how to implement them is importatn to avoid conflicts on data insertion.
+
+#### **Null constraints**: 
+
+- Define the behavior of the insertions when a value is `NULL`.
+
+  ```SQL
+  CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(40),
+    department VARCHAR(40),
+    price INTEGER NOT NULL,
+    weight INTEGER,
+  );
+  ```
+
+  - Setting constraints **after** table creation:
+
+    ```SQL
+    ALTER TABLE products
+    ALTER COLUMN price
+    SET NOT NULL;
+    ```
     
-    - Setting constraints on table creation:
+      - **Note**: If your table already has `NULL` values an error will be thrown. To fix this, you have to deal with all the `NULL` values first (by deleting them, modifying their values, etc.).
 
-      ```SQL
-      CREATE TABLE products (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(40),
-        department VARCHAR(40),
-        price INTEGER NOT NULL,
-        weight INTEGER,
-      );
+        ```SQL
+        -- Solving the error by setting a price
+        UPDATE products SET price = 999 WHERE price is NULL;
+
+        -- Solving the error by deleting the rows
+        ```
+
+#### **Default constraints**: 
+
+- Set a default value when no value is provided.
+
+  ```SQL
+  CREATE TABLE products (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(40),
+      department VARCHAR(40),
+      price INTEGER DEFAULT 999,
+      weight INTEGER,
+    );
+  ```
+
+  - Setting default value **after** table creation:
+
+    ```SQL
+    ALTER TABLE products
+    ALTER COLUMN price
+    SET DEFAULT 999;
+    ```
+
+#### **Unique constraints**: 
+
+- Make it so that there can't be two or more rows with the same column value.
+
+  ```SQL
+  CREATE TABLE products (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(40) NOT NULL UNIQUE,
+      department VARCHAR(40),
+      price INTEGER DEFAULT 999,
+      weight INTEGER,
+    );
+  ```
+
+  - Setting unique column **after** table creation:
+
+    ```SQL
+    ALTER TABLE products
+    ADD UNIQUE (name);
+    ```
+
+    - **Note**: You can't add a UNIQUE constraint unless all those columns in the table are already unique.
+
+#### **Multi-column Unique constraints**: 
+
+- Make it possible to make a combination of column values be unique (think of first_name / phone_number)
+
+  ```SQL
+  CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(40) NOT NULL,
+    department VARCHAR(40),
+    price INTEGER DEFAULT 999,
+    weight INTEGER,
+    UNIQUE(name, department)
+  );
+  ```
+
+  - Setting a unique multi-column combination **after** table creation:
+
+  ```SQL
+  ALTER TABLE products
+  ADD UNIQUE (name, department);
+  ```
+
+  - **Note**: You can't add a UNIQUE constraint unless all those column combinations in the table are already unique.
+
+#### **Checks**: 
+
+- Allow you to verify that certain conditions are met when adding new data to a table.
+
+  ```SQL
+    CREATE TABLE products (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(40),
+      department VARCHAR(40),
+      price INTEGER CHECK (price > 0),
+      weight INTEGER,
+    );
+    ```
+
+    - Setting a *check* **after** table creation:
+
+    ```SQL
+    ALTER TABLE products
+    ADD CHECK (price > 0);
+    ```
+
+      - **Note**: You can't add a check if any of the existing rows on the table don't satisfy it.
+
+- **Note**: A check can only work on the row we are adding/updating.
+
+#### **Checks over multiple columns**
+
+You can perform checks that validate conditions accross multiple columns.
+
+- Defining a mulit-column check:
+
+  ```SQL
+  CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(40),
+    created_at TIMESTAMP NOT NULL,
+    est_delivery TIMESTAMP NOT NULL,
+    CHECK (created_at < est_delivery)
+  );
+
+  -- Insertion Success
+  INSERT INTO orders (name, created_at, est_delivery) VALUES ('Shirt', '2000-NOV-20 01:00AM', '2000-NOV-25 01:00AM')
+  -- Insertion Failure (est_delivery date is before the created_at date)
+  INSERT INTO orders (name, created_at, est_delivery) VALUES ('Shirt', '2000-NOV-20 01:00AM', '2000-NOV-10 01:00AM')
+  ```
+
+#### Removing constraints
+
+- You can always remove constraints from a table if you dim them not necessary.
+
+    ```SQL
+    ALTER TABLE table_name DROP CONSTRAINT constraint_name;
+    ```
+    - **Remember**: PostgreSQL asigns names to constraints automatically. You can check them out under a table's constraints panel in PGAdmin:
+
       ```
-
-    - Setting constraints **after** table creation:
-
-      ```SQL
-      ALTER TABLE products
-      ALTER COLUMN price
-      SET NOT NULL;
+      pgAdmin
+      │
+      ├── Servers
+      │   ├── [Server Name]
+      │   │   ├── Databases
+      │   │   │   ├── [Database Name]
+      │   │   │   │   ├── Schemas
+      │   │   │   │   │   ├── [Schema Name]
+      │   │   │   │   │   │   ├── Tables
+      │   │   │   │   │   │   │   ├── [Table Name]
+      │   │   │   │   │   │   │   │   ├── Constraints
+      │   │   │   │   │   │   │   │   └── [Constraint Name]
       ```
-      
-        - **Note**: If your table already has `NULL` values an error will be thrown. To fix this, you have to deal with all the `NULL` values first (by deleting them, modifying their values, etc.).
-
-          ```SQL
-          -- Solving the error by setting a price
-          UPDATE products SET price = 999 WHERE price is NULL;
-
-          -- Solving the error by deleting the rows
-          ```
-
-
-
 
 ### Common Queries
 
@@ -1475,6 +1613,13 @@ The `ORDER BY` keyword is used to sort the result set returned by a `SELECT` sta
 
   -- Deleting one or more records
   DELETE FROM table_name WHERE column_1 = 5;
+  ```
+
+- Constraints
+
+  ```SQL
+  -- Removing a constraint
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name;
   ```
 
 ### Excercises
