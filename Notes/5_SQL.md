@@ -1362,7 +1362,13 @@ Row level validation (things we can check when a row is being inserted/updated)
 - Is a value unique in its column ?
 - Is a value <, >, >=, <=, =, some other value ?
 
-There are many types of constraints, knowing when and how to implement them is importatn to avoid conflicts on data insertion.
+When to apply validation *server side* vs *database side* ?
+
+| **Web Server**                                    | **Database**                                                         |
+|---------------------------------------------------|----------------------------------------------------------------------|
+| Easier to express more complex validation         | Validation still applied even if you connect with a different client |
+| Far easier to apply new validation rules          | Guaranteed that validation is always applied                         |
+| Many libraries to handle validation automatically | Can only apply new validation rules if all existing rows satisfy it  |
 
 #### **Null constraints**: 
 
