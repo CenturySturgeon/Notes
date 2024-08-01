@@ -463,6 +463,8 @@ When deleting records that have children rows pointing at them (via the foreign 
 
 ![SQL Joins](../images/SQLJoins.png)
 
+![Cross Join](../images/CrossJoin.png)
+
 | Join       | Description                                                                        |
 |------------|------------------------------------------------------------------------------------|
 | INNER JOIN | Returns only the rows that have matching values in both tables.                    |
