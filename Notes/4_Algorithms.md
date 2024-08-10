@@ -122,6 +122,27 @@
 | Bucket Sort    | O(n+k)     | O(n+k)     | O(n^2)     | O(n)             |
 
 
+### Handy Algorithms
+
+- Listing All Contiguous Subarrays
+    - A contiguous subarray is a sequence of elements that come from a larger array, and all elements in this subarray are adjacent to each other in the original array.
+
+    ```Python
+    test_str = '1234'
+    ans = []
+
+    # Go through all the numbers
+    for i in range(len(test_str)):
+        # Go through all the numbers beggining from i. 
+        # Note that 'len(test_str) + 1' is due to slices not being inclusive on the right number.
+        for j in range(i + 1, len(test_str) + 1):
+            sub = test_str[i: j]
+            ans.append(sub)
+
+    # ['1', '12', '123', '1234', '2', '23', '234', '3', '34', '4']
+    print(ans)
+    ```
+
 ### Core Concepts
 
 ---
