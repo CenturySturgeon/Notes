@@ -333,24 +333,226 @@ class Author
   
 ### Fundamentals
 
+#### Chapter 1 Reliable, Scalable, and Maintainable Applications
+
+- **Availability**: Percentage of time a system or service is operational and accessible when needed. It is a measure of how often the system is up and running compared to the total time it should be available.
+
+  - Two nines '**99%**' Availability means the service is down around 3.65 days a year.
+  - Every aditional nine decreases the downtime by an order of magnitude of roughly 10 times:
+
+    | Availability | Downtime           |
+    |--------------|--------------------|
+    | 99%          | 3.65 days/year     |
+    | 99.9%        | 8.77 hours/year    |
+    | 99.99%       | 52.6 minutes/year  |
+    | 99.999%      | 5.26 minutes/year  |
+    | 100%         | 0 seconds/year     |
+ 
+
+- **Reliability**: Measures how consistently and correctly a system performs its intended functions over time without failure. It indicates the system's ability to operate without errors or breakdowns when in use.
+  
+  - *Measurement*: Often assessed using metrics such as Mean Time Between Failures (MTBF) or Mean Time to Failure (MTTF). These metrics quantify how long the system performs correctly before encountering a failure.
+
+- **Redundancy**: Redundancy refers to the inclusion of extra components or systems to ensure that a system can continue to operate in the event of a failure. It is a design approach that involves adding duplicate resources to increase reliability and availability.
+
+  - *Hardware Redundancy*: Adding spare hardware components (e.g., additional servers, power supplies, or network links) that can take over if primary components fail.
+  - *Data Redundancy*: Replicating data across multiple storage devices or locations to protect against data loss.
+  - *Geographic Redundancy*: Distributing resources across different locations or data centers to protect against site-specific failures.
+
+- **Maintainability**: Over time, many different people will work on the system (engineering and operations, both maintaining current behavior and adapting the system to new use cases), and they should all be able to work on it productively.
+  - Operability: Make it easy for operations teams to keep the system running smoothly.
+  - Simplicity: Make it easy for new engineers to understand the system.
+  - Evolvability: Make it easy for engineers to make changes to the system in the future
+
+- **Fault**: One component of the system deviating from its spec.
+
+- **Failiure**: When the system as a whole stops providing the required service to the user
+
+- Rolling upgrade:
+
+- **Throughput**: The amount of work processed by a system or component in a given amount of time. It's a measure of how efficiently a system performs its tasks. Examples:
+  - Systems performance: Requests per second (requests/second)
+  - Networks: Megabits per second (Mbps)
+  - Databases: Queries per second (queries/second)
+
+- **Latency**: Refers to the time delay between the initiation of a request and the beginning of a response. It’s a measure of the delay experienced by a request or action within a system or network.
+
+- **Service time**: The time it takes to process the request (authorization, load balancing, etc.).
+
+- **Response time**: Response time is the total time it takes from the initiation of a request until the entire response is received and processed. It encompasses the latency as well as the service time.
+
+  - It’s common to see the average response time of a service reported. (Strictly speaking, the term “average” doesn’t refer to any particular formula, but in practice it is usually understood as the arithmetic mean: given n values, add up all the values, and divide by n.) However, the mean is not a very good metric if you want to know your “typical” response time, because it doesn’t tell you how many users actually experienced that delay.
+
+  - Usually it is better to use percentiles. If you take your list of response times and sort it from fastest to slowest, then the median is the halfway point: for example, if your median response time is 200 ms, that means half your requests return in less than 200 ms, and half your requests take longer than that.
+
+    - There are algorithms that can calculate a good approximation of percentiles at minimal CPU and memory cost:
+      - forward decay
+      - t-digest
+      - HdrHistogram. 
+
+- Vertical scaling: Systems *'scaling up'* increase their ability to process more requests by improving the hardware of the hosting machine.
+
+- Horizontal scaling: Systems *'scaling out'* increase their ability to process more requests by adding more machines to handle them.
+
+Distributing load across multiple machines is also known as a shared-nothing architecture.
+
+- **SLA (Service Level Agreement)**: Contracts that define the expected performance and availability of a service 
+
+- **Telemetry**: Monitoring things like performance metrics and error rates. Once the rocket leaves the ground, telemetry is important to know what's going on 
+
+- **Load parameters**: request per second, reads to writes ratio, etc.
+
+- **Fan-out**: Read page 29.
+
+- **Elastic Systems**: Those that can scale automatically.
+
+
+#### Chapter 2 Data Models and Query Languages
+
+- **Relational VS. Document Model**
+  - Pros and Cons
+    - **SQL Databases**:
+      -  Better support for joins, and many-to-one and many-to-many relationships.
+      - Splitting a document-like structure into multiple tables can lead to cumbersome schemas and unnecessarily complicated application code.
+
+    - **NoSQL Databases**:
+      - Schema flexibility.
+      - Better performance due to locality.
+      - For some applications it is closer to the data structures used by the application.
+      - If your application does use many-to-many relationships, the document model becomes less appealing
+
+  - Data Model
+    - **SQL Databases**: 
+      - Relational model with tables, rows, and columns.
+      - Accessed via SQL queries.
+      - Schema is predefined and changes can be complex.
+    
+    - **NoSQL Databases**:
+      - Varied models including document stores, key-value stores, column-family stores, and graph databases.
+      - Flexible schema, allowing for adjustments and hierarchical or nested data structures.
+
+  - Schema Flexibility
+    - **SQL Databases**:
+      - Fixed schema.
+      - Schema changes require migrations, which can be time-consuming.
+    
+    - **NoSQL Databases**:
+      - Dynamic schema.
+      - Easier to store different fields or structures in records without predefined schema changes.
+
+  - Consistency and Transactions
+    - **SQL Databases**:
+      - Adhere to ACID (Atomicity, Consistency, Isolation, Durability) properties.
+      - Ensure reliable transactions and consistency even in system failures.
+    
+    - **NoSQL Databases**:
+      - May prioritize availability and partition tolerance (CAP theorem) over strict consistency.
+      - Often offer eventual consistency instead of strong consistency.
+      - Multi-statement transactions might not be as robust.
+
+  - Scalability
+    - **SQL Databases**:
+      - Typically scale vertically (adding resources to a single server).
+      
+    - **NoSQL Databases**:
+      - Designed to scale out horizontally (distributing data across multiple servers).
+      - Can handle large volumes of data and high-velocity workloads more effectively.
+
+  - Query Language
+    - **SQL Databases**:
+      - Use Structured Query Language (SQL).
+      - SQL is powerful for complex queries involving multiple tables.
+      
+    - **NoSQL Databases**:
+      - Query mechanisms vary by database type.
+      - Document stores might use JSON-based queries; key-value stores use simple key-based lookups.
+
+  - Use Cases
+    - **SQL Databases**:
+      - Best for applications needing complex transactions, strong consistency, and well-defined schemas.
+      - Examples: financial systems, traditional enterprise applications.
+      
+    - **NoSQL Databases**:
+      - Ideal for scenarios where scalability, flexibility, and high performance are critical.
+      - Examples: real-time web applications, big data applications, content management systems.
+
+A document is usually stored as a single continuous string, encoded as JSON, XML, or a binary variant thereof (such as MongoDB’s BSON). If your application often needs to access the entire document (for example, to render it on a web page), there is a performance advantage to this storage locality.
+
+If data is split across multiple tables, like in Figure 2-1, multiple index lookups are required to retrieve it all, which may require more disk seeks and take more time. The locality advantage only applies if you need large parts of the document at the same time.
+
+- **Imperative VS. Declarative Languages**:
+  - Imperative Language: Tells the computer to perform certain operations in a certain order, like JS or Python. You tell the code line by line what to do.
+  - Declarative Language: You specify the pattern of the data you want, but not how to achieve that goal (like CSS or react).
+
+- **MapReduce**: Programming model for handling large amounts of data across many machines, popularized by Google.
+  - A limited form of MapReduce is supported by some NoSQL datastores, including MongoDB and CouchDB, as a mechanism for performing read-only queries across many documents.
+  - MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between: the logic of the query is expressed with snippets of code, which are called repeatedly by the processing framework.
+
+- Graph-Like Data Models
+  - Many-to-many relationships are prevalent in your data.
+  - Consist of:
+    - Vertices (also known as nodes or entities).
+    - Edges (also known as relationships or arcs).
+
+- **Normalization**: Apparently, in DBs normalization means to store the data in such a way that it is [unique] not duplicated. Like in LinkedIn  your profile has a city or location, the db tables have a table for your user (id, name, last_name, city_id)  and a table for cities (id, city_name, etc.) making it so that if you update the city name in the cities table, all users will have their city updated.
+
+- **Schema-on-read**: XML DBs don't have concrete schemas like relational DBs. That doesn't mean they don't have a structure (it's implicit since the app ensures the data is valid and has a certain structure) but the DB itself doesn't. Hence schema-on-read instead of the incorrect "schema-less".
+
+- **Heterogeneous data**: data that is not following the same structure across all records. Like chocolate chip cookies, they're not exactly the same, they have different shapes and sizes.
+
+- **Homogeneous data**: Data that has the same  structure (following a pattern, it doesn't mean it's all exactly the same info) across all records.
+
+- **Declarative language**: You tell the outcome you want
+
+- **Imperative language**: You specify the steps to achieve the outcome you want
+
+
+
+
+
+#### Chapter 3: Storage and Retrieval
+
+- **Log**: An append-only sequence of records. Many databases internally use a log, which is an append-only data file.
+  - Application Logs: These are the types of logs you know, the file that has all the records of what's going on in an application.
+  - DB Log: Some DBs use an internal append-only log to keep track of its records.
+    - NOTE: Remember the example of the world's simplest DB where it uses bash commands to append data in a hasmpap way and searches for the most recent occurence of the key. This way you'll immediatly remember what a log is in this context:
+
+      ```Bash
+      db_set() {
+        echo "$1, $2" >> database
+      }
+      db_get() {
+        grep "^$1," database | sed -e 's/^$1,//" | tail -n 1
+      } 
+      ```
+
+- **Index**: An additional structure that is derived from the primary data. It allows you to search records faster in the DB with the downside of slowing down writes.
+
+
+- **Storage engines**:
+  - Log-structured:
+  - Page-oriented:
+
+
+
 <details>
   <summary><h4 style="display: inline;">Functional vs Non-Functional Requirements</h4></summary><br>
 
-| Functional Requirements          | Non-Functional Requirements              |
-|---------------------------------|-----------------------------------------|
-| A functional requirement defines a system or its component. | A non-functional requirement defines the quality attribute of a software system. |
-| It specifies “What should the software system do?” | It places constraints on “How should the software system fulfill the functional requirements?” |
-| Functional requirement is specified by User. | Non-functional requirement is specified by technical peoples e.g. Architect, Technical leaders and software developers. |
-| It is mandatory. | It is not mandatory. |
-| It is captured in use case. | It is captured as a quality attribute. |
-| Defined at a component level. | Applied to a system as a whole. |
-| Helps you verify the functionality of the software. | Helps you to verify the performance of the software. |
-| Functional Testing like System, Integration, End to End, API testing, etc are done. | Non-Functional Testing like Performance, Stress, Usability, Security testing, etc are done. |
-| Usually easy to define. | Usually more difficult to define. |
-| **Example**                      | **Example**                             |
-| 1) Authentication of user whenever he/she logs into the system. | 1) Emails should be sent with a latency of no greater than 12 hours from such an activity. |
-| 2) System shutdown in case of a cyber attack. | 2) The processing of each request should be done within 10 seconds |
-| 3) A Verification email is sent to user whenever he/she registers for the first time on some software system. | 3) The site should load in 3 seconds when the number of simultaneous users are > 10000 |
+| Functional Requirements                                                                                       | Non-Functional Requirements                                                                                             |
+|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| A functional requirement defines a system or its component.                                                   | A non-functional requirement defines the quality attribute of a software system.                                        |
+| It specifies “What should the software system do?”                                                            | It places constraints on “How should the software system fulfill the functional requirements?”                          |
+| Functional requirement is specified by User.                                                                  | Non-functional requirement is specified by technical peoples e.g. Architect, Technical leaders and software developers. |
+| It is mandatory.                                                                                              | It is not mandatory.                                                                                                    |
+| It is captured in use case.                                                                                   | It is captured as a quality attribute.                                                                                  |
+| Defined at a component level.                                                                                 | Applied to a system as a whole.                                                                                         |
+| Helps you verify the functionality of the software.                                                           | Helps you to verify the performance of the software.                                                                    |
+| Functional Testing like System, Integration, End to End, API testing, etc are done.                           | Non-Functional Testing like Performance, Stress, Usability, Security testing, etc are done.                             |
+| Usually easy to define.                                                                                       | Usually more difficult to define.                                                                                       |
+| **Example**                                                                                                   | **Example**                                                                                                             |
+| 1) Authentication of user whenever he/she logs into the system.                                               | 1) Emails should be sent with a latency of no greater than 12 hours from such an activity.                              |
+| 2) System shutdown in case of a cyber attack.                                                                 | 2) The processing of each request should be done within 10 seconds                                                      |
+| 3) A Verification email is sent to user whenever he/she registers for the first time on some software system. | 3) The site should load in 3 seconds when the number of simultaneous users are > 10000                                  |
 
 </details>
 
