@@ -151,15 +151,114 @@ If data is split across multiple tables, like in Figure 2-1, multiple index look
   - Imperative Language: Tells the computer to perform certain operations in a certain order, like JS or Python. You tell the code line by line what to do.
   - Declarative Language: You specify the pattern of the data you want, but not how to achieve that goal (like CSS or react).
 
-- **MapReduce**: Programming model for handling large amounts of data across many machines, popularized by Google.
-  - A limited form of MapReduce is supported by some NoSQL datastores, including MongoDB and CouchDB, as a mechanism for performing read-only queries across many documents.
-  - MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between: the logic of the query is expressed with snippets of code, which are called repeatedly by the processing framework.
+**MapReduce**
+  - Programming model for handling large amounts of data across many machines, popularized by Google.
+    - A limited form of MapReduce is supported by some NoSQL datastores, including MongoDB and CouchDB, as a mechanism for performing read-only queries across many documents.
+    - MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between: the logic of the query is expressed with snippets of code, which are called repeatedly by the processing framework.
+    - It is based on the `map` (also known as *collect*) and `reduce` (also known as *fold* or *inject* ) functions that exist in many functional programming languages:
+      ```Python
+      # Map
+      # Applies a given function to all items in an iterable (like a list) and returns an iterator that produces the results
+      
+      # Define a function to be applied to each element
+      def square(x):
+          return x * x
+      numbers = [1, 2, 3, 4, 5]
+      # Apply the function to each item in the list using map
+      squared_numbers = map(square, numbers)
+      # Convert the map object to a list and print it
+      print(list(squared_numbers))  # Output: [1, 4, 9, 16, 25]
 
-- Graph-Like Data Models
-  - Many-to-many relationships are prevalent in your data.
-  - Consist of:
-    - Vertices (also known as nodes or entities).
-    - Edges (also known as relationships or arcs).
+      # Reduce
+      # Applies a binary function (a function that takes two arguments) cumulatively to the items of an iterable, from left to right, so as to reduce the iterable to a single value.
+      from functools import reduce
+      # Define a function to be used for reduction
+      def add(x, y):
+          return x + y
+      numbers = [1, 2, 3, 4, 5]
+      # Apply the function cumulatively using reduce
+      sum_of_numbers = reduce(add, numbers)
+
+      print(sum_of_numbers)  # Output: 15
+      ```
+  - The `map` and `reduce` functions are somewhat restricted in what they are allowed to do. They must be pure functions, which means they only use the data that is passed to them as input, they cannot perform additional database queries, and they must not have any side effects.
+
+Graph-Like Data Models
+
+In scenarios where **many-to-many relationships** are prevalent in your data, a graph-like data model can be particularly effective. This model consists of the following key components:
+
+- **Vertices** (also known as **nodes** or **entities**):
+  - Represent **individual objects** or **entities** in the graph.
+  - Each vertex can contain attributes or properties that describe the entity it represents.
+  - Examples include people, locations, products, or any distinct objects.
+
+- **Edges** (also known as **relationships** or **arcs**):
+  - Represent the **connections** or **relationships** between vertices.
+  - Edges can be **directed** or **undirected**:
+    - **Directed edges** have a direction, indicating a one-way relationship (e.g., A → B).
+    - **Undirected edges** do not have a direction, indicating a mutual relationship (e.g., A ↔ B).
+  - Each edge can also have attributes or properties that describe the relationship.
+
+- Key Characteristics
+
+  - **Flexible Schema**:
+    - Graph models do not require a rigid schema, allowing the addition of new types of relationships or entities without altering existing data.
+
+  - **Efficient Traversal**:
+    - Graph databases are optimized for traversing and querying relationships between vertices, making them suitable for applications requiring complex queries over interconnected data.
+
+  - **Use Cases**:
+    - Social networks (e.g., users, friends, and interactions)
+    - Recommendation systems (e.g., users and products)
+    - Fraud detection (e.g., transactions and accounts)
+    - Network and IT infrastructure (e.g., servers, connections, and configurations)
+
+- Examples
+
+  - **Social Network**:
+    - **Vertices**: Users
+    - **Edges**: Friendships, messages, posts
+
+  - **Recommendation System**:
+    - **Vertices**: Users, Products
+    - **Edges**: Purchases, ratings, reviews
+
+Triple Stores and SPARQL
+
+- **Triple Stores**
+
+  Triple Stores are a type of graph database designed to store and manage **RDF (Resource Description Framework)** data, which is represented as triples. Each triple consists of:
+  - **Subject**: The entity being described.
+  - **Predicate**: The property or relationship.
+  - **Object**: The value or another entity related to the subject.
+
+  Triple stores are particularly suited for applications that require the management of semantic data and ontologies.
+
+  **Examples of Triple Stores**:
+  - Apache Jena
+  - RDF4J
+  - Virtuoso
+
+- **SPARQL**
+
+  **SPARQL** (SPARQL Protocol and RDF Query Language) is a query language specifically designed for querying RDF data. It allows users to perform complex queries to retrieve and manipulate data stored in triple stores.
+
+  **Basic SPARQL Query Structure**:
+  - **SELECT**: Specifies the variables to return.
+  - **WHERE**: Contains the pattern to match in the data.
+  - **FILTER**: (Optional) Refines the results based on conditions.
+
+  - **Example Query**:
+    ```sparql
+      PREFIX ex: <http://example.org/>
+
+      SELECT ?person ?email
+      WHERE {
+        ?person ex:hasEmail ?email .
+        FILTER (CONTAINS(?email, "@example.com"))
+      }
+    ```
+
 
 - **Normalization**: Apparently, in DBs normalization means to store the data in such a way that it is [unique] not duplicated. Like in LinkedIn  your profile has a city or location, the db tables have a table for your user (id, name, last_name, city_id)  and a table for cities (id, city_name, etc.) making it so that if you update the city name in the cities table, all users will have their city updated.
 
@@ -195,10 +294,65 @@ If data is split across multiple tables, like in Figure 2-1, multiple index look
 
 - **Index**: An additional structure that is derived from the primary data. It allows you to search records faster in the DB with the downside of slowing down writes.
 
+  - **Hash Indexes**: Let’s say our data storage consists only of appending to a file, as in the preceding example. Then the simplest possible indexing strategy is this: keep an in-memory hash map where every key is mapped to a byte offset in the data file—the location at which the value can be found.
+    - Think of the leetcode problem 'Encode and decode a string' and you'll get it.
+  
+  - **SSTables and LSM-Trees**
+
+    - *Sorted String Tables* are similar as the log files (append only files) used in the *Hash Indexes* example with just one extra detail: the format of the segment files require that the sequence of key-value pairs is sorted by key and each key only appears once within each merged segment file (the compaction process already ensures that).
+
+      - Merging segments is simple and efficient, even if the files are bigger than the available memory. The approach is like the one used in the mergesort algorithm.
+
+      - In order to find a particular key in the file, you no longer need to keep an index of all the keys in memory. You still need an in-memory index to tell you the offsets for some of the keys, but it can be sparse: one key for every few kilobytes of segment file is sufficient, because a few kilobytes can be scanned very quickly. 
+        - Remember the book's example: You need a key between to keys that are in the in-memory index, so you just use the first key's offset and search from there.
+
+      - Since read requests need to scan over several key-value pairs in the requested range anyway, it is possible to group those records into a block and compress it before writing it to disk.
+    
+    - *Log-Structured Merge-Tree*: Storage engines that are based on this principle of merging and compacting sorted files are often called LSM storage engines.
+
+    - **strategies to determine the order and timing of how SSTables are compacted and merged.**
+
+      - Size-tiered compaction: In size-tiered compaction, newer and smaller SSTables are successively merged into older and larger SSTables.
+        - Cassandra
+        -  HBase
+      
+      - Leveled compaction: In leveled compaction, the key range is split up into smaller SSTables and older data is moved into separate “levels,” which allows the compaction to proceed more incrementally and use less disk space.
+        - LevelDB
+        - RocksDB
+        - Cassandra
+
+    - Since data is stored in sorted order, you can efficiently perform range queries (scanning all keys above some minimum and up to some maximum), and because the disk writes are sequential the LSM-tree can support remarkably high write throughput.
+  
+  - **B-Trees**
+    - Like SSTables, B-trees keep key-value pairs sorted by key, which allows efficient key-value lookups and range queries. But that’s where the similarity ends: B-trees have a very different design philosophy.
+    
+
+
+<iframe width="320" height="180" src="https://www.youtube.com/watch?v=BIlFTFrEFOI&t=64s" title="SQL Hash Indexes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="1"></iframe>
+
+- **Memtable**: An in-memory balanced tree data structure (for example, a red-black tree)
+
+- **Bloom filter**: is a memory-efficient data structure for approximating the contents of a set. It can tell you if a key does not appear in the database, and thus saves many unnecessary disk reads for nonexistent keys.
+
+- **Compaction**: Compaction means throwing away duplicate keys in the log, and keeping only the most recent update for each key (very useful to avoid running out of space).
+
+  - Each segment now has its own in-memory hash table, mapping keys to file offsets. In order to find the value for a key, we first check the most recent segment’s hash map; if the key is not present we check the second-most- recent segment, and so on. 
+  
+  - **Tombstone**: If you want to delete a key and its associated value, you have to append a special deletion record to the data file (sometimes called a tombstone). When log segments are merged, the tombstone tells the merging process to discard any previous values for the deleted key.
 
 - **Storage engines**:
   - Log-structured:
   - Page-oriented:
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -290,6 +444,23 @@ Redis, **RE**mote **DI**ctionary **S**erver, is an open-source, in-memory data s
 4. **Amazon DynamoDB**: DynamoDB is a fully managed NoSQL database service provided by Amazon Web Services (AWS). It offers seamless scalability, high performance, and built-in security features.
 
 </details>
+
+<details>
+  <summary><h4 style="display: inline;">Elastic Search</h4></summary><br>
+
+![Redis](../images/Redis.jpg)
+
+</details>
+
+
+
+
+
+
+
+
+
+
 
 ### Designing Systems & Components
 <details>
