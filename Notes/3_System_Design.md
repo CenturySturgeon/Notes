@@ -719,7 +719,53 @@ Triple Stores and SPARQL
           - For services that use API keys to identify a particular client, another option is to store a client’s requested API version on the server and to allow this version selection to be updated through a separate administrative interface [49].
 
   - **Message-Passing Dataflow**
-    - asynchronous message-passing systems
+    - Asynchronous message-passing systems
+      
+      - Somewhere between RPC (one process sends a request over the network to another process and expects a response as quickly as possible) and databases (where one process writes encoded data, and another process reads it again sometime in the future).
+         
+         - They are similar to RPC in that a client’s request (usually called a message) is delivered to another process with low latency. 
+         - They are similar to databases in that the message is not sent via a direct network connection, but goes via an intermediary called a message broker (also called a __*message queue*__ or __*message-oriented middleware*__), which stores the message temporarily.
+      
+      - **Message Broker Advantages over RPC**
+        - It can act as a buffer if the recipient is unavailable or overloaded, and thus improve system reliability.
+
+        - It can automatically redeliver messages to a process that has crashed, and thus prevent messages from being lost.
+
+        - It avoids the sender needing to know the IP address and port number of the recipient.
+
+        - It allows one message to be sent to several recipients.
+
+        - It logically decouples the sender from the recipient (the sender just publishes messages and doesn’t care who consumes them).
+
+        However, a difference compared to RPC is that message-passing communication is usually one-way: a sender normally doesn’t expect to receive a reply to its messages. It is possible for a process to send a response, but this would usually be done on a separate channel. 
+        
+        This communication pattern is __*asynchronous*__: the sender doesn’t wait for the message to be delivered, but simply sends it and then forgets about it.
+
+      - **Message brokers**
+        - RabbitMQ 
+        - ActiveMQ 
+        - HornetQ 
+        - NATS
+        - Apache Kafka
+
+        - Usage:
+          1. one process sends a message to a named queue or topic.
+          2. The broker ensures that the message is delivered to one or more consumers of or subscribers to that queue or topic.
+          3. There can be many producers and many consumers on the same topic.
+        
+        - A topic provides only one-way dataflow. However, a consumer may itself publish messages to another topic, or to a reply queue that is consumed by the sender of the original message (allowing a request/response dataflow, similar to RPC).
+
+        - Message brokers typically don’t enforce any particular data model—a message is just a sequence of bytes with some metadata, so you can use any encoding format. If the encoding is backward and forward compatible, you have the greatest flexibility to change publishers and consumers independently and deploy them in any order.
+
+        - If a consumer republishes messages to another topic, you may need to be careful to preserve unknown fields, to prevent the issue described previously in the context of databases.
+
+      - **Distributed actor frameworks**
+
+        - Read and synthetizee...
+
+         - The actor model is a programming model for concurrency in a single process. Rather than dealing directly with threads (and the associated problems of race conditions, locking, and deadlock), logic is encapsulated in actors. Each actor typically represents one client or entity, it may have some local state (which is not shared with any other actor), and it communicates with other actors by sending and receiving asynchronous messages. Message delivery is not guaranteed: in certain error scenarios, messages will be lost. Since each actor processes only one message at a time, it doesn’t need to worry about threads, and each actor can be scheduled independently by the framework.
+
+
 
     
 
