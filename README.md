@@ -1,529 +1,259 @@
 # My Software Engineering Notes
 <details>
-  <summary><h2 style='display: inline;'> Python </h2></summary>
+  <summary><h2 style='display: inline;'> Designing Data-Intensive Apps </h2></summary>
   
-![Python Logo](https://github.com/CenturySturgeon/Notes/blob/main/images/PythonLogo.png)
+## Chapter 1: Reliable, Scalable, and Maintainable Applications
 
-### Decorators
+### Availability
 
----
+Percentage of time a system or service is operational and accessible when needed. It measures how often the system is up compared to the total time it should be available.
 
-Python decorators are a powerful feature that allows you to modify or extend the behavior of functions or methods without changing their actual code. They essentially allow you to wrap another function or method and execute code before and/or after the wrapped function runs. Decorators are typically denoted by the @ symbol followed by the decorator function name, placed just above the function definition.
+- **Downtime Based on Availability**:
+  | Availability | Downtime           |
+  |--------------|--------------------|
+  | 99%          | 3.65 days/year     |
+  | 99.9%        | 8.77 hours/year    |
+  | 99.99%       | 52.6 minutes/year  |
+  | 99.999%      | 5.26 minutes/year  |
+  | 100%         | 0 seconds/year     |
 
-Here's a basic example to illustrate how decorators work:
+  Each additional nine decreases the downtime by an order of magnitude of roughly 10 times.
 
-``` Python
-def my_decorator(func):
-    def wrapper():
-        print("Something is happening before the function is called.")
-        func()
-        print("Something is happening after the function is called.")
-    return wrapper
+### Reliability
 
-@my_decorator
-def say_hello():
-    print("Hello!")
+Measures how consistently and correctly a system performs its intended functions over time without failure.
 
-say_hello()
-```
+- **Measurement**:
+  - Often assessed using metrics such as Mean Time Between Failures (MTBF) or Mean Time to Failure (MTTF), which quantify how long the system performs correctly before encountering a failure.
 
-In this example, my_decorator is a decorator function that takes another function func as its argument. Inside my_decorator, a nested function wrapper is defined, which wraps around the original function func. Inside wrapper, you can include code to be executed before and/or after calling func. Finally, the wrapper function is returned.
+### Redundancy
 
-When you decorate the say_hello function with @my_decorator, Python essentially does this: say_hello = my_decorator(say_hello). So, when you call say_hello(), it actually calls the wrapper function created by my_decorator, which in turn calls the original say_hello function within it.
+The inclusion of extra components or systems to ensure continued operation in the event of a failure.
 
-Some of the most common decorators used in Python include:
+- Redundancy Types
+    | Type                      | Description                                                                                                                           |
+    |---------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+    | **Hardware Redundancy**   | Spare hardware components (e.g., additional servers, power supplies, or network links) that can take over if primary components fail. |
+    | **Data Redundancy**       | Replicating data across multiple storage devices or locations to protect against data loss.                                           |
+    | **Geographic Redundancy** | Distributing resources across different locations or data centers to protect against site-specific failures.                          |
 
-``` Python
-@property # Used to define properties on classes, allowing you to define getter, setter, and deleter methods for attributes.
 
-@classmethod # Declares a method within a class that takes the class itself as its first argument instead of the instance.
 
-@staticmethod # Used to declare a method that belongs to the class but doesn't require access to the class or instance.
+### Maintainability
 
-@abstractmethod # Used in abstract base classes to declare abstract methods, which must be implemented by subclasses.
+Ensuring that various people (engineering and operations) can work on the system productively over time.
 
-@wraps # A decorator from the functools module used to preserve the metadata of the original function when creating wrapper functions. This is particularly useful for maintaining docstrings, function name, and other attributes.
+| **Factors**      | **Description**                                                         |
+|------------------|-------------------------------------------------------------------------|
+| **Operability**  | Make it easy for operations teams to keep the system running smoothly.  |
+| **Simplicity**   | Make it easy for new engineers to understand the system.                |
+| **Evolvability** | Make it easy for engineers to make changes to the system in the future. |
 
-@lru_cache # A decorator from the functools module that caches the results of a function, saving time when the same inputs occur again.
-```
 
-### Dunder Methods 
+### Fault and Failure
 
----
+- **Fault**: A deviation of one component from its specification.
+- **Failure**: When the system as a whole stops providing the required service to the user.
 
-Dunder methods, short for "double underscore" methods, are special methods in Python that have names surrounded by double underscores, like `__init__`, `__repr__`, `__add__`, etc. They are also called magic methods or special methods.
+### Rolling Upgrade
 
-These methods allow classes to define specific behavior that gets invoked in response to certain operations or interactions. For example, when you use the + operator with instances of a class, Python looks for the __add__ method to determine how to perform addition for those objects.
+A method of upgrading a system without shutting it down or interrupting its operation.
 
-Here are some common dunder methods and their purposes:
-``` Python
-__init__(self, ...) # Constructor method that initializes a new instance of a class.
-__repr__(self) # Method that returns a string representation of the object, used for debugging and logging.
-__str__(self) # Method that returns a string representation of the object, used for informal representation to end-users.
-__len__(self)# Method that returns the length of the object.
-__getitem__(self, key) # Method that enables accessing elements of an object using square brackets, like obj[key].
-```
+### Throughput
 
-### Iterators
+The amount of work processed by a system or component in a given amount of time.
 
----
+- Examples:
+  - **Systems Performance**: Requests per second (requests/second)
+  - **Networks**: Megabits per second (Mbps)
+  - **Databases**: Queries per second (queries/second)
 
-An iterator in Python is an object that is used to iterate over iterable objects like lists, tuples, dicts, and sets. The Python iterators object is initialized using the `iter()` method. It uses the `next()` method for iteration.
-``` Python
-__iter__() # The iter() method is called for the initialization of an iterator. This returns an iterator object
-__next__() # The next method returns the next value for the iterable. When we use a for loop to traverse any iterable object, internally it uses the iter() method to get an iterator object, which further uses the next() method to iterate over. This method raises a StopIteration to signal the end of the iteration.
-```
+### Latency
 
-``` Python
-string = "GFG"
-ch_iterator = iter(string)
- 
-print(next(ch_iterator)) # -> G
-print(next(ch_iterator)) # -> F
-print(next(ch_iterator)) # -> G
-```
+The time delay between the initiation of a request and the beginning of a response.
 
-### Generators
+### Service Time
 
----
+The time it takes to process a request, including tasks like authorization and load balancing.
 
-`Generators` are a powerful feature that allow you to iterate over a sequence of items without storing them all in memory at once. They are implemented using a special type of function using `yield` expressions.
+### Response Time
 
-Here are key points about Python generators:
+The total time from the initiation of a request until the entire response is received and processed. It encompasses both latency and service time.
 
-- Lazy Evaluation: Generators generate values on-the-fly as they are requested instead of generating them all at once and storing them in memory. This is achieved using the yield statement instead of return.
+- **Metrics**:
+  - **Average Response Time**: Often reported as the arithmetic mean, but may not reflect the typical user experience.
+  - **Percentiles**: Provide a better understanding of response times, with the median being the halfway point. Percentile algorithms include:
+    - Forward Decay
+    - T-Digest
+    - HDRHistogram
 
--Memory Efficiency: Since generators produce values one at a time, they are memory efficient especially for large datasets or infinite sequences.
+### Scaling
 
-- Iteration Support: Generators support iteration automatically, which means you can use them in loops or any other context that expects an iterable.
+- **Vertical Scaling**: *Scaling up* by improving the hardware of the hosting machine.
+- **Horizontal Scaling**: *Scaling out* by adding more machines to handle increased load. Known as a shared-nothing architecture.
 
-- State Maintenance: The state of local variables in a generator function is remembered between calls. This allows you to write complex iterative algorithms.
+### SLA (Service Level Agreement)
 
-- Syntax: Generators are defined using a function that contains one or more yield statements. When called, they return a generator object, which can be iterated over using a for loop or by explicitly calling next() on it.
+Contracts that define the expected performance and availability of a service.
 
-Here’s a simple example of a generator function that generates squares of numbers up to a given limit:
+### Telemetry
 
-```Python
-def square_generator(n):
-    for i in range(n):
-        yield i ** 2
+Monitoring performance metrics and error rates. Essential for understanding system status after deployment.
 
-# Using the generator
-gen = square_generator(5)
-for num in gen:
-    print(num)
+### Load Parameters
 
-# Output:
-# 0
-# 1
-# 4
-# 9
-# 16
-```
+- Examples: 
+    - Requests per second.
+    - Reads-to-writes ratio.
 
-Generators are specially handy when you want to access an array of values but don't want to store them in memory at once (like that API implementation problem you once saw).
+### Fan-out
 
-### Yield 
+- **Note**: Refer to page 29 for detailed information.
 
----
+### Elastic Systems
 
-`Generators` are a special type of iterable that allow you to iterate over a sequence of values lazily, meaning that they produce values on-the-fly as they are requested rather than generating the entire sequence upfront and storing it in memory.
+Systems that can scale automatically.
 
-When you use `yield` inside a function, it turns that function into a generator function. Instead of using return to return a single value and exit the function, yield is used to yield a value to the caller while suspending the state of the function. This allows the function to be resumed from where it left off the next time it is called.
 
-Here's a simple example:
-``` Python
-def count_up_to(n):
-    count = 1
-    while count <= n:
-        yield count
-        count += 1
+## Chapter 2: Data Models and Query Languages
 
-# Using the generator function
-counter = count_up_to(5)
-print(next(counter))  # Output: 1
-print(next(counter))  # Output: 2
-print(next(counter))  # Output: 3
-```
+### Relational vs. Document Model
 
-In this example, count_up_to is a generator function that yields numbers from 1 up to n. When you call next(counter), it starts or resumes execution of the generator function until the next yield statement, where it yields the value and pauses execution. The function retains its state, so subsequent calls to next() continue from where it left off.
+- **Pros and Cons**
 
-Using yield allows for memory-efficient iteration over large sequences, as only one value needs to be stored in memory at a time, unlike with lists where the entire sequence is stored. Additionally, it enables lazy evaluation, meaning that values are generated only when needed, which can improve performance in certain scenarios.
+  - **SQL Databases**:
+    - Pros:
+      - Better support for joins, and many-to-one and many-to-many relationships.
+      - Reliable for complex transactions and strong consistency.
+    - Cons:
+      - Splitting a document-like structure into multiple tables can lead to cumbersome schemas and complex application code.
 
-### Zip
-
----
-
-The zip() function in Python is used to combine multiple iterables (lists, tuples, etc.) element-wise. It takes in two or more iterables as arguments and returns an iterator that generates tuples of corresponding elements from each iterable.
-
-Here's a basic example:
-
-```python
-list1 = [1, 2, 3]
-list2 = ['a', 'b', 'c']
-
-zipped = zip(list1, list2)
-
-for item in zipped:
-    print(item)
-# Output:
-
-(1, 'a')
-(2, 'b')
-(3, 'c')
-```
-
-In this example, zip() pairs the first element of list1 with the first element of list2, the second element of list1 with the second element of list2, and so on.
-
-One important thing to note about zip() is that it stops generating tuples as soon as one of the input iterables is exhausted. For example:
-
-```python
-list1 = [1, 2, 3]
-list2 = ['a', 'b']
-
-zipped = zip(list1, list2)
-
-for item in zipped:
-    print(item)
-# Output:
-
-(1, 'a')
-(2, 'b')
-```
-
-Here, since list2 has only two elements, the third element of list1 is ignored.
-
-If you want to get a list of tuples instead of an iterator, you can use the list() function to convert the iterator returned by zip() into a list:
-
-```python
-list1 = [1, 2, 3]
-list2 = ['a', 'b', 'c']
-
-zipped = list(zip(list1, list2))
-
-print(zipped)
-# Output:
-
-[(1, 'a'), (2, 'b'), (3, 'c')]
-```
-
-zip() is commonly used in scenarios where you need to iterate over multiple lists simultaneously, especially when the lists are related and you want to process their elements together.
-
-### Serialization
-
----
-
-Serialization in Python refers to the process of converting complex data structures, such as objects or data collections, into a format that can be easily stored or transmitted and later reconstructed back into its original form. This process is essential for tasks like saving data to a file, sending data over a network, or storing data in a database.
-
-Python provides several built-in modules for serialization, such as:
-
-- pickle: This module can serialize Python objects into a binary format. It can handle almost any Python object, including custom classes and functions.
-
-- json: This module serializes Python objects into a human-readable format called JSON (JavaScript Object Notation). JSON is commonly used for transmitting data between a server and a client over a network.
-
-- marshal: This module is similar to pickle but is more restricted in terms of the types of objects it can serialize. It is primarily used for serializing Python code objects.
-
-- shelve: This module provides a simple interface for persistently storing Python objects in a dictionary-like format.
-
-Serialization is particularly useful for tasks like data storage, data exchange between different systems or languages, and caching. However, it's essential to consider security implications, especially when deserializing data, as it can lead to security vulnerabilities if not handled properly.
-
-### Lambda Functions
-
----
-
-Lambda functions in Python are small, anonymous functions defined using the lambda keyword. They are often used when you need a short function for a short period of time and don't want to define a full function using def.
-
-#### Syntax
-The syntax of a lambda function is:
-
-```Python
-lambda arguments: expression
-```
-- lambda is the keyword used to define a lambda function.
-- arguments are the input parameters for the function.
-- expression is a single expression that gets evaluated and returned as the result of the function.
-#### Examples
-
-##### Basic Example:
-
-```Python
-square = lambda x: x ** 2
-print(square(5))  # Output: 25
-```
-
-Here, lambda x: x ** 2 defines a lambda function that takes one argument x and returns its square.
-
-##### Using Multiple Arguments
-
-```Python
-add = lambda x, y: x + y
-print(add(3, 4))  # Output: 7
-```
-
-This lambda function lambda x, y: x + y takes two arguments x and y and returns their sum.
-
-##### In List Sorting
-Lambda functions are often used in conjunction with built-in functions like sorted() or filter():
-
-```Python
-points = [(1, 2), (3, 1), (5, 4), (2, 7)]
-points_sorted = sorted(points, key=lambda x: x[1])
-print(points_sorted)  # Output: [(3, 1), (1, 2), (5, 4), (2, 7)]
-```
-
-Here, lambda x: x[1] specifies that the list should be sorted based on the second element of each tuple in points.
-
-##### As an Argument to map()
-
-```Python
-numbers = [1, 2, 3, 4, 5]
-squared = list(map(lambda x: x ** 2, numbers))
-print(squared)  # Output: [1, 4, 9, 16, 25]
-```
-
-The lambda function lambda x: x ** 2 is applied to each element in numbers using map() to compute their squares.
-
-#### Benefits of Lambda Functions
-- Conciseness: They reduce the amount of code when a simple function is needed.
-- Readability: Lambda functions can make code more readable when used appropriately, such as within map(), filter(), or sorted().
-#### Limitations
-- Single Expression: Lambda functions are restricted to a single expression, making them unsuitable for complex logic.
-- No Statements: They cannot contain statements like return, pass, or assert.
-
-Lambda functions are particularly useful in functional programming contexts where functions are treated as first-class citizens and are passed around as arguments or returned from other functions
-</details>
-<details>
-  <summary><h2 style='display: inline;'> Django </h2></summary>
-  
-![Django Logo](https://github.com/CenturySturgeon/Notes/blob/main/images/DjangoLogo.png)
-
-### One-to-many Relations
-
-- Use `ForeignKey`
-
-- Related name makes it so that when you want to access an authors book set (by default RELATEDCLASSNAME_SET [book_set]) you use the provided related name 'books' instead of the default 'book_set'.
-
-```class Books
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, related_name='books') # Can be null if no value is provided
-```
-
-### Many-to-many Relations
-    
-- Use `ManyToManyField`
-
-```
-# In this case, related_name is used to get all the books of a country by using 'books' (in this case) instead of 'book_set'
-class Book
-    published_countries = models.ManyToManyField(Country, related_name='books')
-```
-
-### One-to-One Relations    
-    
-- Use `OneToOneField`
-
-- Related name is not needed here since Django automatically will link authors to the Address object it belongs to. This means you can access an author object from its adress like 'Address.objects.all()[0].author'
-
-```
-class Author
-    address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True)
-```
-</details>
-<details>
-  <summary><h2 style='display: inline;'> System Design </h2></summary>
-  
-### Fundamentals
-
-#### Chapter 1 Reliable, Scalable, and Maintainable Applications
-
-- **Availability**: Percentage of time a system or service is operational and accessible when needed. It is a measure of how often the system is up and running compared to the total time it should be available.
-
-  - Two nines '**99%**' Availability means the service is down around 3.65 days a year.
-  - Every aditional nine decreases the downtime by an order of magnitude of roughly 10 times:
-
-    | Availability | Downtime           |
-    |--------------|--------------------|
-    | 99%          | 3.65 days/year     |
-    | 99.9%        | 8.77 hours/year    |
-    | 99.99%       | 52.6 minutes/year  |
-    | 99.999%      | 5.26 minutes/year  |
-    | 100%         | 0 seconds/year     |
- 
-
-- **Reliability**: Measures how consistently and correctly a system performs its intended functions over time without failure. It indicates the system's ability to operate without errors or breakdowns when in use.
-  
-  - *Measurement*: Often assessed using metrics such as Mean Time Between Failures (MTBF) or Mean Time to Failure (MTTF). These metrics quantify how long the system performs correctly before encountering a failure.
-
-- **Redundancy**: Redundancy refers to the inclusion of extra components or systems to ensure that a system can continue to operate in the event of a failure. It is a design approach that involves adding duplicate resources to increase reliability and availability.
-
-  - *Hardware Redundancy*: Adding spare hardware components (e.g., additional servers, power supplies, or network links) that can take over if primary components fail.
-  - *Data Redundancy*: Replicating data across multiple storage devices or locations to protect against data loss.
-  - *Geographic Redundancy*: Distributing resources across different locations or data centers to protect against site-specific failures.
-
-- **Maintainability**: Over time, many different people will work on the system (engineering and operations, both maintaining current behavior and adapting the system to new use cases), and they should all be able to work on it productively.
-  - Operability: Make it easy for operations teams to keep the system running smoothly.
-  - Simplicity: Make it easy for new engineers to understand the system.
-  - Evolvability: Make it easy for engineers to make changes to the system in the future
-
-- **Fault**: One component of the system deviating from its spec.
-
-- **Failiure**: When the system as a whole stops providing the required service to the user
-
-- Rolling upgrade:
-
-- **Throughput**: The amount of work processed by a system or component in a given amount of time. It's a measure of how efficiently a system performs its tasks. Examples:
-  - Systems performance: Requests per second (requests/second)
-  - Networks: Megabits per second (Mbps)
-  - Databases: Queries per second (queries/second)
-
-- **Latency**: Refers to the time delay between the initiation of a request and the beginning of a response. It’s a measure of the delay experienced by a request or action within a system or network.
-
-- **Service time**: The time it takes to process the request (authorization, load balancing, etc.).
-
-- **Response time**: Response time is the total time it takes from the initiation of a request until the entire response is received and processed. It encompasses the latency as well as the service time.
-
-  - It’s common to see the average response time of a service reported. (Strictly speaking, the term “average” doesn’t refer to any particular formula, but in practice it is usually understood as the arithmetic mean: given n values, add up all the values, and divide by n.) However, the mean is not a very good metric if you want to know your “typical” response time, because it doesn’t tell you how many users actually experienced that delay.
-
-  - Usually it is better to use percentiles. If you take your list of response times and sort it from fastest to slowest, then the median is the halfway point: for example, if your median response time is 200 ms, that means half your requests return in less than 200 ms, and half your requests take longer than that.
-
-    - There are algorithms that can calculate a good approximation of percentiles at minimal CPU and memory cost:
-      - forward decay
-      - t-digest
-      - HdrHistogram. 
-
-- Vertical scaling: Systems *'scaling up'* increase their ability to process more requests by improving the hardware of the hosting machine.
-
-- Horizontal scaling: Systems *'scaling out'* increase their ability to process more requests by adding more machines to handle them.
-
-Distributing load across multiple machines is also known as a shared-nothing architecture.
-
-- **SLA (Service Level Agreement)**: Contracts that define the expected performance and availability of a service 
-
-- **Telemetry**: Monitoring things like performance metrics and error rates. Once the rocket leaves the ground, telemetry is important to know what's going on 
-
-- **Load parameters**: request per second, reads to writes ratio, etc.
-
-- **Fan-out**: Read page 29.
-
-- **Elastic Systems**: Those that can scale automatically.
-
-
-#### Chapter 2 Data Models and Query Languages
-
-- **Relational VS. Document Model**
-  - Pros and Cons
-    - **SQL Databases**:
-      -  Better support for joins, and many-to-one and many-to-many relationships.
-      - Splitting a document-like structure into multiple tables can lead to cumbersome schemas and unnecessarily complicated application code.
-
-    - **NoSQL Databases**:
+  - **NoSQL Databases**:
+    - Pros:
       - Schema flexibility.
       - Better performance due to locality.
-      - For some applications it is closer to the data structures used by the application.
-      - If your application does use many-to-many relationships, the document model becomes less appealing
+      - For some applications, closer to the data structures used by the application.
+    - Cons:
+      - Document model can become less appealing for applications with many-to-many relationships.
 
-  - Data Model
-    - **SQL Databases**: 
-      - Relational model with tables, rows, and columns.
-      - Accessed via SQL queries.
-      - Schema is predefined and changes can be complex.
-    
-    - **NoSQL Databases**:
-      - Varied models including document stores, key-value stores, column-family stores, and graph databases.
-      - Flexible schema, allowing for adjustments and hierarchical or nested data structures.
+### Data Model
 
-  - Schema Flexibility
-    - **SQL Databases**:
-      - Fixed schema.
-      - Schema changes require migrations, which can be time-consuming.
-    
-    - **NoSQL Databases**:
-      - Dynamic schema.
-      - Easier to store different fields or structures in records without predefined schema changes.
+- **SQL Databases**:
+  - Relational model with tables, rows, and columns.
+  - Accessed via SQL queries.
+  - Schema is predefined and changes can be complex.
 
-  - Consistency and Transactions
-    - **SQL Databases**:
-      - Adhere to ACID (Atomicity, Consistency, Isolation, Durability) properties.
-      - Ensure reliable transactions and consistency even in system failures.
-    
-    - **NoSQL Databases**:
-      - May prioritize availability and partition tolerance (CAP theorem) over strict consistency.
-      - Often offer eventual consistency instead of strong consistency.
-      - Multi-statement transactions might not be as robust.
+- **NoSQL Databases**:
+  - Varied models including document stores, key-value stores, column-family stores, and graph databases.
+  - Flexible schema, allowing for adjustments and hierarchical or nested data structures.
 
-  - Scalability
-    - **SQL Databases**:
-      - Typically scale vertically (adding resources to a single server).
-      
-    - **NoSQL Databases**:
-      - Designed to scale out horizontally (distributing data across multiple servers).
-      - Can handle large volumes of data and high-velocity workloads more effectively.
+### Schema Flexibility
 
-  - Query Language
-    - **SQL Databases**:
-      - Use Structured Query Language (SQL).
-      - SQL is powerful for complex queries involving multiple tables.
-      
-    - **NoSQL Databases**:
-      - Query mechanisms vary by database type.
-      - Document stores might use JSON-based queries; key-value stores use simple key-based lookups.
+- **SQL Databases**:
+  - Fixed schema.
+  - Schema changes require migrations, which can be time-consuming.
 
-  - Use Cases
-    - **SQL Databases**:
-      - Best for applications needing complex transactions, strong consistency, and well-defined schemas.
-      - Examples: financial systems, traditional enterprise applications.
-      
-    - **NoSQL Databases**:
-      - Ideal for scenarios where scalability, flexibility, and high performance are critical.
-      - Examples: real-time web applications, big data applications, content management systems.
+- **NoSQL Databases**:
+  - Dynamic schema.
+  - Easier to store different fields or structures in records without predefined schema changes.
 
-A document is usually stored as a single continuous string, encoded as JSON, XML, or a binary variant thereof (such as MongoDB’s BSON). If your application often needs to access the entire document (for example, to render it on a web page), there is a performance advantage to this storage locality.
+### Consistency and Transactions
 
-If data is split across multiple tables, like in Figure 2-1, multiple index lookups are required to retrieve it all, which may require more disk seeks and take more time. The locality advantage only applies if you need large parts of the document at the same time.
+- **SQL Databases**:
+  - Adhere to ACID (Atomicity, Consistency, Isolation, Durability) properties.
+  - Ensure reliable transactions and consistency even in system failures.
 
-- **Imperative VS. Declarative Languages**:
-  - Imperative Language: Tells the computer to perform certain operations in a certain order, like JS or Python. You tell the code line by line what to do.
-  - Declarative Language: You specify the pattern of the data you want, but not how to achieve that goal (like CSS or react).
+- **NoSQL Databases**:
+  - May prioritize availability and partition tolerance (CAP theorem) over strict consistency.
+  - Often offer eventual consistency instead of strong consistency.
+  - Multi-statement transactions might not be as robust.
 
-**MapReduce**
-  - Programming model for handling large amounts of data across many machines, popularized by Google.
-    - A limited form of MapReduce is supported by some NoSQL datastores, including MongoDB and CouchDB, as a mechanism for performing read-only queries across many documents.
-    - MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between: the logic of the query is expressed with snippets of code, which are called repeatedly by the processing framework.
-    - It is based on the `map` (also known as *collect*) and `reduce` (also known as *fold* or *inject* ) functions that exist in many functional programming languages:
-      ```Python
-      # Map
-      # Applies a given function to all items in an iterable (like a list) and returns an iterator that produces the results
-      
-      # Define a function to be applied to each element
-      def square(x):
-          return x * x
-      numbers = [1, 2, 3, 4, 5]
-      # Apply the function to each item in the list using map
-      squared_numbers = map(square, numbers)
-      # Convert the map object to a list and print it
-      print(list(squared_numbers))  # Output: [1, 4, 9, 16, 25]
+### Scalability
 
-      # Reduce
-      # Applies a binary function (a function that takes two arguments) cumulatively to the items of an iterable, from left to right, so as to reduce the iterable to a single value.
-      from functools import reduce
-      # Define a function to be used for reduction
-      def add(x, y):
-          return x + y
-      numbers = [1, 2, 3, 4, 5]
-      # Apply the function cumulatively using reduce
-      sum_of_numbers = reduce(add, numbers)
+- **SQL Databases**:
+  - Typically scale vertically (adding resources to a single server).
 
-      print(sum_of_numbers)  # Output: 15
+- **NoSQL Databases**:
+  - Designed to scale out horizontally (distributing data across multiple servers).
+  - Can handle large volumes of data and high-velocity workloads more effectively.
+
+### Query Language
+
+- **SQL Databases**:
+  - Use Structured Query Language (SQL).
+  - SQL is powerful for complex queries involving multiple tables.
+
+- **NoSQL Databases**:
+  - Query mechanisms vary by database type.
+  - Document stores might use JSON-based queries; key-value stores use simple key-based lookups.
+
+### Use Cases
+
+- **SQL Databases**:
+  - Best for applications needing complex transactions, strong consistency, and well-defined schemas.
+  - Examples: Financial systems, traditional enterprise applications.
+
+- **NoSQL Databases**:
+  - Ideal for scenarios where scalability, flexibility, and high performance are critical.
+  - Examples: Real-time web applications, big data applications, content management systems.
+
+### Document Storage
+
+A document is usually stored as a single continuous string, encoded as JSON, XML, or a binary variant (e.g., MongoDB’s BSON). If your application often needs to access the entire document (e.g., to render it on a web page), there is a performance advantage due to this storage locality.
+
+If data is split across multiple tables, as shown in Figure 2-1, multiple index lookups are required to retrieve it all. This can result in more disk seeks and longer retrieval times. The locality advantage is significant if large parts of the document are needed simultaneously.
+
+### Imperative vs. Declarative Languages
+
+- **Imperative Language**:
+  - Specifies the exact operations in a particular order (e.g., JavaScript, Python).
+  - Example: Line-by-line instructions on what to do.
+
+- **Declarative Language**:
+  - Specifies what the result should be, without detailing how to achieve it (e.g., CSS, React).
+
+### MapReduce
+
+- **Overview**:
+  - A programming model for handling large amounts of data across many machines, popularized by Google.
+  - A limited form of MapReduce is supported by some NoSQL datastores, including MongoDB and CouchDB, for read-only queries across many documents.
+  - Combines `map` and `reduce` functions from functional programming languages.
+
+- **Map Function**:
+    ```Python
+        # Map
+        # Applies a given function to all items in an iterable (like a list) and returns an iterator that produces the results
+        
+        # Define a function to be applied to each element
+        def square(x):
+            return x * x
+        numbers = [1, 2, 3, 4, 5]
+        # Apply the function to each item in the list using map
+        squared_numbers = map(square, numbers)
+        # Convert the map object to a list and print it
+        print(list(squared_numbers))  # Output: [1, 4, 9, 16, 25]
+
+        # Reduce
+        # Applies a binary function (a function that takes two arguments) cumulatively to the items of an iterable, from left to right, so as to reduce the iterable to a single value.
+        from functools import reduce
+        # Define a function to be used for reduction
+        def add(x, y):
+            return x + y
+        numbers = [1, 2, 3, 4, 5]
+        # Apply the function cumulatively using reduce
+        sum_of_numbers = reduce(add, numbers)
+
+        print(sum_of_numbers)  # Output: 15
       ```
-  - The `map` and `reduce` functions are somewhat restricted in what they are allowed to do. They must be pure functions, which means they only use the data that is passed to them as input, they cannot perform additional database queries, and they must not have any side effects.
 
-Graph-Like Data Models
+### Graph-Like Data Models
 
-In scenarios where **many-to-many relationships** are prevalent in your data, a graph-like data model can be particularly effective. This model consists of the following key components:
+In scenarios where **many-to-many relationships** are prevalent, a graph-like data model can be particularly effective. This model consists of the following key components:
 
 - **Vertices** (also known as **nodes** or **entities**):
   - Represent **individual objects** or **entities** in the graph.
   - Each vertex can contain attributes or properties that describe the entity it represents.
-  - Examples include people, locations, products, or any distinct objects.
+  - Examples: People, locations, products, or any distinct objects.
 
 - **Edges** (also known as **relationships** or **arcs**):
   - Represent the **connections** or **relationships** between vertices.
@@ -532,54 +262,50 @@ In scenarios where **many-to-many relationships** are prevalent in your data, a 
     - **Undirected edges** do not have a direction, indicating a mutual relationship (e.g., A ↔ B).
   - Each edge can also have attributes or properties that describe the relationship.
 
-- Key Characteristics
+#### Key Characteristics
 
-  - **Flexible Schema**:
-    - Graph models do not require a rigid schema, allowing the addition of new types of relationships or entities without altering existing data.
+- **Flexible Schema**:
+  - Graph models do not require a rigid schema, allowing the addition of new types of relationships or entities without altering existing data.
 
-  - **Efficient Traversal**:
-    - Graph databases are optimized for traversing and querying relationships between vertices, making them suitable for applications requiring complex queries over interconnected data.
+- **Efficient Traversal**:
+  - Graph databases are optimized for traversing and querying relationships between vertices, making them suitable for applications requiring complex queries over interconnected data.
 
-  - **Use Cases**:
-    - Social networks (e.g., users, friends, and interactions)
-    - Recommendation systems (e.g., users and products)
-    - Fraud detection (e.g., transactions and accounts)
-    - Network and IT infrastructure (e.g., servers, connections, and configurations)
+- **Use Cases**:
+  - Social networks (e.g., users, friends, and interactions)
+  - Recommendation systems (e.g., users and products)
+  - Fraud detection (e.g., transactions and accounts)
+  - Network and IT infrastructure (e.g., servers, connections, and configurations)
 
 - Examples
-
-  - **Social Network**:
+    - **Social Network**:
     - **Vertices**: Users
     - **Edges**: Friendships, messages, posts
 
-  - **Recommendation System**:
+    - **Recommendation System**:
     - **Vertices**: Users, Products
     - **Edges**: Purchases, ratings, reviews
 
-Triple Stores and SPARQL
+#### Triple Stores and SPARQL
 
-- **Triple Stores**
+- **Triple Stores**:
+  - Triple Stores are a type of graph database designed to store and manage **RDF (Resource Description Framework)** data, represented as triples. Each triple consists of:
+    - **Subject**: The entity being described.
+    - **Predicate**: The property or relationship.
+    - **Object**: The value or another entity related to the subject.
+  - Triple stores are particularly suited for managing semantic data and ontologies.
+  
+  - **Examples of Triple Stores**:
+    - Apache Jena
+    - RDF4J
+    - Virtuoso
 
-  Triple Stores are a type of graph database designed to store and manage **RDF (Resource Description Framework)** data, which is represented as triples. Each triple consists of:
-  - **Subject**: The entity being described.
-  - **Predicate**: The property or relationship.
-  - **Object**: The value or another entity related to the subject.
-
-  Triple stores are particularly suited for applications that require the management of semantic data and ontologies.
-
-  **Examples of Triple Stores**:
-  - Apache Jena
-  - RDF4J
-  - Virtuoso
-
-- **SPARQL**
-
-  **SPARQL** (SPARQL Protocol and RDF Query Language) is a query language specifically designed for querying RDF data. It allows users to perform complex queries to retrieve and manipulate data stored in triple stores.
-
-  **Basic SPARQL Query Structure**:
-  - **SELECT**: Specifies the variables to return.
-  - **WHERE**: Contains the pattern to match in the data.
-  - **FILTER**: (Optional) Refines the results based on conditions.
+- **SPARQL**:
+  - **SPARQL** (SPARQL Protocol and RDF Query Language) is a query language specifically designed for querying RDF data. It allows users to perform complex queries to retrieve and manipulate data stored in triple stores.
+  
+  - **Basic SPARQL Query Structure**:
+    - **SELECT**: Specifies the variables to return.
+    - **WHERE**: Contains the pattern to match in the data.
+    - **FILTER**: (Optional) Refines the results based on conditions.
 
   - **Example Query**:
     ```sparql
@@ -592,24 +318,29 @@ Triple Stores and SPARQL
       }
     ```
 
+#### Additional Concepts
 
-- **Normalization**: Apparently, in DBs normalization means to store the data in such a way that it is [unique] not duplicated. Like in LinkedIn  your profile has a city or location, the db tables have a table for your user (id, name, last_name, city_id)  and a table for cities (id, city_name, etc.) making it so that if you update the city name in the cities table, all users will have their city updated.
+- **Normalization**:
+  - In databases, normalization means to store the data in such a way that it is **unique** and not duplicated. For example, in LinkedIn, your profile has a city or location, but the database has separate tables for users and cities. If you update the city name in the cities table, all users with that city will have their data updated.
 
-- **Schema-on-read**: XML DBs don't have concrete schemas like relational DBs. That doesn't mean they don't have a structure (it's implicit since the app ensures the data is valid and has a certain structure) but the DB itself doesn't. Hence schema-on-read instead of the incorrect "schema-less".
+- **Schema-on-Read**:
+  - XML databases don't have concrete schemas like relational databases. This doesn't mean they lack structure; the structure is implicit, as the application ensures data validity. Hence, "schema-on-read" is a more accurate term than "schema-less."
 
-- **Heterogeneous data**: data that is not following the same structure across all records. Like chocolate chip cookies, they're not exactly the same, they have different shapes and sizes.
+- **Heterogeneous Data**:
+  - Data that does not follow the same structure across all records. Example: Chocolate chip cookies vary in shape and size.
 
-- **Homogeneous data**: Data that has the same  structure (following a pattern, it doesn't mean it's all exactly the same info) across all records.
+- **Homogeneous Data**:
+  - Data that follows the same structure or pattern across all records. It does not mean all records have identical information, but they adhere to a consistent format.
 
-- **Declarative language**: You tell the outcome you want
+- **Declarative Language**:
+  - Specifies what outcome you want without detailing the steps to achieve it.
 
-- **Imperative language**: You specify the steps to achieve the outcome you want
+- **Imperative Language**:
+  - Specifies the exact steps needed to achieve the desired outcome.
 
 
 
-
-
-#### Chapter 3: Storage and Retrieval
+## Chapter 3: Storage and Retrieval
 
 - **Log**: An append-only sequence of records. Many databases internally use a log, which is an append-only data file.
   - Application Logs: These are the types of logs you know, the file that has all the records of what's going on in an application.
@@ -1098,9 +829,359 @@ Triple Stores and SPARQL
 
          - The actor model is a programming model for concurrency in a single process. Rather than dealing directly with threads (and the associated problems of race conditions, locking, and deadlock), logic is encapsulated in actors. Each actor typically represents one client or entity, it may have some local state (which is not shared with any other actor), and it communicates with other actors by sending and receiving asynchronous messages. Message delivery is not guaranteed: in certain error scenarios, messages will be lost. Since each actor processes only one message at a time, it doesn’t need to worry about threads, and each actor can be scheduled independently by the framework.
 
+### Part II
 
+  - **shared-memory architecture**: All the components can be treated as a single machine 
+    - Many CPUs, many RAM chips, and many disks can be joined together under one operating system, and a fast interconnect allows any CPU to access any part of the memory or disk.
+      - The problem with a shared-memory approach is that the cost grows faster than linearly: a machine with twice as many CPUs, twice as much RAM, and twice as much disk capacity as another typically costs significantly more than twice as much.
+        - And due to bottlenecks, a machine twice the size cannot necessarily handle twice the load.
 
+  - **shared-disk architecture**: Uses several machines with independent CPUs and RAM, but stores data on an array of disks that is shared between the machines, which are connected via a fast network.
+    - This architecture is used for some data warehousing workloads, but contention and the overhead of locking limit the scalability of the shared-disk approach.
+
+  - **Shared Nothing Architectures**: Each machine or virtual machine running the database software is called a node. Each node uses its CPUs, RAM, and disks independently. Any coordination between nodes is done at the software level, using a conventional network.
+    - No special hardware is required by a shared-nothing system, so you can use whatever machines have the best price/performance ratio.
+  
+  - **Replication Versus Partitioning**
+    - **Replication**: Keeping a copy of the same data on several different nodes, potentially in different locations. Replication provides redundancy: if some nodes are unavailable, the data can still be served from the remaining nodes. 
+      - Replication can also help improve performance.
     
+    - **Partitioning (Sharding)**: Splitting a big database into smaller subsets called partitions so that different partitions can be assigned to different nodes (also known as sharding).
+
+</details>
+<details>
+  <summary><h2 style='display: inline;'> Python </h2></summary>
+  
+![Python Logo](https://github.com/CenturySturgeon/Notes/blob/main/images/PythonLogo.png)
+
+### Decorators
+
+---
+
+Python decorators are a powerful feature that allows you to modify or extend the behavior of functions or methods without changing their actual code. They essentially allow you to wrap another function or method and execute code before and/or after the wrapped function runs. Decorators are typically denoted by the @ symbol followed by the decorator function name, placed just above the function definition.
+
+Here's a basic example to illustrate how decorators work:
+
+``` Python
+def my_decorator(func):
+    def wrapper():
+        print("Something is happening before the function is called.")
+        func()
+        print("Something is happening after the function is called.")
+    return wrapper
+
+@my_decorator
+def say_hello():
+    print("Hello!")
+
+say_hello()
+```
+
+In this example, my_decorator is a decorator function that takes another function func as its argument. Inside my_decorator, a nested function wrapper is defined, which wraps around the original function func. Inside wrapper, you can include code to be executed before and/or after calling func. Finally, the wrapper function is returned.
+
+When you decorate the say_hello function with @my_decorator, Python essentially does this: say_hello = my_decorator(say_hello). So, when you call say_hello(), it actually calls the wrapper function created by my_decorator, which in turn calls the original say_hello function within it.
+
+Some of the most common decorators used in Python include:
+
+``` Python
+@property # Used to define properties on classes, allowing you to define getter, setter, and deleter methods for attributes.
+
+@classmethod # Declares a method within a class that takes the class itself as its first argument instead of the instance.
+
+@staticmethod # Used to declare a method that belongs to the class but doesn't require access to the class or instance.
+
+@abstractmethod # Used in abstract base classes to declare abstract methods, which must be implemented by subclasses.
+
+@wraps # A decorator from the functools module used to preserve the metadata of the original function when creating wrapper functions. This is particularly useful for maintaining docstrings, function name, and other attributes.
+
+@lru_cache # A decorator from the functools module that caches the results of a function, saving time when the same inputs occur again.
+```
+
+### Dunder Methods 
+
+---
+
+Dunder methods, short for "double underscore" methods, are special methods in Python that have names surrounded by double underscores, like `__init__`, `__repr__`, `__add__`, etc. They are also called magic methods or special methods.
+
+These methods allow classes to define specific behavior that gets invoked in response to certain operations or interactions. For example, when you use the + operator with instances of a class, Python looks for the __add__ method to determine how to perform addition for those objects.
+
+Here are some common dunder methods and their purposes:
+``` Python
+__init__(self, ...) # Constructor method that initializes a new instance of a class.
+__repr__(self) # Method that returns a string representation of the object, used for debugging and logging.
+__str__(self) # Method that returns a string representation of the object, used for informal representation to end-users.
+__len__(self)# Method that returns the length of the object.
+__getitem__(self, key) # Method that enables accessing elements of an object using square brackets, like obj[key].
+```
+
+### Iterators
+
+---
+
+An iterator in Python is an object that is used to iterate over iterable objects like lists, tuples, dicts, and sets. The Python iterators object is initialized using the `iter()` method. It uses the `next()` method for iteration.
+``` Python
+__iter__() # The iter() method is called for the initialization of an iterator. This returns an iterator object
+__next__() # The next method returns the next value for the iterable. When we use a for loop to traverse any iterable object, internally it uses the iter() method to get an iterator object, which further uses the next() method to iterate over. This method raises a StopIteration to signal the end of the iteration.
+```
+
+``` Python
+string = "GFG"
+ch_iterator = iter(string)
+ 
+print(next(ch_iterator)) # -> G
+print(next(ch_iterator)) # -> F
+print(next(ch_iterator)) # -> G
+```
+
+### Generators
+
+---
+
+`Generators` are a powerful feature that allow you to iterate over a sequence of items without storing them all in memory at once. They are implemented using a special type of function using `yield` expressions.
+
+Here are key points about Python generators:
+
+- Lazy Evaluation: Generators generate values on-the-fly as they are requested instead of generating them all at once and storing them in memory. This is achieved using the yield statement instead of return.
+
+-Memory Efficiency: Since generators produce values one at a time, they are memory efficient especially for large datasets or infinite sequences.
+
+- Iteration Support: Generators support iteration automatically, which means you can use them in loops or any other context that expects an iterable.
+
+- State Maintenance: The state of local variables in a generator function is remembered between calls. This allows you to write complex iterative algorithms.
+
+- Syntax: Generators are defined using a function that contains one or more yield statements. When called, they return a generator object, which can be iterated over using a for loop or by explicitly calling next() on it.
+
+Here’s a simple example of a generator function that generates squares of numbers up to a given limit:
+
+```Python
+def square_generator(n):
+    for i in range(n):
+        yield i ** 2
+
+# Using the generator
+gen = square_generator(5)
+for num in gen:
+    print(num)
+
+# Output:
+# 0
+# 1
+# 4
+# 9
+# 16
+```
+
+Generators are specially handy when you want to access an array of values but don't want to store them in memory at once (like that API implementation problem you once saw).
+
+### Yield 
+
+---
+
+`Generators` are a special type of iterable that allow you to iterate over a sequence of values lazily, meaning that they produce values on-the-fly as they are requested rather than generating the entire sequence upfront and storing it in memory.
+
+When you use `yield` inside a function, it turns that function into a generator function. Instead of using return to return a single value and exit the function, yield is used to yield a value to the caller while suspending the state of the function. This allows the function to be resumed from where it left off the next time it is called.
+
+Here's a simple example:
+``` Python
+def count_up_to(n):
+    count = 1
+    while count <= n:
+        yield count
+        count += 1
+
+# Using the generator function
+counter = count_up_to(5)
+print(next(counter))  # Output: 1
+print(next(counter))  # Output: 2
+print(next(counter))  # Output: 3
+```
+
+In this example, count_up_to is a generator function that yields numbers from 1 up to n. When you call next(counter), it starts or resumes execution of the generator function until the next yield statement, where it yields the value and pauses execution. The function retains its state, so subsequent calls to next() continue from where it left off.
+
+Using yield allows for memory-efficient iteration over large sequences, as only one value needs to be stored in memory at a time, unlike with lists where the entire sequence is stored. Additionally, it enables lazy evaluation, meaning that values are generated only when needed, which can improve performance in certain scenarios.
+
+### Zip
+
+---
+
+The zip() function in Python is used to combine multiple iterables (lists, tuples, etc.) element-wise. It takes in two or more iterables as arguments and returns an iterator that generates tuples of corresponding elements from each iterable.
+
+Here's a basic example:
+
+```python
+list1 = [1, 2, 3]
+list2 = ['a', 'b', 'c']
+
+zipped = zip(list1, list2)
+
+for item in zipped:
+    print(item)
+# Output:
+
+(1, 'a')
+(2, 'b')
+(3, 'c')
+```
+
+In this example, zip() pairs the first element of list1 with the first element of list2, the second element of list1 with the second element of list2, and so on.
+
+One important thing to note about zip() is that it stops generating tuples as soon as one of the input iterables is exhausted. For example:
+
+```python
+list1 = [1, 2, 3]
+list2 = ['a', 'b']
+
+zipped = zip(list1, list2)
+
+for item in zipped:
+    print(item)
+# Output:
+
+(1, 'a')
+(2, 'b')
+```
+
+Here, since list2 has only two elements, the third element of list1 is ignored.
+
+If you want to get a list of tuples instead of an iterator, you can use the list() function to convert the iterator returned by zip() into a list:
+
+```python
+list1 = [1, 2, 3]
+list2 = ['a', 'b', 'c']
+
+zipped = list(zip(list1, list2))
+
+print(zipped)
+# Output:
+
+[(1, 'a'), (2, 'b'), (3, 'c')]
+```
+
+zip() is commonly used in scenarios where you need to iterate over multiple lists simultaneously, especially when the lists are related and you want to process their elements together.
+
+### Serialization
+
+---
+
+Serialization in Python refers to the process of converting complex data structures, such as objects or data collections, into a format that can be easily stored or transmitted and later reconstructed back into its original form. This process is essential for tasks like saving data to a file, sending data over a network, or storing data in a database.
+
+Python provides several built-in modules for serialization, such as:
+
+- pickle: This module can serialize Python objects into a binary format. It can handle almost any Python object, including custom classes and functions.
+
+- json: This module serializes Python objects into a human-readable format called JSON (JavaScript Object Notation). JSON is commonly used for transmitting data between a server and a client over a network.
+
+- marshal: This module is similar to pickle but is more restricted in terms of the types of objects it can serialize. It is primarily used for serializing Python code objects.
+
+- shelve: This module provides a simple interface for persistently storing Python objects in a dictionary-like format.
+
+Serialization is particularly useful for tasks like data storage, data exchange between different systems or languages, and caching. However, it's essential to consider security implications, especially when deserializing data, as it can lead to security vulnerabilities if not handled properly.
+
+### Lambda Functions
+
+---
+
+Lambda functions in Python are small, anonymous functions defined using the lambda keyword. They are often used when you need a short function for a short period of time and don't want to define a full function using def.
+
+#### Syntax
+The syntax of a lambda function is:
+
+```Python
+lambda arguments: expression
+```
+- lambda is the keyword used to define a lambda function.
+- arguments are the input parameters for the function.
+- expression is a single expression that gets evaluated and returned as the result of the function.
+#### Examples
+
+##### Basic Example:
+
+```Python
+square = lambda x: x ** 2
+print(square(5))  # Output: 25
+```
+
+Here, lambda x: x ** 2 defines a lambda function that takes one argument x and returns its square.
+
+##### Using Multiple Arguments
+
+```Python
+add = lambda x, y: x + y
+print(add(3, 4))  # Output: 7
+```
+
+This lambda function lambda x, y: x + y takes two arguments x and y and returns their sum.
+
+##### In List Sorting
+Lambda functions are often used in conjunction with built-in functions like sorted() or filter():
+
+```Python
+points = [(1, 2), (3, 1), (5, 4), (2, 7)]
+points_sorted = sorted(points, key=lambda x: x[1])
+print(points_sorted)  # Output: [(3, 1), (1, 2), (5, 4), (2, 7)]
+```
+
+Here, lambda x: x[1] specifies that the list should be sorted based on the second element of each tuple in points.
+
+##### As an Argument to map()
+
+```Python
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x ** 2, numbers))
+print(squared)  # Output: [1, 4, 9, 16, 25]
+```
+
+The lambda function lambda x: x ** 2 is applied to each element in numbers using map() to compute their squares.
+
+#### Benefits of Lambda Functions
+- Conciseness: They reduce the amount of code when a simple function is needed.
+- Readability: Lambda functions can make code more readable when used appropriately, such as within map(), filter(), or sorted().
+#### Limitations
+- Single Expression: Lambda functions are restricted to a single expression, making them unsuitable for complex logic.
+- No Statements: They cannot contain statements like return, pass, or assert.
+
+Lambda functions are particularly useful in functional programming contexts where functions are treated as first-class citizens and are passed around as arguments or returned from other functions
+</details>
+<details>
+  <summary><h2 style='display: inline;'> Django </h2></summary>
+  
+![Django Logo](https://github.com/CenturySturgeon/Notes/blob/main/images/DjangoLogo.png)
+
+### One-to-many Relations
+
+- Use `ForeignKey`
+
+- Related name makes it so that when you want to access an authors book set (by default RELATEDCLASSNAME_SET [book_set]) you use the provided related name 'books' instead of the default 'book_set'.
+
+```class Books
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, related_name='books') # Can be null if no value is provided
+```
+
+### Many-to-many Relations
+    
+- Use `ManyToManyField`
+
+```
+# In this case, related_name is used to get all the books of a country by using 'books' (in this case) instead of 'book_set'
+class Book
+    published_countries = models.ManyToManyField(Country, related_name='books')
+```
+
+### One-to-One Relations    
+    
+- Use `OneToOneField`
+
+- Related name is not needed here since Django automatically will link authors to the Address object it belongs to. This means you can access an author object from its adress like 'Address.objects.all()[0].author'
+
+```
+class Author
+    address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True)
+```
+</details>
+<details>
+  <summary><h2 style='display: inline;'> System Design </h2></summary>
+  
+### Fundamentals
 
 <details>
   <summary><h4 style="display: inline;">Functional vs Non-Functional Requirements</h4></summary><br>
@@ -1122,6 +1203,7 @@ Triple Stores and SPARQL
 | 3) A Verification email is sent to user whenever he/she registers for the first time on some software system. | 3) The site should load in 3 seconds when the number of simultaneous users are > 10000                                  |
 
 </details>
+
 
 ### Napkin Math
 
