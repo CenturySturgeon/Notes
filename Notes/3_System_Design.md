@@ -565,11 +565,163 @@ Triple Stores and SPARQL
 
 #### Chapter 4. Encoding and Evolution
 
+  - Backward compatibility
+    - Newer code can read data that was written by older code.
+    - Easy to achieve.
+
+  - Forward compatibility
+    - Older code can read data that was written by newer code.
+    - Tricky to achieve.
+
+  - Representational State Transfer (REST), and remote procedure calls (RPC), as well as message-passing systems such as actors and message queues.
+
+  - **Formats for Encoding Data**
+
+    - **Encoding**: The translation from the in-memory representation to a byte sequence (also known as __*serialization*__ or __*marshalling*__).
+
+    - **Decoding**: The reverse of encoding, the translation from a byte sequence to the in-memory representation.
+      - Parsing
+      - Deserialization
+      - Unmarshalling
+
+    - **Language-Specific Formats**
+      | Language | Serialization Method |
+      |----------|----------------------|
+      | Python   | Pickle               |
+      | Java     | java.io.Serializable |
+      | Ruby     | Marshal              |
+      | Java     | Kryo (TPD)           |
+
+    - **JSON, XML, and Binary Variants**
+
+      - In XML and CSV, you cannot distinguish between a number and a string that happens to consist of digits (except by referring to an external schema). JSON distinguishes strings and numbers, but it doesn’t distinguish integers and floating-point numbers, and it doesn’t specify a precision.
+
+        - integers greater than 253 cannot be exactly represented in an IEEE 754 double-precision floating-point number, so such numbers become inaccurate when parsed in a language that uses floating-point numbers (such as JavaScript). 
+
+          - Twitter uses a 64-bit number to identify each tweet. The JSON returned by Twitter’s API includes tweet IDs twice, once as a JSON number and once as a decimal string.
+
+      - JSON and XML have good support for Unicode character strings (i.e., human-readable text), but they don’t support binary strings (sequences of bytes without a character encoding).
 
 
+      - CSV does not have any schema, so it is up to the application to define the meaning of each row and column.
+    
+    The difficulty of getting different organizations to agree on anything outweighs most other concerns.
+
+    - **Binary encoding**
+
+      - For data that is used only internally within your organization, there is less pressure to use a lowest-common-denominator encoding format.
+
+      - JSON is less verbose than XML, but both still use a lot of space compared to binary formats. This observation led to the development of a profusion of binary encodings for JSON: 
+        - (MessagePack, BSON, BJSON, UBJSON, BISON, and Smile, to name a few)
+      - XML 
+        - (WBXML and Fast Infoset, for example). 
+
+    - **Thrift and Protocol Buffers**
+      - Apache Thrift (FaceBook) and Protocol Buffers (protobuf) (Google) are binary encoding libraries.
+
+      - Thrift and Protocol Buffers each come with a code generation tool that takes a schema definition like the ones shown here, and produces classes that implement the schema in various programming languages [18]. Your application code can call this generated code to encode or decode records of the schema.
+
+    - **Field tags and schema evolution**
+
+      - Removing a field is just like adding a field, with backward and forward compatibility concerns reversed. That means you can only remove a field that is optional (a required field can never be removed), and you can never use the same tag number again (because you may still have data written somewhere that includes the old tag number, and that field must be ignored by new code).
+
+    - Read this subsection if you want to know what a tag is in this context.
+
+  - **Datatypes and schema evolution**
+
+    - What about changing the datatype of a field? That may be possible—check the documentation for details—but there is a risk that values will lose precision or get truncated. For example, say you change a 32-bit integer into a 64-bit integer. New code can easily read data written by old code, because the parser can fill in any missing bits with zeros. However, if old code reads data written by new code, the old code is still using a 32-bit variable to hold the value. If the decoded 64-bit value won’t fit in 32 bits, it will be truncated.
+
+    - A curious detail of Protocol Buffers is that it does not have a list or array datatype, but instead has a `repeated` marker for fields (which is a third option alongside `required` and `optional`).
+      - This has the nice effect that it’s okay to change an `optional` (single-valued) field into a `repeated` (multi-valued) field.
+
+  - **Avro**
+    - Apache Avro [20] is another binary encoding format that is interestingly different from Protocol Buffers and Thrift.
+      - Avro also uses a schema to specify the structure of the data being encoded. It has two schema languages: one (Avro IDL) intended for human editing, and one (based on JSON) that is more easily machine-readable.
+
+    - **But what is the writer’s schema?**
+      - Read this and make good sumarized notes.
+
+    - **Dynamically generated schemas**
+      - Read this and make good sumarized notes.
+
+  - **Dataflow Through Databases**
+    Section talks about how you should write data to the DB in such a way that the future code shouldn't have trouble reading it. It also mentions an example where an ORM might be troublesom when updating DB records if the application code isn't updated (check the image 4-7). 
+
+    Lastly, it talks about how __*snapshots*__ are saved for backup and how you could take advantage of the fact they're read only and use an encoder format like parquet for data-warehousing for analytics or use Avro to reduce the snapshot file size.
+    - **DB migrations**: Rewriting data.
+
+  - **Dataflow Through Services: REST and RPC**
+    When communicating over a network there are a few different ways of arranging that communication. The most common arrangement is to have two roles:
+
+    - Clients: Connect to the servers to make requests to that API.
+
+    - Servers: Expose an API over the network.
+      - Can be clients to other servers.
+
+    - Service: The API exposed by the server.
+      - Services can impose fine-grained restrictions on what clients can and cannot do (this is a way of encapsulation). 
+
+    - **Ajax**: *Asynchronous Javascript and XML* is a technique where a client-side JavaScript application running inside a web browser can use XMLHttpRequest to become an HTTP client.
+      - In this case, the server’s response is typically not HTML for displaying to a human, but rather data in an encoding that is convenient for further processing by the client-side application code (such as JSON). Although HTTP may be used as the transport protocol, the API implemented on top is application-specific, and the client and server need to agree on the details of that API.
+
+      - A key design goal of a service-oriented/microservices architecture is to make the application easier to change and maintain by making services independently deployable and evolvable.
+        - For example, each service should be owned by one team, and that team should be able to release new versions of the service frequently, without having to coordinate with other teams.
+        - We should expect old and new versions of servers and clients to be running at the same time:
+          - Data encoding used by servers and clients must be compatible across versions of the service API.
+
+    - **SOA**: **Service Oriented Architecture** more recently refined and rebranded as __*microservices architecture*__:
+      - Moreover, a server can itself be a client to another service (for example, a typical web app server acts as client to a database). This approach is often used to decompose a large application into smaller services by area of functionality, such that one service makes a request to another when it requires some functionality or data from that other service. This way of building applications has traditionally been called a **SOA**, more recently...
+
+    - One service making requests to another service owned by the same organization, often located within the same datacenter, as part of a service-oriented/microservices architecture. (Software that supports this kind of use case is sometimes called **middleware**.)
+
+    - There are two popular approaches to web services:
+
+      - **REST**: *REpresentational State Transfer* is a design philosophy that builds upon the principles of HTTP.
+        - Simple formats.
+        - Using URLs for identifying resources .
+        - Using HTTP features for cache control, authentication, and content type negotiation.
+        - An API designed according to the principles of REST is called RESTful.
+
+      - **SOAP**: *Simple Object Access Protocol is an XML-based protocol for making network API requests.
+        - Aims to be independent from HTTP and avoids using most HTTP features.
+        - It comes with a sprawling and complex multitude of related standards (the web service framework, known as WS) that add various features.
+        - The API of a SOAP web service is described using an XML-based language called the *Web Services Description Language*, or __*WSDL*__.
+          - WSDL enables code generation so that a client can access a remote service using local classes and method calls (which are encoded to XML messages and decoded again by the framework). 
+          - **WSDL** is not designed to be human-readable.
+        - Users of SOAP rely heavily on tool support, code generation, and IDEs.
+      
+      - **The problems with remote procedure calls (RPCs)**
+
+        - **RPC**: Remote Procedure Call.
+          - The RPC model tries to make a request to a remote network service look the same as calling a function or method in your programming language, within the same process (this abstraction is called *location transparency*).
+          - The main focus of RPC frameworks is on requests between services owned by the same organization, typically within the same datacenter.
+
+        - **Idempotence**:
+
+        - Thrift and Avro come with RPC support included.
+        - **gRPC** is an RPC implementation using Protocol Buffers.
+
+      - **Data encoding and evolution for RPC**
+        - We can make a simplifying assumption in the case of dataflow through services: it is reasonable to assume that all the servers will be updated first, and all the clients second. 
+          - Thus, you only need backward compatibility on requests, and forward compatibility on responses.
+
+        - The backward and forward compatibility properties of an RPC scheme are inherited from whatever encoding it uses:
+          - Thrift, gRPC (Protocol Buffers), and Avro RPC can be evolved according to the compatibility rules of the respective encoding format.
+          - In SOAP, requests and responses are specified with XML schemas. These can be evolved, but there are some subtle pitfalls [47].
+          - RESTful APIs most commonly use JSON (without a formally specified schema) for responses, and JSON or URI-encoded/form-encoded request parameters for requests. Adding optional request parameters and adding new fields to response objects are usually considered changes that maintain compatibility.
+
+        - Service compatibility is made harder by the fact that RPC is often used for communication across organizational boundaries, so the provider of a service often has no control over its clients and cannot force them to upgrade.
+          - If a compatibility-breaking change is required, the service provider often ends up maintaining multiple versions of the service API side by side.
 
 
+        - There is no agreement on how API versioning should work (i.e., how a client can indicate which version of the API it wants to use [48]). 
+          - For RESTful APIs, common approaches are to use a version number in the URL or in the HTTP header. 
+          - For services that use API keys to identify a particular client, another option is to store a client’s requested API version on the server and to allow this version selection to be updated through a separate administrative interface [49].
 
+  - **Message-Passing Dataflow**
+    - asynchronous message-passing systems
+
+    
 
 <details>
   <summary><h4 style="display: inline;">Functional vs Non-Functional Requirements</h4></summary><br>
