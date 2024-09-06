@@ -338,218 +338,190 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
 
 ## Chapter 3: Storage and Retrieval
 
-- **Log**: An append-only sequence of records. Many databases internally use a log, which is an append-only data file.
-  - Application Logs: These are the types of logs you know, the file that has all the records of what's going on in an application.
-  - DB Log: Some DBs use an internal append-only log to keep track of its records.
-    - NOTE: Remember the example of the world's simplest DB where it uses bash commands to append data in a hasmpap way and searches for the most recent occurence of the key. This way you'll immediatly remember what a log is in this context:
+- **Log**:
+  - An append-only sequence of records.
+  - Many databases internally use a log, which is an append-only data file.
 
-      ```Bash
-      db_set() {
-        echo "$1, $2" >> database
-      }
-      db_get() {
-        grep "^$1," database | sed -e 's/^$1,//" | tail -n 1
-      } 
-      ```
+  - **Application Logs**:
+    - These logs record events and activities within an application.
+    - Example: Log files capturing user interactions, errors, or system events.
 
-- **Index**: An additional structure that is derived from the primary data. It allows you to search records faster in the DB with the downside of slowing down writes.
-
-- **Hash Indexes**: Let’s say our data storage consists only of appending to a file, as in the preceding example. Then the simplest possible indexing strategy is this: keep an in-memory hash map where every key is mapped to a byte offset in the data file—the location at which the value can be found.
-  - Think of the leetcode problem 'Encode and decode a string' and you'll get it.
-
-- **SSTables and LSM-Trees**
-
-  - *Sorted String Tables* are similar as the log files (append only files) used in the *Hash Indexes* example with just one extra detail: the format of the segment files require that the sequence of key-value pairs is sorted by key and each key only appears once within each merged segment file (the compaction process already ensures that).
-
-    - Merging segments is simple and efficient, even if the files are bigger than the available memory. The approach is like the one used in the mergesort algorithm.
-
-    - In order to find a particular key in the file, you no longer need to keep an index of all the keys in memory. You still need an in-memory index to tell you the offsets for some of the keys, but it can be sparse: one key for every few kilobytes of segment file is sufficient, because a few kilobytes can be scanned very quickly. 
-      - Remember the book's example: You need a key between to keys that are in the in-memory index, so you just use the first key's offset and search from there.
-
-    - Since read requests need to scan over several key-value pairs in the requested range anyway, it is possible to group those records into a block and compress it before writing it to disk.
-  
-  - *Log-Structured Merge-Tree*: Storage engines that are based on this principle of merging and compacting sorted files are often called LSM storage engines.
-
-  - **strategies to determine the order and timing of how SSTables are compacted and merged.**
-
-    - Size-tiered compaction: In size-tiered compaction, newer and smaller SSTables are successively merged into older and larger SSTables.
-      - Cassandra
-      -  HBase
+  - **DB Log**:
     
-    - Leveled compaction: In leveled compaction, the key range is split up into smaller SSTables and older data is moved into separate “levels,” which allows the compaction to proceed more incrementally and use less disk space.
-      - LevelDB
-      - RocksDB
-      - Cassandra
-
-  - Since data is stored in sorted order, you can efficiently perform range queries (scanning all keys above some minimum and up to some maximum), and because the disk writes are sequential the LSM-tree can support remarkably high write throughput.
-
-- **B-Trees**
-  - Like SSTables, B-trees keep key-value pairs sorted by key, which allows efficient key-value lookups and range queries. But that’s where the similarity ends: B-trees have a very different design philosophy.
-
-  - B-trees break the database down into fixed-size blocks or pages, traditionally 4 KB in size (sometimes bigger), and read or write one page at a time. 
-
-  - **Pages**: Each page can be identified using an address or location, which allows one page to refer to another—similar to a pointer, but on disk instead of in memory. We can use these page references to construct a tree of pages.
-
-    - A *leaf page* is a page that no longer stores  references, but the values of the keys in its range.
-
-    - **Branching factor**: The number of references to child pages in one page of the B-tree. It depends on the amount of space required to store the page references and the range boundaries, but typically it is several hundred.
-
-    - If there isn’t enough free space in the leaf page to accommodate a new key-value, it is split into two half-full pages, and the parent page is updated to account for the new subdivision of key ranges.
-
-  - **NOTE**: a B-tree with n keys always has a depth of O(log n). Most databases can fit into a B-tree that is three or four levels deep, so you don’t need to follow many page references to find the page you are looking for. (A four-level tree of 4 KB pages with a branching factor of 500 can store up to 256 TB.)
-
-  - In order to make the database resilient to crashes, it is common for B-tree implementations to include an additional data structure on disk: a *write-ahead log* (also known as a redo log). 
-    - **WAL**: *Write-ahead log*, An append-only file to which every B-tree modification must be written before it can be applied to the pages of the tree itself. When the database comes back up after a crash, this log is used to restore the B-tree back to a consistent state.
-
-  - An additional complication of updating pages in place is that careful concurrency control is required if multiple threads are going to access the B-tree at the same time.
-    - This is typically done by protecting the tree’s data structures with *latches* (lightweight locks).
-
-  - **B-Tree Optimizations**
-    - Instead of overwriting pages and maintaining a WAL for crash recovery, some databases (like LMDB) use a copy-on-write scheme.
+    - Some databases use an internal append-only log to track records.
     
-    - We can save space in pages by not storing the entire key, but abbreviating it. Especially in pages on the interior of the tree, keys only need to provide enough information to act as boundaries between key ranges. Packing more keys into a page allows the tree to have a higher branching factor, and thus fewer levels.
-
-    - In general, pages can be positioned anywhere on disk; there is nothing requiring pages with nearby key ranges to be nearby on disk.
-      - Many B-tree implementations therefore try to lay out the tree so that leaf pages appear in sequential order on disk. However, it’s difficult to maintain that order as the tree grows.
-
-    - Additional pointers have been added to the tree. For example, each leaf page may have references to its sibling pages to the left and right.
-
-  - **B-Tree and LSM-Tree Comparisson**
-
-    - As a rule of thumb:
-      - LSM-trees are typically faster for writes.
-      - B-trees are thought to be faster for reads.
-      - Reads are typically slower on LSM-trees because they have to check several different data structures and SSTables at different stages of compaction (benchmarks are often inconclusive, read *'Comparing B-Trees and LSM-Trees'*).
-
-    - **LSM-Tree Advantages**
-
-      - A B-tree index must write every piece of data at least twice: once to the WAL, and once to the tree page itself.
-      
-      - Log-structured indexes also rewrite data multiple times due to repeated compaction and merging of SSTables. This effect—one write to the database resulting in multiple writes to the disk over the course of the database’s lifetime—is known as **write amplification**. 
+    - **Note**: Consider the example of the world's simplest database using bash commands, which illustrates how a log can be used in this context:
+      ```bash
+        db_set() {
+            echo "$1, $2" >> database
+        }
         
-        - It is of particular concern on SSDs, which can only overwrite blocks a limited number of times before wearing out.
-      
-      - In write-heavy applications, the performance bottleneck might be the rate at which the database can write to disk. In this case, *write amplification* has a direct performance cost:
-        - The more that a storage engine writes to disk, the fewer writes per second it can handle within the available disk bandwidth. 
-      
-      - LSM-trees are typically able to sustain higher write throughput than B-trees, partly because they sometimes have lower write amplification, and partly because they sequentially write compact SSTable files rather than having to overwrite several pages in the tree.
-        - This difference is particularly important on magnetic hard drives, where sequential writes are much faster than random writes.
-
-      - LSM-trees can be compressed better, and thus often produce smaller files on disk than B-trees. 
-        - B-tree storage engines leave some disk space unused due to fragmentation.
-
-        - Since LSM-trees are not page-oriented and periodically rewrite SSTables to remove fragmentation, they have lower storage overheads, especially when using *leveled compaction*.
-  
-  - **Downsides of LSM-trees**
-
-    - The compaction process can sometimes interfere with the performance of ongoing reads and writes.
-      - B-trees can be more predictable as their writing overheads can be predicted (LSM-trees have scenarios where their operations have to wait while the disk completes a heavy operation).
-
-    - On high write throughput, the disk’s finite write bandwidth needs to be shared between the initial write (logging and flushing a memtable to disk) and the compaction threads running in the background.
-
-      - When writing to an empty database, the full disk bandwidth can be used for the initial write, but the bigger the database gets, the more disk bandwidth is required for compaction.
-
-      - If write throughput is high and compaction is not configured carefully, it can happen that compaction cannot keep up with the rate of incoming writes.
-        - The number of unmerged segments on disk keeps growing until you run out of disk space -> reads slow down as well.
+        db_get() {
+            grep "^$1," database | sed -e 's/^$1,//' | tail -n 1
+        }
+      ```
     
-    - An advantage of B-trees is that each key exists in exactly one place in the index, whereas a log-structured storage engine may have multiple copies of the same key in different segments.
+    - In this example:
+      - `db_set` appends a record (key-value pair) to the `database` file.
+      - `db_get` retrieves the most recent value associated with a key from the `database` file.
 
-  - There is no quick and easy rule for determining which type of storage engine is better for your use case, so it is worth testing empirically.
+  - **Understanding Logs**:
+    - Logs are essential for tracking changes and maintaining a history of operations in databases.
+    - The append-only nature of logs ensures that all changes are recorded sequentially, which aids in data recovery and consistency.
 
-- **Other Indexing Structures**
-  - So far we have only discussed key-value indexes, which are like a primary key index in the relational model. 
+### Database Indexing Structures
+
+- **Index**: An additional structure derived from the primary data. It allows faster record searches in the database but can slow down writes.
+
+#### Hash Indexes
+
+- **Hash Indexes**: 
+  - Imagine our data storage involves only appending to a file. The simplest indexing strategy is to maintain an in-memory hash map where each key maps to a byte offset in the data file, indicating where the value can be found.
+  - This is similar to the LeetCode problem *'Encode and Decode Strings'*.
+
+#### SSTables and LSM-Trees
+
+- **Sorted String Tables (SSTables)**:
+  - Similar to log files used in the *Hash Indexes* example, but with an added detail: segment files are sorted by key, and each key appears only once within each merged segment file (ensured by the compaction process).
+  - Merging segments is efficient, akin to the merge sort algorithm, even if the files are larger than available memory.
+  - To find a key, you don't need an index of all keys in memory; a sparse in-memory index is sufficient. For example, if you need a key between two in-memory index keys, use the offset of the first key and search from there.
+  - Since read requests involve scanning several key-value pairs, grouping records into a block and compressing it before writing to disk is possible.
+
+- **Log-Structured Merge-Tree (LSM-Tree)**:
+  - LSM storage engines are based on merging and compacting sorted files.
+
+- **Compaction Strategies**:
+  - **Size-Tiered Compaction**: Newer, smaller SSTables are merged into older, larger SSTables.
+    - Used by: Cassandra, HBase
+  - **Leveled Compaction**: Splits the key range into smaller SSTables and moves older data into separate levels, allowing more incremental compaction and less disk space usage.
+    - Used by: LevelDB, RocksDB, Cassandra
+
+- **Advantages**:
+  - Sorted data supports efficient range queries, and sequential disk writes enable high write throughput.
+
+#### B-Trees
+
+- **B-Trees**:
+  - Like SSTables, B-trees keep key-value pairs sorted by key, enabling efficient lookups and range queries. However, B-trees differ significantly in design.
+
+- **Structure**:
+  - B-trees use fixed-size blocks or pages (traditionally 4 KB) and read or write one page at a time.
+  - **Pages**: Identified using an address, allowing pages to refer to other pages (similar to pointers but on disk).
+    - **Leaf Page**: Stores values of the keys in its range without references.
+    - **Branching Factor**: Number of references to child pages. Typically several hundred.
+
+- **Operations**:
+  - If a leaf page cannot accommodate a new key-value pair, it splits into two pages, and the parent page is updated.
+
+- **Note**:
+  - A B-tree with `n` keys has a depth of `O(log n)`. Most databases fit into a B-tree that's three or four levels deep, handling up to 256 TB with a branching factor of 500.
+
+- **Write-Ahead Log (WAL)**:
+  - **WAL**: An append-only file where every B-tree modification is written before being applied to the pages. This log restores the B-tree to a consistent state after a crash.
+
+- **Concurrency Control**:
+  - Managed with *latches* (lightweight locks) to prevent concurrent access issues.
+
+- **Optimizations**:
+  - **Copy-On-Write**: Some databases (e.g., LMDB) use this instead of overwriting pages and maintaining a WAL.
+  - **Abbreviated Keys**: Store shorter keys in pages to save space and increase branching factor.
+  - **Page Layout**: Aim to lay out leaf pages sequentially on disk, though maintaining this order can be challenging.
+  - **Additional Pointers**: Leaf pages may include references to neighboring sibling pages.
+
+- **Comparison with LSM-Trees**:
+  - **Rule of Thumb**:
+    - LSM-trees are generally faster for writes.
+    - B-trees are typically faster for reads.
+  - **Advantages of LSM-Trees**:
+    - Write amplification: B-trees write data at least twice (WAL and page), while LSM-trees can reduce this through compaction.
+    - Better write throughput, particularly on magnetic hard drives due to sequential writes.
+    - More effective compression and lower storage overhead, especially with leveled compaction.
+
+  - **Downsides of LSM-Trees**:
+    - Compaction can interfere with performance, especially on high write throughput.
+    - Disk bandwidth for initial writes and compaction may become a bottleneck.
+    - Multiple copies of the same key across segments can occur.
+
+#### Other Indexing Structures
+
+- **Key-Value Indexes**: As discussed, similar to a primary key index in the relational model.
+- **Secondary Indexes**: Can be created using the `CREATE INDEX` command in relational databases. Both B-trees and log-structured indexes can serve as secondary indexes.
+
+#### Storing Values within the Index
+
+- **Heap File**:
+  - The index's key is used for queries, while the value can be:
+    - The actual row data.
+    - A reference to the row stored elsewhere in a *heap file*, which maintains data in no particular order.
+
+- **Clustered Index**:
+  - Stores the indexed row directly within the index, optimizing read performance but potentially increasing storage and write overhead.
+
+- **Covering Index**:
+  - Stores some columns of a table within the index, allowing queries to be answered by the index alone. This reduces read times but increases storage and write overhead.
+
+#### Multi-Column Indexes
+
+- **Concatenated Index**:
+  - Combines several fields into one key by appending columns, e.g., (lastname, firstname). Useful for queries involving multiple fields in a specific order.
+
+- **Multi-Dimensional Indexes**:
+  - Generalize querying multiple columns, important for geospatial data and other multi-dimensional queries.
+    - Examples:
+      - Ecommerce: Search products by color (RGB dimensions).
+      - Weather Database: Search for temperature observations within a range on specific dates.
+
+### Full-Text Search and Fuzzy Indexes
+
+- Traditional indexes do not support searching for similar keys, such as misspelled words.
+- This is known as **fuzzy querying**, which requires different techniques.
+- **Lucene**:
+    - Lucene allows searching for words within a certain **edit distance**. For instance, an edit distance of 1 means that one letter has been added, removed, or replaced.
+    - It uses an SSTable-like structure for its term dictionary. This structure includes a small in-memory index that helps locate the offset in the sorted file where a key can be found.
+    - Lucene’s in-memory index is a finite state automaton over the characters in the keys, similar to a trie.
+    - This automaton can be converted into a **Levenshtein automaton**, which supports efficient search for words within a given edit distance.
+
+#### Keeping Everything in Memory
+
+  - Compared to main memory, disks are more cumbersome to deal with. We use disks because:
+    - They are **durable** (data is not lost if the power is turned off).
+    - They have a **lower cost per gigabyte** compared to RAM.
   
-  - It is also very common to have secondary indexes. In relational databases, you can create several secondary indexes on the same table using the `CREATE INDEX` command.
-
-  - Both B-trees and log-structured indexes can be used as secondary indexes.
-
-- **Storing values within the index**
-  - The key in an index is the thing that queries search for, but the value can be one of two things: it could be the actual row  in question, or it could be a reference to the row stored elsewhere.
-    - The place where rows are stored is known as a __*heap file*__, and it stores data in no particular order.
+  - As RAM prices decrease, the cost argument for disks diminishes. Many datasets are manageable within RAM, making it feasible to keep them entirely in memory, sometimes distributed across multiple machines. This has led to the development of **in-memory databases**.
+    - Examples: 
+        - Memcached
+        - Redis
+  - Some in-memory key-value stores, like **Memcached**, are designed solely for caching, where data loss upon restart is acceptable.
   
-  - The heap file approach is common because it avoids duplicating data when multiple secondary indexes are present.
-    - Each index just references a location in the heap file, and the actual data is kept in one place.
+  - Other in-memory databases focus on **durability** through:
+    - Special hardware (e.g., battery-powered RAM),
+    - Writing a log of changes to disk,
+    - Periodic snapshots to disk,
+    - Replicating the in-memory state to other machines.
   
-  - When updating a value without changing the key, the heap file approach allows the record to be overwritten in place (if the new value isn't larger than the old one).
-
-  - If the new value is larger, as it probably needs to be moved to a new location in the heap where there is enough space. 
-    - Either all indexes need to be updated to point at the new heap location of the record, or a forwarding pointer is left behind in the old heap location.
-
-    - In some situations, the extra hop from the index to the heap file is too much of a performance penalty for reads, so it can be desirable to store the indexed row directly within an index. 
-      - This is known as a __*clustered index*__.
-
-  - A compromise between a __*clustered index*__ (storing all row data within the index) and a __*nonclustered index*__ (storing only references to the data within the index) is known as a __*covering index*__ or __*index with included columns*__, which stores some of a table’s columns within the index. 
-    - This allows some queries to be answered by using the index alone (in which case, the index is said to cover the query).
-    - As with any kind of duplication of data, clustered and covering indexes can speed up reads, but they require additional storage and can add overhead on writes.
-
-- **Multi-Column Indexes**
-  - The indexes discussed so far only map a single key to a value.
-    - That is *not sufficient* if we need to query multiple columns of a table (or multiple fields in a document) simultaneously.
-
-  - The most common type of multi-column index is the __*concatenated index*__: combines several fields into one key by appending one column to another (the index definition specifies in which order the fields are concatenated).
-
-    - This is like an old-fashioned paper phone book, which provides an index from (lastname, firstname) to phone number. 
-      
-      - Can be used to find all the people with a particular last name, or all the people with a particular lastname-firstname combination.
-      
-      - However, the index is useless if you want to find all the people with a particular first name.
-
-  - Multi-dimensional indexes are a more general way of querying several columns at once, which is particularly important for geospatial data.
-
-    - An interesting idea is that multi-dimensional indexes are not just for geographic locations. 
-
-      - For example, on an ecommerce website you could use a three-dimensional index on the dimensions (red, green, blue) to search for products in a certain range of colors. 
-
-      - In a database of weather observations you could have a two-dimensional index on (date, temperature) in order to efficiently search for all the observations during the year 2013 where the temperature was between 25 and 30°C. 
-
-- **Full-text search and fuzzy indexes**
-
-  - Previously discussed indexes don’t allow you to do is search for similar keys, such as misspelled words.
-    - This is called __*fuzzy querying*__ and it requires different techniques.
-
-    - Lucene is able to search text for words within a certain edit distance (an __*edit distance*__ of 1 means that one letter has been added, removed, or replaced).
-
-    - Lucene uses a SSTable-like structure for its term dictionary. This structure requires a small in-memory index that tells queries at which offset in the sorted file they need to look for a key.
-
-    - In Lucene, the in-memory index is a finite state automaton over the characters in the keys, similar to a trie.
-      - This automaton can be transformed into a Levenshtein automaton, which supports efficient search for words within a given edit distance.
-
-- **Keeping everything in memory**
-
-  - Compared to main memory, disks are awkward to deal with. 
-    - We tolerate this because disks have two significant advantages: 
-      - They are durable (their contents are not lost if the power is turned off).
-      - They have a lower cost per gigabyte than RAM.
-
-  - As RAM becomes cheaper, the cost-per-gigabyte argument is eroded. Many datasets are simply not that big, so it’s quite feasible to keep them entirely in memory, potentially distributed across several machines. This has led to the development of __*in-memory*__ databases.
-    - Memcached
-    - Redis
-
-  - Some in-memory key-value stores, such as Memcached, are intended for caching use only, where it’s acceptable for data to be lost if a machine is restarted.
-
-  - Other in-memory databases aim for durability, which can be achieved with special hardware (such as battery-powered RAM), by writing a log of changes to disk, by writing periodic snapshots to disk, or by replicating the in-memory state to other machines.
-
-  - When an in-memory database is restarted, it needs to reload its state, either from disk or over the network from a __*replica*__.
-    - The disk is merely used as an append-only log for durability, and reads are served entirely from memory.
-
-  - In-memoery DBs can be faster because they can avoid the overheads of encoding in-memory data structures in a form that can be written to disk.
-
-  - __*Anti-caching*__ approach: works by evicting the least recently used data from memory to disk when there is not enough memory, and loading it back into memory when it is accessed again in the future.
-
-**Transaction Processing or Analytics?**
-
-  - **Transaction**: A group of reads and writes that form a logical unit.
-    - A transaction needn’t necessarily have ACID properties. Transaction processing just means allowing clients to make low- latency reads and writes—as opposed to batch processing jobs, which only run periodically (for example, once per day).
-
-  - **OLTP**: __*Online Transaction Processing*__ is an access pattern designed to handle a high volume of short online transaction requests, such as inserting, updating, and querying data. 
+  - When an in-memory database restarts, it reloads its state from disk or over the network from a **replica**.
+    - The disk acts as an append-only log for durability, while reads are served entirely from memory.
   
+  - **In-memory DBs** can be faster as they avoid the overhead of encoding data structures for disk storage.
+  
+  - **Anti-Caching**: Evicts the least recently used data from memory to disk when memory is insufficient, and reloads it into memory when accessed again.
+
+#### Transaction Processing or Analytics?
+
+- **Transaction Processing vs. Analytics**:
+  
+  - **Transaction**: A logical unit of reads and writes. Transactions do not necessarily need to have ACID properties but should allow low-latency reads and writes.
+    - Unlike batch processing jobs, which run periodically (e.g., once per day).
+  
+  - **OLTP** (*Online Transaction Processing*):
+    - Designed to handle a high volume of short online transactions (inserts, updates, queries).
     - Focuses on:
-      - Fast query processing.
+      - Fast query processing,
       - Maintaining data integrity in multi-user environments.
-      - Commonly used in applications like retail sales and banking.
-
-  - **OLAP**: __*Online Analytics Processing*__ is an access pattern optimized for querying and analyzing large volumes of data. 
+    - Commonly used in applications like retail sales and banking.
   
+  - **OLAP** (*Online Analytics Processing*):
+    - Optimized for querying and analyzing large volumes of data.
     - Supports complex queries and multidimensional analysis.
     - Often used for business intelligence, reporting, and data mining.
 
@@ -561,61 +533,80 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
     | **Primarily used by**    | End user/customer, via web application            | Internal analyst, for decision support    |
     | **What data represents** | Latest state of data (current point in time)      | History of events that happened over time |
     | **Dataset size**         | Gigabytes to terabytes                            | Terabytes to petabytes                    |
-  
+
     - In the late 1980s and early 1990s, there was a trend for companies to stop using their OLTP systems for analytics purposes, and to run the analytics on a separate database instead. This separate database was called a __*data warehouse*__.
 
-- **Data Warehousing**
 
-  - A __*data warehouse*__, by contrast, is a separate database that analysts can query to their hearts’ content, without affecting OLTP operations.
-    - Remember DB admins consider themselves guardians of the DB and don't want anyone messing with them.
-    - The data warehouse contains a read-only copy of all the data from in all the various OLTP systems in the company.
-    - **ETL**: __*Extract–Transform–Load*__ is a process where data is extracted from OLTP DBs using either a periodic data dump or a continuous stream of update, it then:
-      - Transforms into an analysis-friendly schema.
-      - Cleans it up.
-      - Loads it into the data warehouse.
 
-- **The divergence between OLTP databases and data warehouses**
+### Data Warehousing
 
-- **Stars and Snowflakes: Schemas for Analytics**
+A **data warehouse** is a separate database designed for querying by analysts without affecting OLTP operations.
+- Database administrators often prefer not to have analysts interacting with OLTP databases directly.
+- The data warehouse contains a read-only copy of data from various OLTP systems within the company.
+- **ETL** (*Extract–Transform–Load*):
+    - Data is extracted from OLTP databases using either periodic data dumps or continuous updates.
+    - The data is then:
+      - Transformed into an analysis-friendly schema,
+      - Cleaned up,
+      - Loaded into the data warehouse.
 
-- **Column-Oriented Storage**
+#### The Divergence Between OLTP Databases and Data Warehouses
 
-  - The idea behind column-oriented storage is simple: don’t store all the values from one row together, but store all the values from each column together instead.
+- **OLTP vs. Data Warehousing**:
+  - OLTP databases are optimized for fast, real-time transaction processing and maintain data integrity.
+  - Data warehouses are optimized for complex queries and data analysis, supporting historical data and large-scale data processing.
 
-  - **Column Compression**
-    - **Note**: Cassandra and HBase have a concept of column families, which they inherited from Bigtable. However, it is very misleading to call them column-oriented: within each column family, they store all columns from a row together, along with a row key, and they do not use column compression. Thus, the Bigtable model is still mostly row- oriented.
+#### Stars and Snowflakes: Schemas for Analytics
 
-  - **Memory bandwidth and vectorized processing**
-    - Besides reducing the volume of data that needs to be loaded from disk, column-oriented storage layouts are also good for making efficient use of CPU cycles. For example, the query engine can take a chunk of compressed column data that fits comfortably in the CPU’s L1 cache and iterate through it in a tight loop (that is, with no function calls). A CPU can execute such a loop much faster than code that requires a lot of function calls and conditions for each record that is processed. Column compression allows more rows from a column to fit in the same amount of L1 cache. Operators, such as the bitwise AND and OR described previously, can be designed to operate on such chunks of compressed column data directly. This technique is known as __*vectorized processing*__.
+- **Star Schema**: Central fact tables connected to dimension tables in a star-like pattern. Useful for straightforward querying.
+- **Snowflake Schema**: A more normalized form of the star schema where dimension tables are split into multiple related tables. This reduces redundancy but can complicate queries.
 
-  - **Writing to Column-Oriented Storage**
-    - Fortunately, we have already seen a good solution earlier in this chapter: LSM-trees. All writes first go to an in-memory store, where they are added to a sorted structure and prepared for writing to disk. It doesn’t matter whether the in-memory store is row-oriented or column-oriented. When enough writes have accumulated, they are merged with the column files on disk and written to new files in bulk. This is essentially what Vertica does.
+#### Column-Oriented Storage
+
+In column-oriented storage, values from each column are stored together rather than values from each row.
   
-  - **Aggregation: Data Cubes and Materialized Views**
+  - **Column Compression**:
+    - **Note**: Systems like Cassandra and HBase use column families, but they store columns together within each family and do not use column compression extensively. Thus, they are primarily row-oriented.
 
-    - **REDUCE THE NEXT ROWS:**
+  - **Memory Bandwidth and Vectorized Processing**:
+    - Column-oriented storage reduces the volume of data loaded from disk and enhances CPU efficiency.
+    - Column data can fit in the CPU’s L1 cache, allowing for faster processing through **vectorized processing**.
+    - **Vectorized processing** involves executing operations on chunks of compressed column data directly, improving performance.
 
-    - Another aspect of data warehouses that is worth mentioning briefly is materialized aggregates. As discussed earlier, data warehouse queries often involve an aggregate function, such as , , , , or in SQL. If the same aggregates are used by many different queries, it can be wasteful to crunch through the raw data every time. Why not cache some of the counts or sums that queries use most often?
-    
-    - One way of creating such a cache is a materialized view. In a relational data model, it is often defined like a standard (virtual) view: a table-like object whose contents are the results of some query. The difference is that a materialized view is an actual copy of the query results, written to disk, whereas a virtual view is just a shortcut for writing queries. When you read from a virtual view, the SQL engine expands it into the view’s underlying query on the fly and then processes the expanded query.
+  - **Writing to Column-Oriented Storage**:
+    - **LSM-trees** are effective for writing to column-oriented storage. Writes first go to an in-memory store and are then merged with column files on disk.
+    - This method is utilized by systems like Vertica.
 
-    - When the underlying data changes, a materialized view needs to be updated, because it is a denormalized copy of the data. The database can do that automatically, but such updates make writes more expensive, which is why materialized views are not often used in OLTP databases. In read- heavy data warehouses they can make more sense (whether or not they actually improve read performance depends on the individual case).
+  - **Aggregation: Data Cubes and Materialized Views**:
+    - **Materialized Views**:
+      - Used to cache frequently queried aggregates, reducing the need to recompute them each time.
+      - Unlike virtual views, materialized views store actual copies of query results on disk.
+      - Updates to the underlying data require refreshing materialized views, which can make writes more expensive but beneficial for read-heavy data warehouses.
 
-<iframe width="320" height="180" src="https://www.youtube.com/watch?v=BIlFTFrEFOI&t=64s" title="SQL Hash Indexes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="1"></iframe>
+<!-- <iframe width="320" height="180" src="https://www.youtube.com/watch?v=BIlFTFrEFOI&t=64s" title="SQL Hash Indexes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="1"></iframe> -->
 
-- **Memtable**: An in-memory balanced tree data structure (for example, a red-black tree)
+- **Memtable**:
+  - An in-memory balanced tree data structure, such as a red-black tree, used to manage writes before they are flushed to disk.
 
-- **Bloom filter**: A memory-efficient data structure for approximating the contents of a set. It can tell you if a key does not appear in the database, and thus saves many unnecessary disk reads for nonexistent keys.
+- **Bloom Filter**:
+  - A memory-efficient data structure used to approximate the contents of a set.
+  - It can indicate if a key does not exist in the database, reducing unnecessary disk reads for non-existent keys.
 
-- **Compaction**: Compaction means throwing away duplicate keys in the log, and keeping only the most recent update for each key (very useful to avoid running out of space).
-
-  - Each segment now has its own in-memory hash table, mapping keys to file offsets. In order to find the value for a key, we first check the most recent segment’s hash map; if the key is not present we check the second-most- recent segment, and so on. 
+- **Compaction**:
+  - Involves removing duplicate keys and retaining only the most recent update for each key to avoid running out of space.
+  - Each segment has an in-memory hash table mapping keys to file offsets.
+    - To find a key’s value, the most recent segment’s hash map is checked first, followed by older segments if necessary.
   
-  - **Tombstone**: If you want to delete a key and its associated value, you have to append a special deletion record to the data file (sometimes called a tombstone). When log segments are merged, the tombstone tells the merging process to discard any previous values for the deleted key.
+  - **Tombstone**:
+    - A special deletion record appended to the data file to mark a key for deletion.
+    - During log segment merges, tombstones instruct the merging process to discard any previous values for the deleted key.
 
-- **Storage engines**:
-  - Log-structured:
-  - Page-oriented:
+## Storage Engines
+
+- **Log-Structured**:
+    - Optimized for write-heavy workloads with mechanisms like LSM-trees.
+- **Page-Oriented**:
+    - Focuses on reading and writing data in fixed-size pages, often used in traditional B-tree-based systems.
 
 
 
@@ -623,7 +614,8 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
 
 
 
-#### Chapter 4. Encoding and Evolution
+
+## Chapter 4. Encoding and Evolution
 
   - Backward compatibility
     - Newer code can read data that was written by older code.
