@@ -2,6 +2,8 @@
 <details>
   <summary><h2 style='display: inline;'> Designing Data-Intensive Apps </h2></summary>
   
+# Part I
+
 ## Chapter 1: Reliable, Scalable, and Maintainable Applications
 
 ### Availability
@@ -342,9 +344,10 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
 
 ## Chapter 3: Storage and Retrieval
 
-- **Log**:
-  - An append-only sequence of records.
-  - Many databases internally use a log, which is an append-only data file.
+### Log
+
+- An append-only sequence of records.
+    - Many databases internally use a log, which is an append-only data file.
 
   - **Application Logs**:
     - These logs record events and activities within an application.
@@ -621,224 +624,269 @@ In column-oriented storage, values from each column are stored together rather t
 
 ## Chapter 4. Encoding and Evolution
 
-  - Backward compatibility
+- **Backward Compatibility**
     - Newer code can read data that was written by older code.
-    - Easy to achieve.
+        - Relatively easy to achieve.
 
-  - Forward compatibility
+- **Forward Compatibility**
     - Older code can read data that was written by newer code.
-    - Tricky to achieve.
+        - Tricky to achieve.
 
-  - Representational State Transfer (REST), and remote procedure calls (RPC), as well as message-passing systems such as actors and message queues.
+- **REST** 
+    - Representational State Transfer
+- **RPC**
+    - Remote Procedure Calls
 
-  - **Formats for Encoding Data**
+- **Message-Passing Systems**: Includes actors and message queues.
 
-    - **Encoding**: The translation from the in-memory representation to a byte sequence (also known as __*serialization*__ or __*marshalling*__).
+### Formats for Encoding Data
 
-    - **Decoding**: The reverse of encoding, the translation from a byte sequence to the in-memory representation.
-      - Parsing
-      - Deserialization
-      - Unmarshalling
+- **Encoding**: The translation from the in-memory representation to a byte sequence (also known as __*serialization*__ or __*marshalling*__).
 
-    - **Language-Specific Formats**
-      | Language | Serialization Method |
-      |----------|----------------------|
-      | Python   | Pickle               |
-      | Java     | java.io.Serializable |
-      | Ruby     | Marshal              |
-      | Java     | Kryo (TPD)           |
+- **Decoding**: The reverse of encoding, translating from a byte sequence to the in-memory representation.
+  - Parsing
+  - Deserialization
+  - Unmarshalling
 
-    - **JSON, XML, and Binary Variants**
+- **Language-Specific Formats**:
+  | Language | Serialization Method     |
+  |----------|--------------------------|
+  | Python   | Pickle                   |
+  | Java     | `java.io.Serializable`   |
+  | Ruby     | Marshal                  |
+  | Java     | Kryo (TPD)               |
 
-      - In XML and CSV, you cannot distinguish between a number and a string that happens to consist of digits (except by referring to an external schema). JSON distinguishes strings and numbers, but it doesn’t distinguish integers and floating-point numbers, and it doesn’t specify a precision.
+- **JSON, XML, and Binary Variants**:
+  - **JSON and XML**:
+    - XML and CSV do not inherently distinguish between numbers and strings of digits (except through external schemas).
+    - JSON distinguishes strings and numbers but does not differentiate between integers and floating-point numbers, nor does it specify precision.
 
-        - integers greater than 253 cannot be exactly represented in an IEEE 754 double-precision floating-point number, so such numbers become inaccurate when parsed in a language that uses floating-point numbers (such as JavaScript). 
+      - **Precision Issues**: Integers greater than 2^53 cannot be exactly represented in an IEEE 754 double-precision floating-point number, leading to inaccuracies when parsed in languages using floating-point numbers (e.g., JavaScript).
+        - **Example**: Twitter uses a 64-bit number for tweet IDs. Their API returns tweet IDs as both a JSON number and a decimal string to handle precision issues.
 
-          - Twitter uses a 64-bit number to identify each tweet. The JSON returned by Twitter’s API includes tweet IDs twice, once as a JSON number and once as a decimal string.
+  - **Unicode Support**:
+    - JSON and XML support Unicode character strings (human-readable text) but do not natively support binary strings (sequences of bytes without a character encoding).
 
-      - JSON and XML have good support for Unicode character strings (i.e., human-readable text), but they don’t support binary strings (sequences of bytes without a character encoding).
+  - **CSV**:
+    - CSV lacks a schema, so the meaning of each row and column must be defined by the application.
 
-
-      - CSV does not have any schema, so it is up to the application to define the meaning of each row and column.
-    
-    The difficulty of getting different organizations to agree on anything outweighs most other concerns.
-
-    - **Binary encoding**
-
-      - For data that is used only internally within your organization, there is less pressure to use a lowest-common-denominator encoding format.
-
-      - JSON is less verbose than XML, but both still use a lot of space compared to binary formats. This observation led to the development of a profusion of binary encodings for JSON: 
-        - (MessagePack, BSON, BJSON, UBJSON, BISON, and Smile, to name a few)
-      - XML 
-        - (WBXML and Fast Infoset, for example). 
-
-    - **Thrift and Protocol Buffers**
-      - Apache Thrift (FaceBook) and Protocol Buffers (protobuf) (Google) are binary encoding libraries.
-
-      - Thrift and Protocol Buffers each come with a code generation tool that takes a schema definition like the ones shown here, and produces classes that implement the schema in various programming languages [18]. Your application code can call this generated code to encode or decode records of the schema.
-
-    - **Field tags and schema evolution**
-
-      - Removing a field is just like adding a field, with backward and forward compatibility concerns reversed. That means you can only remove a field that is optional (a required field can never be removed), and you can never use the same tag number again (because you may still have data written somewhere that includes the old tag number, and that field must be ignored by new code).
-
-    - Read this subsection if you want to know what a tag is in this context.
-
-  - **Datatypes and schema evolution**
-
-    - What about changing the datatype of a field? That may be possible—check the documentation for details—but there is a risk that values will lose precision or get truncated. For example, say you change a 32-bit integer into a 64-bit integer. New code can easily read data written by old code, because the parser can fill in any missing bits with zeros. However, if old code reads data written by new code, the old code is still using a 32-bit variable to hold the value. If the decoded 64-bit value won’t fit in 32 bits, it will be truncated.
-
-    - A curious detail of Protocol Buffers is that it does not have a list or array datatype, but instead has a `repeated` marker for fields (which is a third option alongside `required` and `optional`).
-      - This has the nice effect that it’s okay to change an `optional` (single-valued) field into a `repeated` (multi-valued) field.
-
-  - **Avro**
-    - Apache Avro [20] is another binary encoding format that is interestingly different from Protocol Buffers and Thrift.
-      - Avro also uses a schema to specify the structure of the data being encoded. It has two schema languages: one (Avro IDL) intended for human editing, and one (based on JSON) that is more easily machine-readable.
-
-    - **But what is the writer’s schema?**
-      - Read this and make good sumarized notes.
-
-    - **Dynamically generated schemas**
-      - Read this and make good sumarized notes.
-
-  - **Dataflow Through Databases**
-    Section talks about how you should write data to the DB in such a way that the future code shouldn't have trouble reading it. It also mentions an example where an ORM might be troublesom when updating DB records if the application code isn't updated (check the image 4-7). 
-
-    Lastly, it talks about how __*snapshots*__ are saved for backup and how you could take advantage of the fact they're read only and use an encoder format like parquet for data-warehousing for analytics or use Avro to reduce the snapshot file size.
-    - **DB migrations**: Rewriting data.
-
-  - **Dataflow Through Services: REST and RPC**
-    When communicating over a network there are a few different ways of arranging that communication. The most common arrangement is to have two roles:
-
-    - Clients: Connect to the servers to make requests to that API.
-
-    - Servers: Expose an API over the network.
-      - Can be clients to other servers.
-
-    - Service: The API exposed by the server.
-      - Services can impose fine-grained restrictions on what clients can and cannot do (this is a way of encapsulation). 
-
-    - **Ajax**: *Asynchronous Javascript and XML* is a technique where a client-side JavaScript application running inside a web browser can use XMLHttpRequest to become an HTTP client.
-      - In this case, the server’s response is typically not HTML for displaying to a human, but rather data in an encoding that is convenient for further processing by the client-side application code (such as JSON). Although HTTP may be used as the transport protocol, the API implemented on top is application-specific, and the client and server need to agree on the details of that API.
-
-      - A key design goal of a service-oriented/microservices architecture is to make the application easier to change and maintain by making services independently deployable and evolvable.
-        - For example, each service should be owned by one team, and that team should be able to release new versions of the service frequently, without having to coordinate with other teams.
-        - We should expect old and new versions of servers and clients to be running at the same time:
-          - Data encoding used by servers and clients must be compatible across versions of the service API.
-
-    - **SOA**: **Service Oriented Architecture** more recently refined and rebranded as __*microservices architecture*__:
-      - Moreover, a server can itself be a client to another service (for example, a typical web app server acts as client to a database). This approach is often used to decompose a large application into smaller services by area of functionality, such that one service makes a request to another when it requires some functionality or data from that other service. This way of building applications has traditionally been called a **SOA**, more recently...
-
-    - One service making requests to another service owned by the same organization, often located within the same datacenter, as part of a service-oriented/microservices architecture. (Software that supports this kind of use case is sometimes called **middleware**.)
-
-    - There are two popular approaches to web services:
-
-      - **REST**: *REpresentational State Transfer* is a design philosophy that builds upon the principles of HTTP.
-        - Simple formats.
-        - Using URLs for identifying resources .
-        - Using HTTP features for cache control, authentication, and content type negotiation.
-        - An API designed according to the principles of REST is called RESTful.
-
-      - **SOAP**: *Simple Object Access Protocol is an XML-based protocol for making network API requests.
-        - Aims to be independent from HTTP and avoids using most HTTP features.
-        - It comes with a sprawling and complex multitude of related standards (the web service framework, known as WS) that add various features.
-        - The API of a SOAP web service is described using an XML-based language called the *Web Services Description Language*, or __*WSDL*__.
-          - WSDL enables code generation so that a client can access a remote service using local classes and method calls (which are encoded to XML messages and decoded again by the framework). 
-          - **WSDL** is not designed to be human-readable.
-        - Users of SOAP rely heavily on tool support, code generation, and IDEs.
-      
-      - **The problems with remote procedure calls (RPCs)**
-
-        - **RPC**: Remote Procedure Call.
-          - The RPC model tries to make a request to a remote network service look the same as calling a function or method in your programming language, within the same process (this abstraction is called *location transparency*).
-          - The main focus of RPC frameworks is on requests between services owned by the same organization, typically within the same datacenter.
-
-        - **Idempotence**:
-
-        - Thrift and Avro come with RPC support included.
-        - **gRPC** is an RPC implementation using Protocol Buffers.
-
-      - **Data encoding and evolution for RPC**
-        - We can make a simplifying assumption in the case of dataflow through services: it is reasonable to assume that all the servers will be updated first, and all the clients second. 
-          - Thus, you only need backward compatibility on requests, and forward compatibility on responses.
-
-        - The backward and forward compatibility properties of an RPC scheme are inherited from whatever encoding it uses:
-          - Thrift, gRPC (Protocol Buffers), and Avro RPC can be evolved according to the compatibility rules of the respective encoding format.
-          - In SOAP, requests and responses are specified with XML schemas. These can be evolved, but there are some subtle pitfalls [47].
-          - RESTful APIs most commonly use JSON (without a formally specified schema) for responses, and JSON or URI-encoded/form-encoded request parameters for requests. Adding optional request parameters and adding new fields to response objects are usually considered changes that maintain compatibility.
-
-        - Service compatibility is made harder by the fact that RPC is often used for communication across organizational boundaries, so the provider of a service often has no control over its clients and cannot force them to upgrade.
-          - If a compatibility-breaking change is required, the service provider often ends up maintaining multiple versions of the service API side by side.
-
-
-        - There is no agreement on how API versioning should work (i.e., how a client can indicate which version of the API it wants to use [48]). 
-          - For RESTful APIs, common approaches are to use a version number in the URL or in the HTTP header. 
-          - For services that use API keys to identify a particular client, another option is to store a client’s requested API version on the server and to allow this version selection to be updated through a separate administrative interface [49].
-
-  - **Message-Passing Dataflow**
-    - Asynchronous message-passing systems
-      
-      - Somewhere between RPC (one process sends a request over the network to another process and expects a response as quickly as possible) and databases (where one process writes encoded data, and another process reads it again sometime in the future).
-         
-         - They are similar to RPC in that a client’s request (usually called a message) is delivered to another process with low latency. 
-         - They are similar to databases in that the message is not sent via a direct network connection, but goes via an intermediary called a message broker (also called a __*message queue*__ or __*message-oriented middleware*__), which stores the message temporarily.
-      
-      - **Message Broker Advantages over RPC**
-        - It can act as a buffer if the recipient is unavailable or overloaded, and thus improve system reliability.
-
-        - It can automatically redeliver messages to a process that has crashed, and thus prevent messages from being lost.
-
-        - It avoids the sender needing to know the IP address and port number of the recipient.
-
-        - It allows one message to be sent to several recipients.
-
-        - It logically decouples the sender from the recipient (the sender just publishes messages and doesn’t care who consumes them).
-
-        However, a difference compared to RPC is that message-passing communication is usually one-way: a sender normally doesn’t expect to receive a reply to its messages. It is possible for a process to send a response, but this would usually be done on a separate channel. 
-        
-        This communication pattern is __*asynchronous*__: the sender doesn’t wait for the message to be delivered, but simply sends it and then forgets about it.
-
-      - **Message brokers**
-        - RabbitMQ 
-        - ActiveMQ 
-        - HornetQ 
-        - NATS
-        - Apache Kafka
-
-        - Usage:
-          1. one process sends a message to a named queue or topic.
-          2. The broker ensures that the message is delivered to one or more consumers of or subscribers to that queue or topic.
-          3. There can be many producers and many consumers on the same topic.
-        
-        - A topic provides only one-way dataflow. However, a consumer may itself publish messages to another topic, or to a reply queue that is consumed by the sender of the original message (allowing a request/response dataflow, similar to RPC).
-
-        - Message brokers typically don’t enforce any particular data model—a message is just a sequence of bytes with some metadata, so you can use any encoding format. If the encoding is backward and forward compatible, you have the greatest flexibility to change publishers and consumers independently and deploy them in any order.
-
-        - If a consumer republishes messages to another topic, you may need to be careful to preserve unknown fields, to prevent the issue described previously in the context of databases.
-
-      - **Distributed actor frameworks**
-
-        - Read and synthetizee...
-
-         - The actor model is a programming model for concurrency in a single process. Rather than dealing directly with threads (and the associated problems of race conditions, locking, and deadlock), logic is encapsulated in actors. Each actor typically represents one client or entity, it may have some local state (which is not shared with any other actor), and it communicates with other actors by sending and receiving asynchronous messages. Message delivery is not guaranteed: in certain error scenarios, messages will be lost. Since each actor processes only one message at a time, it doesn’t need to worry about threads, and each actor can be scheduled independently by the framework.
-
-### Part II
-
-  - **shared-memory architecture**: All the components can be treated as a single machine 
-    - Many CPUs, many RAM chips, and many disks can be joined together under one operating system, and a fast interconnect allows any CPU to access any part of the memory or disk.
-      - The problem with a shared-memory approach is that the cost grows faster than linearly: a machine with twice as many CPUs, twice as much RAM, and twice as much disk capacity as another typically costs significantly more than twice as much.
-        - And due to bottlenecks, a machine twice the size cannot necessarily handle twice the load.
-
-  - **shared-disk architecture**: Uses several machines with independent CPUs and RAM, but stores data on an array of disks that is shared between the machines, which are connected via a fast network.
-    - This architecture is used for some data warehousing workloads, but contention and the overhead of locking limit the scalability of the shared-disk approach.
-
-  - **Shared Nothing Architectures**: Each machine or virtual machine running the database software is called a node. Each node uses its CPUs, RAM, and disks independently. Any coordination between nodes is done at the software level, using a conventional network.
-    - No special hardware is required by a shared-nothing system, so you can use whatever machines have the best price/performance ratio.
+- **Binary Encoding**
+  - When data is used only internally within an organization, there is less pressure to use a lowest-common-denominator encoding format.
   
-  - **Replication Versus Partitioning**
-    - **Replication**: Keeping a copy of the same data on several different nodes, potentially in different locations. Replication provides redundancy: if some nodes are unavailable, the data can still be served from the remaining nodes. 
-      - Replication can also help improve performance.
+  - **Comparison with JSON and XML**:
+    - JSON is less verbose than XML, but both formats still use more space compared to binary formats.
+
+    - This has led to the development of various binary encodings for JSON, including:
+      - MessagePack
+      - BSON
+      - BJSON
+      - Smile
     
-    - **Partitioning (Sharding)**: Splitting a big database into smaller subsets called partitions so that different partitions can be assigned to different nodes (also known as sharding).
+    - For XML, examples of binary encodings include:
+      - WBXML
+      - Fast Infoset
+
+- **Thrift and Protocol Buffers**
+  - **Apache Thrift** (developed by Facebook) and **Protocol Buffers (protobuf)** (developed by Google) are binary encoding libraries.
+  - Both Thrift and Protocol Buffers provide code generation tools that:
+    - Take a schema definition and produce classes that implement the schema in various programming languages.
+    - Allow application code to call the generated code to encode or decode records based on the schema.
+
+- **Field Tags and Schema Evolution**
+  - **Removing Fields**:
+    - Removing a field involves similar backward and forward compatibility concerns as adding a field, but with reversed implications.
+    - You can only remove a field if it is optional (required fields cannot be removed).
+    - Once a tag number is used, it should not be reused to avoid conflicts with existing data that might include the old tag number.
+
+  - **Further Reading**:
+    - For additional details on what a tag is in this context, refer to the subsection on tag definitions.
+
+### Datatypes and Schema Evolution
+
+  - **Changing Data Types**:
+    - Changing the datatype of a field might be possible but can result in loss of precision or truncation. For example:
+      - Changing a 32-bit integer to a 64-bit integer:
+        - **New Code**: Can read data written by old code since it can handle the extra bits by filling them with zeros.
+        - **Old Code**: Uses a 32-bit variable, so if it reads a 64-bit value, it may be truncated if the value exceeds 32 bits.
+
+  - **Protocol Buffers**:
+    - Protocol Buffers do not have a dedicated list or array datatype but use a `repeated` marker for fields.
+      - This allows converting an `optional` (single-valued) field into a `repeated` (multi-valued) field without issues.
+
+- **Avro**
+    - Apache Avro is another binary encoding format that differs from Protocol Buffers and Thrift.
+    - Avro uses schemas to define data structures and supports two schema languages:
+      - **Avro IDL**: Intended for human editing.
+      - **JSON-Based Schema**: More machine-readable.
+
+  - **Writer’s Schema**:
+    - For details on the writer’s schema, refer to the specific subsection.
+
+  - **Dynamically Generated Schemas**:
+    - For details on dynamically generated schemas, refer to the specific subsection.
+
+### Dataflow Through Databases
+
+Section talks about how you should write data to the DB in such a way that the future code shouldn't have trouble reading it. It also mentions an example where an ORM might be troublesom when updating DB records if the application code isn't updated (check the image 4-7). 
+
+Lastly, it talks about how __*snapshots*__ are saved for backup and how you could take advantage of the fact they're read only and use an encoder format like parquet for data-warehousing for analytics or use Avro to reduce the snapshot file size.
+- **DB migrations**: Rewriting data.
+
+- **Dataflow Through Services: REST and RPC**
+
+  - **Communication Roles**:
+    - **Clients**: Connect to servers to make API requests.
+    - **Servers**: Expose APIs over the network and may act as clients to other servers.
+
+  - **Services**:
+    - The API exposed by the server can impose restrictions on what clients can do, serving as a form of encapsulation.
+
+  - **Ajax**:
+    - *Asynchronous JavaScript and XML*: A technique where client-side JavaScript applications use XMLHttpRequest to act as HTTP clients.
+      - The server response is typically data in a format like JSON for further client-side processing.
+      - The API implemented on top is application-specific, and both client and server must agree on API details.
+
+  - **Service-Oriented Architecture (SOA)**:
+    - **Microservices Architecture**: A refined version of SOA.
+      - Services should be independently deployable and evolvable, allowing teams to release new versions frequently without coordination with others.
+      - Expect old and new versions of servers and clients to run simultaneously, requiring compatible data encoding across service API versions.
+
+  - **Middleware**:
+    - Software that supports service-to-service communication within the same organization, often within the same datacenter, is referred to as middleware.
+
+### Popular Approaches to Web Services
+
+  - **REST (REpresentational State Transfer)**:
+    - A design philosophy built upon HTTP principles.
+    - Key Characteristics:
+      - Simple formats.
+      - Uses URLs to identify resources.
+      - Leverages HTTP features for cache control, authentication, and content type negotiation.
+    - An API designed according to REST principles is called RESTful.
+
+  - **SOAP (Simple Object Access Protocol)**:
+    - An XML-based protocol for network API requests.
+    - Key Characteristics:
+      - Aims to be independent of HTTP and avoids using most HTTP features.
+      - Includes a complex array of related standards (the web service framework known as WS) for additional features.
+      - The API is described using an XML-based language called **WSDL (Web Services Description Language)**.
+        - **WSDL** allows for code generation so clients can interact with remote services using local classes and methods, which are encoded to XML messages and decoded by the framework.
+        - **WSDL** is not designed for human readability.
+      - SOAP relies heavily on tool support, code generation, and IDEs.
+
+  - **RPC (Remote Procedure Call)**:
+    - RPC attempts to make remote network service requests resemble function or method calls in your programming language, within the same process (this abstraction is known as *location transparency*).
+    - Focuses primarily on requests between services owned by the same organization, typically within the same datacenter.
+
+  - **RPC Implementations**:
+    - **Thrift and Avro**: Both come with built-in RPC support.
+    - **gRPC**: An RPC implementation using Protocol Buffers.
+
+  - **Data Encoding and Evolution for RPC**:
+    - Simplifying Assumption:
+      - It is reasonable to assume servers are updated before clients. Thus, backward compatibility is needed for requests, and forward compatibility is needed for responses.
+    - Compatibility Properties:
+      - **Thrift, gRPC (Protocol Buffers), and Avro RPC**: Evolve according to the compatibility rules of their respective encoding formats.
+      - **SOAP**: Requests and responses are specified with XML schemas, which can be evolved, but subtle pitfalls exist.
+      - **RESTful APIs**: Typically use JSON (without a formal schema) for responses, and JSON or URI-encoded/form-encoded parameters for requests. Adding optional parameters and new fields to responses usually maintains compatibility.
+
+    - **Challenges**:
+      - RPC is often used across organizational boundaries, making it difficult for the service provider to control client upgrades.
+      - Compatibility-breaking changes often require maintaining multiple versions of the API side by side.
+
+    - **API Versioning**:
+      - No universal agreement on API versioning methods.
+      - Common Approaches:
+        - **RESTful APIs**: Version numbers in the URL or HTTP headers.
+        - **API Keys**: Store requested API versions on the server and manage version selection through an administrative interface.
+
+### Message-Passing Dataflow
+
+- **Asynchronous Message-Passing Systems**:
+    - These systems are situated between RPC (where one process sends a request to another process expecting a quick response) and databases (where one process writes data and another reads it later).
+    
+    - **Characteristics**:
+      - Similar to RPC in that messages (requests) are delivered with low latency.
+      - Similar to databases in that messages are sent through an intermediary called a message broker (or message queue, or message-oriented middleware), which temporarily stores the messages.
+    
+    - **Message Broker Advantages Over RPC**:
+
+      - **Buffering**: Acts as a buffer if the recipient is unavailable or overloaded, improving system reliability.
+      - **Automatic Redelivery**: Redelivers messages if the process has crashed, preventing message loss.
+      - **Address Independence**: The sender does not need to know the recipient’s IP address and port number.
+      - **Broadcasting**: Allows a single message to be sent to multiple recipients.
+      - **Decoupling**: Logically decouples the sender from the recipient; the sender just publishes messages without needing to know who will consume them.
+    
+    - **Communication Pattern**:
+      - Typically one-way: the sender does not expect a reply to the message, although responses can be sent on a separate channel.
+      - Asynchronous: The sender does not wait for the message to be delivered but sends it and proceeds.
+
+  - **Message Brokers**:
+    - **Examples**:
+      - RabbitMQ
+      - ActiveMQ
+      - HornetQ
+      - NATS
+      - Apache Kafka
+    
+    - **Usage**:
+      1. A process sends a message to a named queue or topic.
+      2. The broker ensures that the message is delivered to one or more consumers/subscribers.
+      3. Multiple producers and consumers can interact with the same topic.
+    
+    - **Topics and Dataflow**:
+      - A topic provides one-way dataflow, but a consumer can publish messages to another topic or a reply queue, enabling request/response patterns similar to RPC.
+    
+    - **Data Model**:
+      - Message brokers do not enforce a specific data model; messages are sequences of bytes with metadata. Flexible encoding formats can be used as long as they are backward and forward compatible.
+    
+    - **Message Republishing**:
+      - If a consumer republishes messages to another topic, care must be taken to preserve unknown fields to avoid issues similar to those in databases.
+
+  - **Distributed Actor Frameworks**:
+      - The actor model is a concurrency model within a single process. Instead of managing threads directly, logic is encapsulated in actors.
+     
+      - **Actor Characteristics**:
+        - Each actor represents a client or entity with local state (not shared with other actors).
+        - Actors communicate through asynchronous messages.
+        - Message delivery is not guaranteed; messages may be lost in certain error scenarios.
+        - Actors process one message at a time, avoiding threading issues, and can be scheduled independently by the framework.
+    
+    - **Further Reading**:
+      - For a detailed understanding, refer to resources on distributed actor frameworks and their implementation.
+
+### Additional concepts
+- **Idempotence**:
+    - Refers to operations where repeating the operation has the same effect as performing it once. (Details are not covered in this section but are important for RPC operations.)
+
+
+# Part II
+
+## Shared-Memory Architecture
+
+All the components can be treated as a single machine 
+  - Many CPUs, many RAM chips, and many disks can be joined together under one operating system, and a fast interconnect allows any CPU to access any part of the memory or disk.
+
+    - The problem with a shared-memory approach is that the cost grows faster than linearly: a machine with twice as many CPUs, twice as much RAM, and twice as much disk capacity as another typically costs significantly more than twice as much.
+      
+    - And due to bottlenecks, a machine twice the size cannot necessarily handle twice the load.
+
+## Shared-Disk Architecture
+Uses several machines with independent CPUs and RAM, but stores data on an array of disks that is shared between the machines, which are connected via a fast network.
+
+  - This architecture is used for some data warehousing workloads, but contention and the overhead of locking limit the scalability of the shared-disk approach.
+
+- **Shared Nothing Architectures
+Each machine or virtual machine running the database software is called a node. Each node uses its CPUs, RAM, and disks independently. 
+  - Any coordination between nodes is done at the software level, using a conventional network.
+  - No special hardware is required by a shared-nothing system, so you can use whatever machines have the best price/performance ratio.
+
+## Replication Versus Partitioning (Sharding)
+
+  - **Replication**: Keeping a copy of the same data on several different nodes, potentially in different locations. Replication provides redundancy: if some nodes are unavailable, the data can still be served from the remaining nodes. 
+    - Replication can also help improve performance.
+  
+  - **Partitioning (Sharding)**: Splitting a big database into smaller subsets called partitions so that different partitions can be assigned to different nodes (also known as sharding).
 
 </details>
 <details>
