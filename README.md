@@ -1121,11 +1121,94 @@ In Chapter 8 and Chapter 9 we will discuss them in greater depth.
 
 #### Statement-based replication
 
+The leader logs every write request (statement) that it executes and sends that statement log to its followers.
+
+Every `INSERT`, `UPDATE`, or `DELETE` statement is forwarded to followers, and each follower parses and executes that SQL statement as if it had been received from a client.
+
+- **Cons**
+
+  - Any statement that calls a nondeterministic function, such as `RAND()` or `NOW()`, is likely to generate a different value on each replica.
+
+  - If statements use an autoincrementing column, or if they depend on the existing data in the database they must be executed in exactly the same order on each replica, or else they may have a different effect.
+
+    - This limits concurrent transactions.
+
+  - Statements that have side effects (e.g., triggers, stored procedures, user- defined functions) may result in different side effects occurring on each replica, unless the side effects are absolutely deterministic.
+
+Because there are so many edge cases, other replication methods are now generally preferred, even though you could still navigate around them.
+
+
 #### Write-ahead log (WAL) shipping
+
+PostgreSQL's streaming replication is based on this method.
+
+- In the case of a log-structured storage engine, this log is the main place for storage. 
+  - Log segments are compacted and garbage-collected in the background.
+
+- In the case of a B-tree, which overwrites individual disk blocks, every modification is first written to a write-ahead log so that the index can be restored to a consistent state after a crash.
+
+The log is an append-only sequence of bytes containing all writes to the database. 
+
+We can use the exact same log to build a replica on another node: besides writing the log to disk, the leader also sends it across the network to its followers. 
+
+When the follower processes this log, it builds a copy of the exact same data structures as found on the leader.
+
+**Cons**
+
+- The log describes the data on a very low level.
+
+  - The WAL contains details of which bytes were changed in which disk blocks, making replication closely coupled to the storage engine.
+    - If the database changes its storage format from one version to another, it is typically not possible to run different versions of the database software on the leader and the followers.
+
+- WAL shipping (this method's implementation name) makes it troublesome for followers to use more recente versions of the DB, forcing overtime on rolling upgrades.
+
 
 #### Logical (row-based) log replication
 
+An alternative is to use different log formats for replication and for the storage engine, decoupling the process from the storage engine internals.
+
+This kind of replication log is called a `logical log`, to distinguish it from the storage engine’s (physical) data representation.
+
+A logical log for a relational database is usually a sequence of records describing writes to database tables at the granularity of a row:
+
+- For an inserted row, the log contains the new values of all columns.
+
+- For a deleted row, the log contains enough information to uniquely identify the row that was deleted.
+
+- For an updated row, the log contains enough information to uniquely identify the updated row, and the new values of all columns.
+
+**Pros**
+  - Since a logical log is decoupled from the storage engine internals, it can more easily be kept backward compatible, allowing the leader and the follower to run different versions of the database software, or even different storage engines.
+
+  - A logical log format is also easier for external applications to parse.
+    - Super useful for data warehousing or caching.
+      - This technique is called `change data capture`.
+
+
+
 #### Trigger-based replication
+
+PostgreSQL supports this.
+
+A trigger lets you register custom application code that is automatically executed when a data change (write transaction) occurs in a database system.
+
+The trigger has the opportunity to log this change into a separate table, from which it can be read by an external process. That external process can then apply any necessary application logic and replicate the data change to another system.
+
+**Pros**
+  - Involves application code.
+
+  - Allows you to only replicate a subset of the data.
+
+  - Allows you to replicate from one kind of database to another.
+
+  - Can handle conflict resolution.
+
+**Cons**
+  - Involves application code.
+
+  - Has greater overheads than other replication methods.
+
+  - Is more prone to bugs and limitations than the database’s built-in replication.
 
 
 
