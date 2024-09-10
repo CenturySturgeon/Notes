@@ -1422,19 +1422,136 @@ When one user edits a document, the changes are instantly applied to their local
 
 #### Handling Write Conflicts
 
-##### Synchronous versus asynchronous conflict detection
+- **Synchronous versus asynchronous conflict detection**
+  * If you want synchronous conflict detection, you might as well just use single-leader replication.
 
-##### Conflict avoidance
+- **Conflict avoidance**
+  - The simplest strategy for dealing with conflicts is to avoid them.
+    * Most multi-leader setups handle conflict very poorly.
 
-##### Converging toward a consistent state
+  - If all writes for a particular record go through the same leader, then conflicts cannot occur.
+    - However, sometimes you might want to change the designated leader for a record (user moves, datacenter goes down, etc.).
+      * In this situation, conflict avoidance breaks down, and you have to deal with the possibility of concurrent writes on different leaders.
 
-##### Custom conflict resolution logic
+- **Converging toward a consistent state**
+  - A single-leader database applies writes in a sequential order: if there are several updates to the same field, the last write determines the final value of the field.
+
+  - In a multi-leader configuration, *there is no defined ordering of writes*.
+    * If each replica simply applied writes in the order that it saw the writes, the database would end up in an inconsistent state.
+
+  - There are various ways of achieving convergent conflict resolution:
+
+    1. Give each write a unique ID (e.g., a timestamp, a long random number, a UUID, etc.), pick the write with the highest ID as the winner, and throw away the other writes.
+        
+        * If a timestamp is used, this technique is known as **last write wins (LWW)**.
+
+        * This approach is popular but dangerously prone to data loss. 
+
+    2. Give each replica a unique ID, and let writes that originated at a higher- numbered replica always take precedence.
+      * Data loss implied.
+
+    3. Somehow merge the values together.
+      * E.g. order them alphabetically and then concatenate them.
+
+    4. Record the conflict in an explicit data structure that preserves all information, and write application code that resolves the conflict at some later time.
+      * Perhaps by prompting the user.
+
+- **Custom conflict resolution logic**
+  - Most multi-leader replication tools let you write conflict resolution logic using application code, which can be executed on read or on write:
+
+    - **On write**
+      - As soon as the database system detects a conflict in the log of replicated changes, it calls the conflict handler.
+        * This handler runs in a background process and cannot prompt the user.
+    
+    - **On read**
+      - Conflicting writes are stored. The next time the data is read, these multiple versions of the data are returned to the application.
+        * The application may prompt the user or automatically resolve the conflict, writing the result back to the DB.
+
+**Note** that conflict resolution usually applies at the level of an individual row or document, not for an entire transaction.
+  * If a transaction atomically makes several different writes, each write is still considered separately for the purposes of conflict resolution.
+
+Read more about research into automatically resolving conflicts at the end of the chapter:
+
+- **CRDTs**: Conflict-free replicated datatypes are data structures that can be concurrently edited by multiple users, and automatically resolve conflicts.
+
+- **Mergeable persistent data structures**: Track history explicitly, similarly to Git, and use a three-way merge function (whereas CRDTs use two-way merges).
+
+- **Operational transformation**: The conflict resolution algorithm behind collaborative editing apps such as Google Doc.
+  * Designed for concurrent editing of an ordered list of items, such as the list of characters that constitute a text document.
+
 
 ##### What is a conflict?
 
+Some kinds of conflict are obvious: Two writes concurrently modifying a field to separate values.
+
+Others not so much. Like in a booking system that makes reservations, two bookings of the same room could be made at the same time on different leaders.
+  * Even if the application checks availability before allowing a user to make a booking, there can be a conflict if the two bookings are made on two different leaders.
+
+#### Multi-Leader Replication Topologies
+
+![Multi-Leader Replication Topologies](https://github.com/CenturySturgeon/Notes/blob/main/images/MLReplicationTopologies.png)
+
+**Replication topology**: Describes the communication paths along which writes are propagated from one node to another.
+
+When you have only two leaders, leader 1 must send all of its writes to leader 2, and vice versa. But when you have more, you can choose from many styles.
+
+- The most general topology is *all-to-all*.
+
+- In circular and star topologies, a write may need to pass through several nodes before it reaches all replicas.
+  
+  * To prevent infinite replication loops, each node is given a unique identifier, and in the replication log, each write is tagged with the identifiers of all the nodes it has passed through.
+
+- A problem with circular and star topologies is that if just one node fails, it can interrupt the flow of replication messages between other nodes, causing them to be unable to communicate until the node is fixed.
+  
+  * The fault tolerance of a more densely connected topology (such as all-to-all) is better.
+
+- The *all-to-all* topologies have issues too.
+  
+  * Some network links may be faster than others: Resulting in some replication messages “overtaking” others.
+
+  * With multi-leader replication, writes may arrive in the wrong order at some replicas (problem of causality).
+
+    * Simply attaching a timestamp to every write is not sufficient, because clocks cannot be trusted to be sufficiently in sync.
+
+    * To order these events correctly, a technique called __*version vectors*__ can be used.
+
+**Note** In 2017 PostgreSQL BDR does not provide causal ordering of writes, and Tungsten Replicator for MySQL doesn’t even try to detect conflicts.
+
+### Leaderless Replication
+
+#### Writing to the Database When a Node Is Down
+
+##### Read repair and anti-entropy
+
+##### Quorums for reading and writing
 
 
+#### Limitations of Quorum Consistency
+
+##### Monitoring staleness
+
+
+#### Sloppy Quorums and Hinted Handoff
+
+##### Multi-datacenter operation
+
+
+#### Detecting Concurrent Writes
+
+##### Last write wins (discarding concurrent writes)
+
+##### The “happens-before” relationship and concurrency
+
+##### Capturing the happens-before relationship
+
+##### Merging concurrently written values
+
+##### Version vectors
+
+--- 
 Investiga sobre el replication stream
+
+https://leetcode.com/discuss/study-guide/5762077/lld-strategy-hustle
 
 ## Chapter 6: Partitioning
 [![PostgreSQL Partitioning](https://img.youtube.com/vi/BoJj-pltxBUM/0.jpg)](https://www.youtube.com/watch?v=oJj-pltxBUM)
