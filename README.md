@@ -4,9 +4,9 @@
   
 # Part I
 
-## Chapter 1: Reliable, Scalable, and Maintainable Applications
+# Chapter 1: Reliable, Scalable, and Maintainable Applications
 
-### Availability
+## Availability
 
 Percentage of time a system or service is operational and accessible when needed. It measures how often the system is up compared to the total time it should be available.
 
@@ -21,14 +21,14 @@ Percentage of time a system or service is operational and accessible when needed
 
   Each additional nine decreases the downtime by an order of magnitude of roughly 10 times.
 
-### Reliability
+## Reliability
 
 Measures how consistently and correctly a system performs its intended functions over time without failure.
 
 - **Measurement**:
   - Often assessed using metrics such as Mean Time Between Failures (MTBF) or Mean Time to Failure (MTTF), which quantify how long the system performs correctly before encountering a failure.
 
-### Redundancy
+## Redundancy
 
 The inclusion of extra components or systems to ensure continued operation in the event of a failure.
 
@@ -41,7 +41,7 @@ The inclusion of extra components or systems to ensure continued operation in th
 
 
 
-### Maintainability
+## Maintainability
 
 Ensuring that various people (engineering and operations) can work on the system productively over time.
 
@@ -52,16 +52,16 @@ Ensuring that various people (engineering and operations) can work on the system
 | **Evolvability** | Make it easy for engineers to make changes to the system in the future. |
 
 
-### Fault and Failure
+## Fault and Failure
 
 - **Fault**: A deviation of one component from its specification.
 - **Failure**: When the system as a whole stops providing the required service to the user.
 
-### Rolling Upgrade
+## Rolling Upgrade
 
 A method of upgrading a system without shutting it down or interrupting its operation.
 
-### Throughput
+## Throughput
 
 The amount of work processed by a system or component in a given amount of time.
 
@@ -70,15 +70,15 @@ The amount of work processed by a system or component in a given amount of time.
   - **Networks**: Megabits per second (Mbps)
   - **Databases**: Queries per second (queries/second)
 
-### Latency
+## Latency
 
 The time delay between the initiation of a request and the beginning of a response.
 
-### Service Time
+## Service Time
 
 The time it takes to process a request, including tasks like authorization and load balancing.
 
-### Response Time
+## Response Time
 
 The total time from the initiation of a request until the entire response is received and processed. It encompasses both latency and service time.
 
@@ -89,37 +89,37 @@ The total time from the initiation of a request until the entire response is rec
     - T-Digest
     - HDRHistogram
 
-### Scaling
+## Scaling
 
 - **Vertical Scaling**: *Scaling up* by improving the hardware of the hosting machine.
 - **Horizontal Scaling**: *Scaling out* by adding more machines to handle increased load. Known as a shared-nothing architecture.
 
-### SLA (Service Level Agreement)
+## SLA (Service Level Agreement)
 
 Contracts that define the expected performance and availability of a service.
 
-### Telemetry
+## Telemetry
 
 Monitoring performance metrics and error rates. Essential for understanding system status after deployment.
 
-### Load Parameters
+## Load Parameters
 
 - Examples: 
     - Requests per second.
     - Reads-to-writes ratio.
 
-### Fan-out
+## Fan-out
 
 - **Note**: Refer to page 29 for detailed information.
 
-### Elastic Systems
+## Elastic Systems
 
 Systems that can scale automatically.
 
 
-## Chapter 2: Data Models and Query Languages
+# Chapter 2: Data Models and Query Languages
 
-### Relational vs. Document Model
+## Relational vs. Document Model
 
 - **Pros and Cons**
 
@@ -138,7 +138,7 @@ Systems that can scale automatically.
     - Cons:
       - Document model can become less appealing for applications with many-to-many relationships.
 
-### Data Model
+## Data Model
 
 - **SQL Databases**:
   - Relational model with tables, rows, and columns.
@@ -149,7 +149,7 @@ Systems that can scale automatically.
   - Varied models including document stores, key-value stores, column-family stores, and graph databases.
   - Flexible schema, allowing for adjustments and hierarchical or nested data structures.
 
-### Schema Flexibility
+## Schema Flexibility
 
 - **SQL Databases**:
   - Fixed schema.
@@ -159,7 +159,7 @@ Systems that can scale automatically.
   - Dynamic schema.
   - Easier to store different fields or structures in records without predefined schema changes.
 
-### Consistency and Transactions
+## Consistency and Transactions
 
 - **SQL Databases**:
   - Adhere to ACID (Atomicity, Consistency, Isolation, Durability) properties.
@@ -170,7 +170,7 @@ Systems that can scale automatically.
   - Often offer eventual consistency instead of strong consistency.
   - Multi-statement transactions might not be as robust.
 
-### Scalability
+## Scalability
 
 - **SQL Databases**:
   - Typically scale vertically (adding resources to a single server).
@@ -179,7 +179,7 @@ Systems that can scale automatically.
   - Designed to scale out horizontally (distributing data across multiple servers).
   - Can handle large volumes of data and high-velocity workloads more effectively.
 
-### Query Language
+## Query Language
 
 - **SQL Databases**:
   - Use Structured Query Language (SQL).
@@ -189,7 +189,7 @@ Systems that can scale automatically.
   - Query mechanisms vary by database type.
   - Document stores might use JSON-based queries; key-value stores use simple key-based lookups.
 
-### Use Cases
+## Use Cases
 
 - **SQL Databases**:
   - Best for applications needing complex transactions, strong consistency, and well-defined schemas.
@@ -199,13 +199,13 @@ Systems that can scale automatically.
   - Ideal for scenarios where scalability, flexibility, and high performance are critical.
   - Examples: Real-time web applications, big data applications, content management systems.
 
-### Document Storage
+## Document Storage
 
 A document is usually stored as a single continuous string, encoded as JSON, XML, or a binary variant (e.g., MongoDB’s BSON). If your application often needs to access the entire document (e.g., to render it on a web page), there is a performance advantage due to this storage locality.
 
 If data is split across multiple tables, as shown in Figure 2-1, multiple index lookups are required to retrieve it all. This can result in more disk seeks and longer retrieval times. The locality advantage is significant if large parts of the document are needed simultaneously.
 
-### Imperative vs. Declarative Languages
+## Imperative vs. Declarative Languages
 
 - **Imperative Language**:
   - Specifies the exact operations in a particular order (e.g., JavaScript, Python).
@@ -214,7 +214,7 @@ If data is split across multiple tables, as shown in Figure 2-1, multiple index 
 - **Declarative Language**:
   - Specifies what the result should be, without detailing how to achieve it (e.g., CSS, React).
 
-### MapReduce
+## MapReduce
 
 - **Overview**:
   - A programming model for handling large amounts of data across many machines, popularized by Google.
@@ -248,7 +248,7 @@ If data is split across multiple tables, as shown in Figure 2-1, multiple index 
         print(sum_of_numbers)  # Output: 15
       ```
 
-### Graph-Like Data Models
+## Graph-Like Data Models
 
 In scenarios where **many-to-many relationships** are prevalent, a graph-like data model can be particularly effective. This model consists of the following key components:
 
@@ -264,7 +264,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
     - **Undirected edges** do not have a direction, indicating a mutual relationship (e.g., A ↔ B).
   - Each edge can also have attributes or properties that describe the relationship.
 
-#### Key Characteristics
+### Key Characteristics
 
 - **Flexible Schema**:
   - Graph models do not require a rigid schema, allowing the addition of new types of relationships or entities without altering existing data.
@@ -287,7 +287,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
     - **Vertices**: Users, Products
     - **Edges**: Purchases, ratings, reviews
 
-#### Triple Stores and SPARQL
+### Triple Stores and SPARQL
 
 - **Triple Stores**:
   - Triple Stores are a type of graph database designed to store and manage **RDF (Resource Description Framework)** data, represented as triples. Each triple consists of:
@@ -320,7 +320,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
       }
     ```
 
-#### Additional Concepts
+### Additional Concepts
 
 - **Normalization**:
   - In databases, normalization means to store the data in such a way that it is **unique** and not duplicated. For example, in LinkedIn, your profile has a city or location, but the database has separate tables for users and cities. If you update the city name in the cities table, all users with that city will have their data updated.
@@ -342,9 +342,9 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
 
 
 
-## Chapter 3: Storage and Retrieval
+# Chapter 3: Storage and Retrieval
 
-### Log
+## Log
 
 - An append-only sequence of records.
     - Many databases internally use a log, which is an append-only data file.
@@ -376,17 +376,17 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
     - Logs are essential for tracking changes and maintaining a history of operations in databases.
     - The append-only nature of logs ensures that all changes are recorded sequentially, which aids in data recovery and consistency.
 
-### Database Indexing Structures
+## Database Indexing Structures
 
 - **Index**: An additional structure derived from the primary data. It allows faster record searches in the database but can slow down writes.
 
-#### Hash Indexes
+### Hash Indexes
 
 - **Hash Indexes**: 
   - Imagine our data storage involves only appending to a file. The simplest indexing strategy is to maintain an in-memory hash map where each key maps to a byte offset in the data file, indicating where the value can be found.
   - This is similar to the LeetCode problem *'Encode and Decode Strings'*.
 
-#### SSTables and LSM-Trees
+### SSTables and LSM-Trees
 
 - **Sorted String Tables (SSTables)**:
   - Similar to log files used in the *Hash Indexes* example, but with an added detail: segment files are sorted by key, and each key appears only once within each merged segment file (ensured by the compaction process).
@@ -406,7 +406,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
 - **Advantages**:
   - Sorted data supports efficient range queries, and sequential disk writes enable high write throughput.
 
-#### B-Trees
+### B-Trees
 
 - **B-Trees**:
   - Like SSTables, B-trees keep key-value pairs sorted by key, enabling efficient lookups and range queries. However, B-trees differ significantly in design.
@@ -449,12 +449,12 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
     - Disk bandwidth for initial writes and compaction may become a bottleneck.
     - Multiple copies of the same key across segments can occur.
 
-#### Other Indexing Structures
+### Other Indexing Structures
 
 - **Key-Value Indexes**: As discussed, similar to a primary key index in the relational model.
 - **Secondary Indexes**: Can be created using the `CREATE INDEX` command in relational databases. Both B-trees and log-structured indexes can serve as secondary indexes.
 
-#### Storing Values within the Index
+### Storing Values within the Index
 
 - **Heap File**:
   - The index's key is used for queries, while the value can be:
@@ -467,7 +467,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
 - **Covering Index**:
   - Stores some columns of a table within the index, allowing queries to be answered by the index alone. This reduces read times but increases storage and write overhead.
 
-#### Multi-Column Indexes
+### Multi-Column Indexes
 
 - **Concatenated Index**:
   - Combines several fields into one key by appending columns, e.g., (lastname, firstname). Useful for queries involving multiple fields in a specific order.
@@ -478,7 +478,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
       - Ecommerce: Search products by color (RGB dimensions).
       - Weather Database: Search for temperature observations within a range on specific dates.
 
-### Full-Text Search and Fuzzy Indexes
+## Full-Text Search and Fuzzy Indexes
 
 - Traditional indexes do not support searching for similar keys, such as misspelled words.
 - This is known as **fuzzy querying**, which requires different techniques.
@@ -488,7 +488,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
     - Lucene’s in-memory index is a finite state automaton over the characters in the keys, similar to a trie.
     - This automaton can be converted into a **Levenshtein automaton**, which supports efficient search for words within a given edit distance.
 
-#### Keeping Everything in Memory
+### Keeping Everything in Memory
 
   - Compared to main memory, disks are more cumbersome to deal with. We use disks because:
     - They are **durable** (data is not lost if the power is turned off).
@@ -513,7 +513,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
   
   - **Anti-Caching**: Evicts the least recently used data from memory to disk when memory is insufficient, and reloads it into memory when accessed again.
 
-#### Transaction Processing or Analytics?
+### Transaction Processing or Analytics?
 
 - **Transaction Processing vs. Analytics**:
   
@@ -545,7 +545,7 @@ In scenarios where **many-to-many relationships** are prevalent, a graph-like da
 
 
 
-### Data Warehousing
+## Data Warehousing
 
 A **data warehouse** is a separate database designed for querying by analysts without affecting OLTP operations.
 - Database administrators often prefer not to have analysts interacting with OLTP databases directly.
@@ -557,18 +557,18 @@ A **data warehouse** is a separate database designed for querying by analysts wi
       - Cleaned up,
       - Loaded into the data warehouse.
 
-#### The Divergence Between OLTP Databases and Data Warehouses
+### The Divergence Between OLTP Databases and Data Warehouses
 
 - **OLTP vs. Data Warehousing**:
   - OLTP databases are optimized for fast, real-time transaction processing and maintain data integrity.
   - Data warehouses are optimized for complex queries and data analysis, supporting historical data and large-scale data processing.
 
-#### Stars and Snowflakes: Schemas for Analytics
+### Stars and Snowflakes: Schemas for Analytics
 
 - **Star Schema**: Central fact tables connected to dimension tables in a star-like pattern. Useful for straightforward querying.
 - **Snowflake Schema**: A more normalized form of the star schema where dimension tables are split into multiple related tables. This reduces redundancy but can complicate queries.
 
-#### Column-Oriented Storage
+### Column-Oriented Storage
 
 In column-oriented storage, values from each column are stored together rather than values from each row.
   
@@ -622,7 +622,7 @@ In column-oriented storage, values from each column are stored together rather t
 
 
 
-## Chapter 4. Encoding and Evolution
+# Chapter 4. Encoding and Evolution
 
 - **Backward Compatibility**
     - Newer code can read data that was written by older code.
@@ -639,7 +639,7 @@ In column-oriented storage, values from each column are stored together rather t
 
 - **Message-Passing Systems**: Includes actors and message queues.
 
-### Formats for Encoding Data
+## Formats for Encoding Data
 
 - **Encoding**: The translation from the in-memory representation to a byte sequence (also known as __*serialization*__ or __*marshalling*__).
 
@@ -701,7 +701,7 @@ In column-oriented storage, values from each column are stored together rather t
   - **Further Reading**:
     - For additional details on what a tag is in this context, refer to the subsection on tag definitions.
 
-### Datatypes and Schema Evolution
+## Datatypes and Schema Evolution
 
   - **Changing Data Types**:
     - Changing the datatype of a field might be possible but can result in loss of precision or truncation. For example:
@@ -725,7 +725,7 @@ In column-oriented storage, values from each column are stored together rather t
   - **Dynamically Generated Schemas**:
     - For details on dynamically generated schemas, refer to the specific subsection.
 
-### Dataflow Through Databases
+## Dataflow Through Databases
 
 Section talks about how you should write data to the DB in such a way that the future code shouldn't have trouble reading it. It also mentions an example where an ORM might be troublesom when updating DB records if the application code isn't updated (check the image 4-7). 
 
@@ -754,7 +754,7 @@ Lastly, it talks about how __*snapshots*__ are saved for backup and how you coul
   - **Middleware**:
     - Software that supports service-to-service communication within the same organization, often within the same datacenter, is referred to as middleware.
 
-### Popular Approaches to Web Services
+## Popular Approaches to Web Services
 
   - **REST (REpresentational State Transfer)**:
     - A design philosophy built upon HTTP principles.
@@ -800,7 +800,7 @@ Lastly, it talks about how __*snapshots*__ are saved for backup and how you coul
         - **RESTful APIs**: Version numbers in the URL or HTTP headers.
         - **API Keys**: Store requested API versions on the server and manage version selection through an administrative interface.
 
-### Message-Passing Dataflow
+## Message-Passing Dataflow
 
 - **Asynchronous Message-Passing Systems**:
     - These systems are situated between RPC (where one process sends a request to another process expecting a quick response) and databases (where one process writes data and another reads it later).
@@ -855,14 +855,14 @@ Lastly, it talks about how __*snapshots*__ are saved for backup and how you coul
     - **Further Reading**:
       - For a detailed understanding, refer to resources on distributed actor frameworks and their implementation.
 
-### Additional concepts
+## Additional concepts
 - **Idempotence**:
     - Refers to operations where repeating the operation has the same effect as performing it once. (Details are not covered in this section but are important for RPC operations.)
 
 
 # Part II
 
-### Shared-Memory Architecture
+## Shared-Memory Architecture
 
 All the components can be treated as a single machine 
   - Many CPUs, many RAM chips, and many disks can be joined together under one operating system, and a fast interconnect allows any CPU to access any part of the memory or disk.
@@ -871,7 +871,7 @@ All the components can be treated as a single machine
       
     - And due to bottlenecks, a machine twice the size cannot necessarily handle twice the load.
 
-### Shared-Disk Architecture
+## Shared-Disk Architecture
 
 Uses several machines with independent CPUs and RAM, but stores data on an array of disks that is shared between the machines, which are connected via a fast network.
 
@@ -882,7 +882,7 @@ Each machine or virtual machine running the database software is called a node. 
   - Any coordination between nodes is done at the software level, using a conventional network.
   - No special hardware is required by a shared-nothing system, so you can use whatever machines have the best price/performance ratio.
 
-### Shared-Nothing Architecture
+## Shared-Nothing Architecture
 
 In this approach, each machine or virtual machine running the database software is called a **node**.
 
@@ -891,14 +891,14 @@ In this approach, each machine or virtual machine running the database software 
   - No special hardware is required.
     - You can distribute data across multiple geographic regions, and thus reduce latency. 
 
-### Replication Versus Partitioning (Sharding)
+## Replication Versus Partitioning (Sharding)
 
   - **Replication**: Keeping a copy of the same data on several different nodes, potentially in different locations. Replication provides redundancy: if some nodes are unavailable, the data can still be served from the remaining nodes. 
     - Replication can also help improve performance.
   
   - **Partitioning (Sharding)**: Splitting a big database into smaller subsets called partitions so that different partitions can be assigned to different nodes (also known as sharding).
 
-## Chapter 5: Replication
+# Chapter 5: Replication
 
 **Replication** means keeping a copy of the same data on multiple machines that are connected via a network. Reasons you may want to replicate data:
   
@@ -925,7 +925,7 @@ There are many trade-offs to consider with replication: for example, whether to 
 ---
 
 
-### Leader-Based Replication
+## Leader-Based Replication
 
 - **Replica**: A node that stores a copy of the Database.
 
@@ -962,7 +962,7 @@ Leader-based replication is built in on PostgreSQL, but load balancing for the D
 Leader-based replication has **one major downside**: there is only one leader, and all writes must go through it.iv If you can’t connect to the leader for any reason, for example due to a network interruption between you and the leader, you can’t write to the database.
 
 
-### Synchronous VS Asynchronous Replication 
+## Synchronous VS Asynchronous Replication 
 
 An important detail of a replicated system is whether the replication happens **synchronously** or **asynchronously**. 
 
@@ -1005,7 +1005,7 @@ An important detail of a replicated system is whether the replication happens **
     - The leader can continue processing writes, even if all of its followers have fallen behind.
 
 
-### Setting Up New Followers
+## Setting Up New Followers
 
 From time to time, you need to set up new followers—perhaps to increase the number of replicas, or to replace failed nodes. The process outline looks like this:
 
@@ -1027,7 +1027,7 @@ Some DBs have this process fully automated, others require an operator to go thr
 
 
 
-### Handling Node Outages
+## Handling Node Outages
 
 Any node in the system can go down, perhaps unexpectedly due to a fault.
 
@@ -1043,7 +1043,7 @@ Being able to reboot individual nodes without downtime is a big advantage for op
   - Keep the impact of a node outage as small as possible.
 
 
-#### Follower failure: Catch-up recovery
+### Follower failure: Catch-up recovery
 
 On its local disk, each follower keeps a log of the data changes it has received from the leader.
 
@@ -1056,7 +1056,7 @@ On crash, or on a networkd de-sycnh, the follower can recover easily:
   3. After applying the changes (caughting-up) it can continue to opperate.
 
 
-#### Leader failure: Failover
+### Leader failure: Failover
 
 Handling a failure of the leader is trickier: 
 
@@ -1117,13 +1117,13 @@ These issues—node failures; unreliable networks; and trade-offs around replica
 In Chapter 8 and Chapter 9 we will discuss them in greater depth.
 
 
-### Implementation of Replication Logs
+## Implementation of Replication Logs
 
 **The Question**:
 
   - How does leader-based replication work under the hood?
 
-#### Statement-based replication
+### Statement-based replication
 
 The leader logs every write request (statement) that it executes and sends that statement log to its followers.
 
@@ -1142,7 +1142,7 @@ Every `INSERT`, `UPDATE`, or `DELETE` statement is forwarded to followers, and e
 Because there are so many edge cases, other replication methods are now generally preferred, even though you could still navigate around them.
 
 
-#### Write-ahead log (WAL) shipping
+### Write-ahead log (WAL) shipping
 
 PostgreSQL's streaming replication is based on this method.
 
@@ -1167,7 +1167,7 @@ When the follower processes this log, it builds a copy of the exact same data st
 - WAL shipping (this method's implementation name) makes it troublesome for followers to use more recente versions of the DB, forcing overtime on rolling upgrades.
 
 
-#### Logical (row-based) log replication
+### Logical (row-based) log replication
 
 An alternative is to use different log formats for replication and for the storage engine, decoupling the process from the storage engine internals.
 
@@ -1190,7 +1190,7 @@ A logical log for a relational database is usually a sequence of records describ
 
 
 
-#### Trigger-based replication
+### Trigger-based replication
 
 PostgreSQL supports this.
 
@@ -1216,7 +1216,7 @@ The trigger has the opportunity to log this change into a separate table, from w
 
 
 
-### Problems with Replication Lag
+## Problems with Replication Lag
 
 **Reasons for Replication**
 
@@ -1257,7 +1257,7 @@ There are *3* main problems that arise when the replication lag is large:
 
 
 
-#### Reading Your Own Writes
+### Reading Your Own Writes
 
 **Scenario**: User writes data and reads it from a *fallen-behind* replica thinking his data is lost.
 
@@ -1292,7 +1292,7 @@ In this case you need `read-after-write` consistency, also known as `read-your-w
     - If your replicas are distributed across different datacenters, there is no guarantee that connections from different devices will be routed to the same datacenter.
 
 
-#### Monotonic Reads
+### Monotonic Reads
 
 **Scenario**: A user reads data on the application, requests another read but the data is no longer there because he read it from another replica.
 
@@ -1302,7 +1302,7 @@ When you read data, you may see an old value; monotonic reads only means that if
 
 - A solution: Make sure that each user always makes their reads from the same replica (different users can read from different replicas).
 
-#### Consistent Prefix Reads
+### Consistent Prefix Reads
 
 **Scenario**: If some partitions are replicated slower than others, an observer may see the answer before they see the question (Mr. Poons).
 
@@ -1318,7 +1318,7 @@ In many distributed databases, different partitions operate independently, so th
     * There are algorithms that keep track of causal dependencies.
 
 
-#### Solutions for Replication Lag
+### Solutions for Replication Lag
 
 When working with an eventually consistent system ask yourself: `what happens if the replication lag spans several seconds?`
   - If the result is bad user experience, you should provide stronger guarantees like read-after-write.
@@ -1332,7 +1332,7 @@ When working with an eventually consistent system ask yourself: `what happens if
 
 
 
-### Multi-Leader Replication
+## Multi-Leader Replication
 
 In this setup, each leader simultaneously acts as a follower to the other leaders.
   
@@ -1358,7 +1358,7 @@ A natural extension of the leader-based replication model is to allow more than 
 
   - Collaborative editing.
 
-#### Use Case: Multi-Datacenter Operation
+### Use Case: Multi-Datacenter Operation
 
 ![Multi-Leader Replication](https://github.com/CenturySturgeon/Notes/blob/main/images/MultiLeaderReplication.png)
 
@@ -1389,7 +1389,7 @@ Autoincrementing keys, triggers, and integrity constraints can be problematic.
   * For this reason, multi-leader replication is often considered dangerous territory that should be avoided if possible.
 
 
-#### Use Case: Clients With Offline Operation
+### Use Case: Clients With Offline Operation
 
 Appropriate if you have an application that needs to continue to work while it is disconnected from the internet.
   - Calendar Apps for example.
@@ -1404,7 +1404,7 @@ From an architectural point of view, this setup is essentially the same as multi
 
 > CouchDB is designed for this mode of operation.
 
-#### Use Case: Collaborative Editing
+### Use Case: Collaborative Editing
 
 Real-time collaborative editing applications allow several people to edit a document simultaneously.
   - Google Docs
@@ -1420,7 +1420,7 @@ When one user edits a document, the changes are instantly applied to their local
 
 
 
-#### Handling Write Conflicts
+### Handling Write Conflicts
 
 - **Synchronous versus asynchronous conflict detection**
   * If you want synchronous conflict detection, you might as well just use single-leader replication.
@@ -1480,14 +1480,14 @@ Read more about research into automatically resolving conflicts at the end of th
   * Designed for concurrent editing of an ordered list of items, such as the list of characters that constitute a text document.
 
 
-##### What is a conflict?
+#### What is a conflict?
 
 Some kinds of conflict are obvious: Two writes concurrently modifying a field to separate values.
 
 Others not so much. Like in a booking system that makes reservations, two bookings of the same room could be made at the same time on different leaders.
   * Even if the application checks availability before allowing a user to make a booking, there can be a conflict if the two bookings are made on two different leaders.
 
-#### Multi-Leader Replication Topologies
+### Multi-Leader Replication Topologies
 
 ![Multi-Leader Replication Topologies](https://github.com/CenturySturgeon/Notes/blob/main/images/MLReplicationTopologies.png)
 
@@ -1517,43 +1517,108 @@ When you have only two leaders, leader 1 must send all of its writes to leader 2
 
 **Note** In 2017 PostgreSQL BDR does not provide causal ordering of writes, and Tungsten Replicator for MySQL doesn’t even try to detect conflicts.
 
-### Leaderless Replication
+## Leaderless Replication
 
-#### Writing to the Database When a Node Is Down
+In leaderless replication any replica can take in writes. Also, *there doesn't exist failover* in leaderless replication.
 
-##### Read repair and anti-entropy
+In some leaderless implementations, the client directly sends its writes to several replicas, while in others, a coordinator node does this on behalf of the client. However, unlike a leader database, that coordinator does not enforce a particular ordering of writes.
 
-##### Quorums for reading and writing
+### Writing to the Database When a Node Is Down
+
+In leaderless replication, writes are sent asynchronously to all replicas where you just need a certain percentage (lets say 2 out of 3 existing replicas) to reply with a success response.
+
+Reads also query all the replicas in order to get the most recent information since there could be the case where a node was down when the write was performed (and thus missing it) but then came back up and replied with __*stale*__ (outdated) data.
+  
+  - You query multiple replicas to avoid getting stale data since one of them is bound to have recent data, which you'll select.
+    
+    - Version numbers are used to determine which value is newer.
+
+- *Read requests are also sent to several nodes in parallel.*
+
+#### **Read Repair and Anti-Entropy**
+
+  - The replication scheme should ensure that eventually all the data is copied to every replica. There exist two main methods to ensure nodes catch up when they fall behind:
+
+    - **Read repair**
+      
+      - When a client makes a read from several nodes in parallel, it can detect any stale responses and sends the new data to those nodes.
+
+      - This approach works well for values that are frequently read.
 
 
-#### Limitations of Quorum Consistency
+    - **Anti-entropy process**
 
-##### Monitoring staleness
+      - Some DBs have a background process that constantly looks for differences in the data between replicas and copies any missing data from one replica to another.
+
+      - Unlike the replication log in leader-based replication, this *anti-entropy* process does not copy writes in any particular order, and there may be a significant delay before data is copied.
+
+  - Not all systems implement both of these.
+    - Without an anti-entropy process, values that are rarely read may be missing from some replicas and thus have reduced durability.
+
+#### **Quorums for reading and writing**
+
+  - Remembering that reads/writes must be successful in a certain percentage of replicas to be succesful, lets use 2 out of 3 total replicas as the success criteria.
+
+    - Given a successful write, how many replicas should we query in order to get the most recent data on read ? 
+      - The answer is 2, since only one replica can be allowed to fall behind in this context.
+
+  - More generally, if there are `n` replicas, every write must be confirmed by `w` nodes to be considered successful, and we must query at least `r` nodes for each read.
+
+    * In our example, `n = 3`, `w = 2`, `r = 2`.
+  
+    - As long as `w + r > n`, we expect to get an up-to-date value when reading.
+      - Because at least 1 of the `r` replicas must be up to date.
+
+  - Reads and writes that obey these r and w values are called `quorum` reads and writes.
+    - You can think of r and w as the minimum number of votes required for the read or write to be valid.
+
+  - In Dynamo-style databases, the parameters n, w, and r are typically configurable.
+
+  - A common choice is to make `n` an odd number (typically 3 or 5) and to set `w = r = (n + 1) / 2` (rounded up).
+    
+    - A workload with few writes and many reads may benefit from setting `w = n` and `r = 1`. This makes reads faster, but has the disadvantage that just one failed node causes all database writes to fail.
+
+  - **NOTE**: There may be more than n nodes in the cluster, but any given value is stored only on n nodes. This allows the dataset to be partitioned, supporting datasets that are larger than you can fit on one node.
+
+  - **Quorum Conditions**
+    
+    - The quorum condition, `w + r > n`, allows the system to tolerate unavailable nodes as follows:
+
+      - If `w < n`, we can still process writes if a node is unavailable.
+      - If `r < n`, we can still process reads if a node is unavailable.
+      - With `n = 3`, `w = 2`, `r = 2` we can tolerate one unavailable node.
+      - With `n = 5`, `w = 3`, `r = 3` we can tolerate two unavailable nodes.
+      - Normally, reads and writes are always sent to all `n` replicas in parallel. The parameters `w` and `r` determine how many nodes we wait for—i.e.,how many of the n nodes need to report success before we consider the read or write to be successful.
 
 
-#### Sloppy Quorums and Hinted Handoff
+### Limitations of Quorum Consistency
 
-##### Multi-datacenter operation
+- **Monitoring staleness**
 
 
-#### Detecting Concurrent Writes
+### Sloppy Quorums and Hinted Handoff
 
-##### Last write wins (discarding concurrent writes)
+- **Multi-datacenter operation**
 
-##### The “happens-before” relationship and concurrency
 
-##### Capturing the happens-before relationship
+### Detecting Concurrent Writes
 
-##### Merging concurrently written values
+#### Last write wins (discarding concurrent writes)
 
-##### Version vectors
+#### The “happens-before” relationship and concurrency
+
+#### Capturing the happens-before relationship
+
+#### Merging concurrently written values
+
+#### Version vectors
 
 --- 
 Investiga sobre el replication stream
 
 https://leetcode.com/discuss/study-guide/5762077/lld-strategy-hustle
 
-## Chapter 6: Partitioning
+# Chapter 6: Partitioning
 [![PostgreSQL Partitioning](https://img.youtube.com/vi/BoJj-pltxBUM/0.jpg)](https://www.youtube.com/watch?v=oJj-pltxBUM)
 </details>
 <details>
