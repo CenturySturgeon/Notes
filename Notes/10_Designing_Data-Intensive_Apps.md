@@ -1797,14 +1797,165 @@ Also, like in the single-replica example, the application may need to merge sibl
 
 [![PostgreSQL Partitioning](../images/Sharding.png)](https://www.youtube.com/watch?v=oJj-pltxBUM)
 
-For very large datasets, or very high query throughput, replication is not sufficient: we need to break the data up into partitions, also known as sharding.
+
+| DB                                | Partitioning Synonym |
+|-----------------------------------|----------------------|
+| MongoDB, Elasticsearch, SolrCloud | Shard                |
+| HBase                             | region               |
+| Bigtable                          | Tablet               |
+| Cassandra, Riak                   | vnode                |
+| Couchbase                         | vBucket              |
+
+For very large datasets, or very high query throughput, storing all data in a single DB is not sufficient: we need to break the data up into partitions (sharding).
 
 Normally, partitions are defined in such a way that each piece of data (each record, row, or document) belongs to exactly one partition.
 
 In effect, each partition is a small database of its own, although the database may support operations that touch multiple partitions at the same time.
 
-- The main reason for wanting to partition data is scalability.
+- The main reason for wanting to partition data is **scalability**.
+
+- Partitions are defined in such a way that each piece of data (each record, row, or document) belongs to exactly one partition.
+  * This is the *why* behind the throughput limitation of replication:
+    - By separating data in different DBs, they each handle less operations.
+
+      > Thus, a large dataset can be distributed across many disks, and the query load can be distributed across many processors.
+
+- The primary challenge of partitioning is consistently finding the partition to which a record belongs.
+  * You don't want to be running parallel queries on all nodes/partitions to find your info.
+
+
+> For queries that operate on a single partition, each node can independently execute the queries for its own partition, so query throughput can be scaled by adding more nodes.
+
+Some systems are designed for **transactional workloads**, and others for **analytics**. This chapter is mainly about different approaches for partitioning large datasets and the interactions with the indexes.
+  * It also talks about __*rebalancing*__, which is necessary if you want to add or remove nodes.
+  * Chapter also covers routing to the right partition.
+
+## Partitioning and Replication
+
+Partitioning is usually combined with replication so that copies of each partition are stored on multiple nodes.
+  
+  - Even though a record belongs to exactly one partition, it may still be stored on several different nodes for fault tolerance.
+
+  - A node may store more than one partition.
+
+  - In leader-follower replication, each node may be the leader for some partitions and a follower for other partitions.
+
+  - The choice of partitioning scheme is mostly independent of the choice of replication scheme.
+    * Replication will be mostly ignored due to this.
+
+
+## Partitioning of Key-Value Data
+
+**Question**: How do you decide which records to store on which nodes?
+
+**Goal**: Spread the data and the query load evenly across nodes.
+
+If the partitioning is unfair, so that some partitions have more data or queries than others, we call it __*skewed*__.
+  * Skew makes partitioning much less effective.
+  * **Hot Node**: A partition with disproportionately high load.
+
+
+- **IMPORTANT**: For this subsection, assume for now that you have a simple key-value data model, in which you always access a record by its primary key.
+
+### Partitioning by Key Range
+
+One way of partitioning is to assign a continuous range of keys (from some minimum to some maximum) to each partition, like the volumes of a paper encyclopedia (Image Above).
+
+  1. If you know the boundaries between the ranges, you can easily determine which partition contains a given key.
+  2. If you also know the partitions and their parent nodes, you can make your request directly to the appropriate node.
+    * Like picking the correct book out of the shelf.
+
+**Note**: The ranges of keys are not necessarily evenly spaced, because your data may not be evenly distributed.
+  * Just like in the encyclopedia, volume 1 takes two letters while volume 12 takes 6 letters.
+  > In order to distribute the data evenly, the __*partition boundaries*__ need to adapt to the data.
+
+![PostgreSQL Partitioning](../images/PartitionedEncyclopedia.png)
+
+Keys in each partition can remain sorted, making range scans are easy, and you can treat the key as a concatenated index in order to fetch several related records in one query (*Multi-column indexes*).
+
+  - However, the downside is that certain access patterns can lead to hot spots.
+    * Revise the sensor with timestamps example in this section (clue: the timestamps make all writes to *today's* partition).
+
+### Partitioning by Hash of Key
+
+Because of this risk of skew and hot spots, __*many distributed datastores use a hash function*__ to determine the partition for a given key.
+  > A good hash function takes skewed data and makes it uniformly distributed.
+
+  - For partitioning purposes, the hash function need not be cryptographically strong.
+
+    * There can be two different keys that get the same result from the hash function.
+
+    * Think of a meatgrinder.
+
+    * Many programming languages have built-in hash functions: they tend to not be viable for partitioning.
+
+Once you have a suitable hash function for keys, you can assign each partition a range of hashes (rather than a range of keys) and every key whose hash falls within a partition’s range will be stored in that partition.
+
+  * For your understanding: In the book it recommends you to visualize a hashing function that **given a string it returns an integer in the range of `1 - 2^32`**; a 32 bit hashing function.
+    
+    - Now the part of '*assign each partition a range of hashes*' makes sense.
+
+This technique is good at distributing keys fairly among the partitions. 
+  - The partition boundaries can be evenly spaced.
+  - They can be chosen pseudorandomly (in which case the technique is sometimes known as __*consistent hashing*__).
+
+Unfortunately, it also has its cons:
+  - You lose the ability to do efficient range queries.
+    > Keys that were once adjacent are now scattered across all the partitions, so their sort order is lost.
+      * Any range query has to be sent to all partitions in MongoDB.
+
+- CouchBase, Riak, Voldemort do not support range queries on the primary key.
+
+- Read this subection to **find out how Cassandra achieves a compromise between the two partitioning strategies**.
+  * Hint: it uses compound primary keys.
+
+The concatenated index approach enables an elegant data model for one-to- many relationships.
+
+  - On a social media site, one user may post many updates (think of an update as a blog post). 
+    
+    - If the primary key for updates is chosen to be (`user_id`, `update_timestamp`), then you can efficiently retrieve all updates made by a particular user within some time interval, sorted by timestamp.
+
+    - Different users may be stored on different partitions, but within each user, the updates are stored ordered by timestamp on a single partition.
+
+**Important**
+  - **Consistent Hashing**, as in the algorithm CDNs use for routing, *actually doesn’t work very well for databases* and is rarely used.
+    * Avoid the term consistent hashing and just call it hash partitioning instead.
+
+### Skewed Workloads and Relieving Hot Spots
+
+
+
+## Partitioning and Secondary Indexes
+
+### Partitioning Secondary Indexes by Document
+
+### Partitioning Secondary Indexes by Term
+
+
+
+## Rebalancing Partitions
+
+### Strategies for Rebalancing
+
+
+#### How not to do it: hash mod N
+
+#### Fixed number of partitions
+
+#### Dynamic partitioning
+
+#### Partitioning proportionally to nodes
+
+
+### Operations: Automatic or Manual Rebalancing
+
+
+
+## Request Routing
+
+### Parallel Query Execution
 --- 
+
 Investiga sobre el replication stream
 
 https://leetcode.com/discuss/study-guide/5762077/lld-strategy-hustle
