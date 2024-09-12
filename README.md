@@ -1798,9 +1798,16 @@ Also, like in the single-replica example, the application may need to merge sibl
   * When comparing the state of replicas, version vectors are the right data structure to use.
 
 # Chapter 6: Partitioning
-[![PostgreSQL Partitioning](https://img.youtube.com/vi/BoJj-pltxBUM/0.jpg)](https://www.youtube.com/watch?v=oJj-pltxBUM)
 
+[![PostgreSQL Partitioning](https://github.com/CenturySturgeon/Notes/blob/main/images/Sharding.png)](https://www.youtube.com/watch?v=oJj-pltxBUM)
 
+For very large datasets, or very high query throughput, replication is not sufficient: we need to break the data up into partitions, also known as sharding.
+
+Normally, partitions are defined in such a way that each piece of data (each record, row, or document) belongs to exactly one partition.
+
+In effect, each partition is a small database of its own, although the database may support operations that touch multiple partitions at the same time.
+
+- The main reason for wanting to partition data is scalability.
 --- 
 Investiga sobre el replication stream
 
