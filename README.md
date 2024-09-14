@@ -1969,6 +1969,37 @@ https://leetcode.com/discuss/study-guide/5762077/lld-strategy-hustle
   
 ![Python Logo](https://github.com/CenturySturgeon/Notes/blob/main/images/PythonLogo.png)
 
+### Binary Operators
+
+| Operator | Description              | Example  |
+|----------|--------------------------|----------|
+| `&`      | Bitwise AND              | `a & b`  |
+| `\|`     | Bitwise OR               | `a \| b` |
+| `^`      | Bitwise XOR              | `a ^ b`  |
+| `~`      | Bitwise NOT              | `~a`     |
+| `<<`     | Bitwise left shift       | `a << b` |
+| `>>`     | Bitwise right shift      | `a >> b` |
+| `==`     | Equality                 | `a == b` |
+| `!=`     | Inequality               | `a != b` |
+| `<`      | Less than                | `a < b`  |
+| `<=`     | Less than or equal to    | `a <= b` |
+| `>`      | Greater than             | `a > b`  |
+| `>=`     | Greater than or equal to | `a >= b` |
+
+Convert `int` to `binary`:
+
+    ```python
+    bin(3) # output -> '0b11'
+    ```
+
+Convert `binary` to `int`:
+
+    ```python
+    int('11', 2) # The 2 stands for the base of the integer (binary = base 2)
+    # output -> '3'
+    ```
+
+
 ### Decorators
 
 ---
