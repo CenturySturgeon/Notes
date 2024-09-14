@@ -1923,7 +1923,16 @@ The concatenated index approach enables an elegant data model for one-to- many r
 
 ### Skewed Workloads and Relieving Hot Spots
 
+In the extreme case where all reads and writes are for the same key, you still end up with all requests being routed to the same partition.
 
+This kind of workload is perhaps unusual, but not unheard of: enter *celebrity posts on social media apps*.
+  * This event can result in a large volume of writes to the same key (where the key is perhaps the user ID of the celebrity, or the ID of the action that people are commenting on).
+
+> Today, **most data systems are not able to automatically compensate** for such a highly skewed workload, so it’s the responsibility of the application to reduce the skew. For example, if one key is known to be very hot, a simple technique is to add a random number to the beginning or end of the key. Just a two-digit decimal random number would split the writes to the key evenly across 100 different keys, allowing those keys to be distributed to different partitions.
+
+> However, having split the writes across different keys, any reads now have to do additional work, as they have to read the data from all 100 keys and combine it. This technique also requires additional bookkeeping: it only makes sense to append the random number for the small number of hot keys; for the vast majority of keys with low write throughput this would be unnecessary overhead. Thus, you also need some way of keeping track of which keys are being split.
+
+> Perhaps in the future, data systems will be able to automatically detect and compensate for skewed workloads; but for now, you need to think through the trade-offs for your own application.
 
 ## Partitioning and Secondary Indexes
 
@@ -1959,3 +1968,5 @@ The concatenated index approach enables an elegant data model for one-to- many r
 Investiga sobre el replication stream
 
 https://leetcode.com/discuss/study-guide/5762077/lld-strategy-hustle
+
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/solutions/4836121/simple-beginner-friendly-dry-run-greedy-approach-readable-sol-time-o-n-space-o-1-gits
