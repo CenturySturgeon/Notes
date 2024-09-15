@@ -1869,7 +1869,7 @@ One way of partitioning is to assign a continuous range of keys (from some minim
   * Just like in the encyclopedia, volume 1 takes two letters while volume 12 takes 6 letters.
   > In order to distribute the data evenly, the __*partition boundaries*__ need to adapt to the data.
 
-![PostgreSQL Partitioning](../images/PartitionedEncyclopedia.png)
+![Partitioned Encyclopedia](../images/PartitionedEncyclopedia.png)
 
 Keys in each partition can remain sorted, making range scans are easy, and you can treat the key as a concatenated index in order to fetch several related records in one query (*Multi-column indexes*).
 
@@ -1936,33 +1936,174 @@ This kind of workload is perhaps unusual, but not unheard of: enter *celebrity p
 
 ## Partitioning and Secondary Indexes
 
+If records are only ever accessed via their primary key, we can determine the partition from that key and use it for routing the requests.
+
+A secondary index usually doesn’t identify a record uniquely but rather is a way of searching for occurrences of a particular value: 
+  - Find all actions by user.
+  - Find all articles containing the word `warhog`.
+  - Find all cars whose color is `red`.
+
+Secondary indexes are the bread and butter of relational databases, and they are common in document databases too.
+  * Most notably, secondary indexes are the *raison d’être* (reason to be) of search servers such as Solr and Elasticsearch.
+
+The problem with secondary indexes is that they don’t map neatly to partitions. There are two main approaches to partitioning a database with secondary indexes: 
+  * Document-based partitioning
+  * Term-based partitioning.
+
 ### Partitioning Secondary Indexes by Document
+
+The book's example is actually pretty neat:
+  * Each partition hold's the secondary indexes ([Check this video](https://www.youtube.com/watch?v=BIlFTFrEFOI)) for *ONLY* the cars that match it *INSIDE* this partitioned.
+  * This means that the client will query all the partitions, having all partitions return the items that match the secondary index (**scather/gather**).
+
+  - ![Partitioning Cars Example](../images/PartitioningByDocument.png)
+
+Whenever you need to write to the database, you only need to deal with the partition that contains the document ID (primary index) that you are writing. 
+  * For that reason, a document-partitioned index is also known as a __*local index*__ (as opposed to a global index).
+
+However, reading from a document-partitioned index requires care:
+  - There is no reason why all `red` cars would fall under the same partition.
+  - You need to query all partitions and merge the results.
+
+**Scather/Gather**: Querying all partitions with secondary indexes.
+  * Can make read queries very expensive.
+  * Even if you query the partitions in parallel, scatter/gather is prone to tail latency amplification. Nevertheless, it is widely used.
+
+> Most database vendors recommend that you structure your partitioning scheme so that secondary index queries can be served from a single partition, but that is not always possible, especially when you’re using multiple secondary indexes in a single query (such as filtering cars by color and by make at the same time).
 
 ### Partitioning Secondary Indexes by Term
 
+Rather than each partition having its own secondary index (a local index), we can construct a global index that covers data in all partitions. 
+  * This global index can't be in just a single node (beats the purpose of partitioning).
+    - The global index must be partitioned as well, but different from the primary index.
 
+This is super easy to understand using the books example:
+  - Each partition has a range of *terms* where car's colors from letter `a` to `r` appear in `partition0` and the rest (`s` to `z`) on `partition1`.
+  - Each partition's color contains the primary IDs of **even the cars in other partitions that belong to this term (red)**.
+  * The index on the make of car is partitioned similarly (with the partition boundary being between f and h).
+
+![Partitioning By Terms](../images/PartitioningByTerms.png)
+
+> We call this kind of index *term-partitioned*, because the *term* we’re looking for determines the partition of the index. Here, a term would be `color:red`, for example. The name term comes from full-text indexes (a particular kind of secondary index), where the terms are all the words that occur in a document.
+
+As before, we can partition the index by the term itself, or using a hash of the term.
+
+- Partitioning by the term itself can be useful for range scans.
+ - E.g., on a numeric property, such as the asking price of the car.
+
+- Partitioning on a hash of the term gives a more even distribution of load.
+
+The advantage of a global (term-partitioned) index over a document-partitioned index is that it can **make reads more efficient**:  
+  - Rather than doing scatter/gather over all partitions, a client only needs to make a request to the partition containing the term that it wants.
+
+The downside of a global index is that writes are slower and more complicated.
+  - A write to a single document may now affect multiple partitions of the index (every term in the document might be on a different partition, on a different node).
+
+> In an ideal world, the index would always be up to date, and every document written to the database would immediately be reflected in the index. However, in a term-partitioned index, that would require a distributed transaction across all partitions affected by a write, which is not supported in all databases (see Chapter 7 and Chapter 9).
+
+In practice, updates to global secondary indexes are often asynchronous (that is, if you read the index shortly after a write, the change you just made may not yet be reflected in the index).
+
+**REMEMBER**: You may see this two approaches called as __*local vs global indexing*__.
 
 ## Rebalancing Partitions
+
+**Rebalancing**: The process of moving load from one node in the cluster to another.
+
+No matter which partitioning scheme is used, rebalancing is usually expected to meet some minimum requirements:
+
+  - After rebalancing, the load (data storage, read and write requests) should be shared fairly between the nodes in the cluster.
+  - While rebalancing is happening, the database should continue accepting reads and writes.
+  - No more data than necessary should be moved between nodes, to make rebalancing fast and to minimize the network and disk I/O load.
 
 ### Strategies for Rebalancing
 
 
-#### How not to do it: hash mod N
+  - __How *not* to do it__: `hash mod N`
 
-#### Fixed number of partitions
+    - In this book example, a hash (key) mod 10 (`key % 10`) would return a number between 0 and 9 (if we write the hash as a decimal number, the hash mod 10 would be the last digit). 
+      
+      - If we have 10 nodes, numbered 0 to 9, that seems like an easy way of assigning each key to a node.
 
-#### Dynamic partitioning
+      * The problem with the mod `N` approach is that if the number of nodes `N` changes, most of the keys will need to be moved from one node to another.
 
-#### Partitioning proportionally to nodes
+      > We need an approach that doesn’t move data around more than necessary.
 
+
+  - **Fixed number of partitions**
+
+    - Create many more partitions than there are nodes, and assign several partitions to each node (say 100 to 1).
+
+      * Now, if a node is added to the cluster, the new node can steal a few partitions from every existing node until partitions are fairly distributed once again. If a node is removed, the same happens in reverse.
+
+      * Only entire partitions are moved between nodes.
+
+      * The number of partitions *doesn't* change.
+
+      * The assignment of partitions to nodes *does* change.
+      
+      * This can take quite some time, but once done it's done.
+
+        - The old assignment of partitions is used for any reads and writes that happen while the transfer is in progress.
+
+    - By assigning more partitions to nodes that are more powerful, you can force those nodes to take a greater share of the load.
+
+    - Used by `ElasticSearch`, `Riak`, `CouchBase`, and `Voldemort`.
+
+    > Choosing the right number of partitions is difficult if the total size of the dataset is highly variable (for example, if it starts small but may grow much larger over time).
+
+    > If partitions are very large, rebalancing and recovery from node failures become expensive. But if partitions are too small, they incur too much overhead.
+
+  - **Dynamic partitioning**
+
+    - For databases that use key range partitioning a fixed number of partitions with fixed boundaries would be very inconvenient:
+      
+      - If you got the boundaries wrong, you could end up with all of the data in one partition and all of the other partitions empty.
+    
+    - In this approach, when a partition grows to exceed a configured size (on HBase, the default is 10 GB), it is split into two partitions so that approximately half of the data ends up on each side of the split.
+
+      * If lots of data is deleted and a partition shrinks below some threshold, it can be merged with an adjacent partition.
+
+    - Each partition is assigned to one node, and each node can handle multiple partitions, like in the case of a fixed number of partitions.
+      * A split partition can be transferred to another node in order to balance the load.
+
+    * An advantage of dynamic partitioning is that the number of partitions adapts to the total data volume.
+      
+    - However, a caveat is that an empty database starts off with a single partition.
+
+      * While the dataset is small, all writes have to be processed by a single node while the other nodes sit idle until splitting.
+
+      * To mitigate this issue, HBase and MongoDB allow an initial set of partitions to be configured on an empty database (this is called __*pre-splitting*__).
+
+      > In the case of key-range partitioning, pre-splitting requires that you already know what the key distribution is going to look like.
+
+    - Dynamic partitioning is not only suitable for key range–partitioned data, but can equally well be used with hash-partitioned data.
+
+    > With dynamic partitioning, the number of partitions is proportional to the size of the dataset, since the splitting and merging processes keep the size of each partition between some fixed minimum and maximum. 
+
+
+  - **Partitioning proportionally to nodes**
+
+    - In this approach, you make the number of partitions proportional to the number of nodes—in other words, to have a fixed number of partitions per node.
+      
+      * The size of each partition grows proportionally to the dataset size while the number of nodes remains unchanged, but when you increase the number of nodes, the partitions become smaller again.
+
+      * Since a larger data volume generally requires a larger number of nodes to store, this approach also keeps the size of each partition fairly stable.
+
+    - When a new node joins the cluster, it randomly chooses a fixed number of existing partitions to split, and then takes ownership of half of them.
+
+      * The randomization can produce unfair splits, but when averaged over a larger number of partitions (in Cassandra, 256 partitions per node by default), the new node ends up taking a fair share of the load from the existing nodes.
+
+    > Picking partition boundaries randomly requires that hash-based partitioning is used (so the boundaries can be picked from the range of numbers produced by the hash function). Indeed this is the approach most similar to consistent hashing.
 
 ### Operations: Automatic or Manual Rebalancing
 
-
+**Question**: Does the rebalancing happen automatically or manually?
 
 ## Request Routing
 
 ### Parallel Query Execution
+
+
 --- 
 
 Investiga sobre el replication stream
