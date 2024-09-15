@@ -2099,9 +2099,55 @@ No matter which partitioning scheme is used, rebalancing is usually expected to 
 
 **Question**: Does the rebalancing happen automatically or manually?
 
+Couchbase, Riak, and Voldemort generate a suggested partition assignment automatically, but require an administrator to commit it before it takes effect.
+
+Fully automated rebalancing can be convenient, because there is less operational work to do for normal maintenance. However, it can be unpredictable.
+
+If rebalancing is not done carefully, this process can overload the network or the nodes and harm the performance of other requests while the rebalancing is in progress.
+
+Such automation can be dangerous in combination with automatic failure detection.
+  1. Say one node is overloaded and is temporarily slow to respond to requests.
+  2. The other nodes conclude that the overloaded node is dead, and automatically rebalance the cluster to move load away from it.
+  3. This puts additional load on the overloaded node, other nodes, and the network 
+      * Potentially causing a cascading failure.
+
+> For that reason, it can be a good thing to have a human in the loop for rebalancing. It’s slower, but it can help prevent surprises.
+
 ## Request Routing
 
+**Question**: When a client wants to make a request, how does it know which node to connect to?
+
+* This is an instance of a more general problem called service discovery, which isn’t limited to just databases. Any piece of software that is accessible over a network has this problem.
+
+Here are a few different approaches to this problem:
+  1. Allow clients to contact any node (e.g., via a round-robin load balancer).
+      * If the node's the owner it handles the request, if not it forwards it to the owner and replies with the response.
+
+  2. Send all requests from clients to a routing tier first, which determines the node that should handle each request and forwards it accordingly.
+      * The routing tier acts as a partition-aware load balancer (no replies, just routing).
+  
+  3. Require that clients be aware of the partitioning and the assignment of partitions to nodes.
+
+**Note**: There are protocols for achieving consensus in a distributed system, but they are hard to implement correctly.
+
+![Partitioning Routing](../images/PartitioningRouting.png)
+
+- Many distributed data systems rely on a separate coordination service such as ZooKeeper to keep track of this cluster metadata.
+
+  * Read this part of the book, as it explains ZooKeeper much better (and it's an extra).
+    - In summary, every node/partition registers itself in ZooKeeper and whenever a partition changes ownership, or a node is added or removed, ZooKeeper notifies the routing tier so that it can keep its routing information up to date.
+  
+  * MongoDB has a similar architecture, but it relies on its own config server implementation and mongos daemons as the routing tier.
+
+  * Cassandra and Riak: Use a gossip protocol among the nodes to disseminate any changes in cluster state.
+
 ### Parallel Query Execution
+
+> So far we have focused on very simple queries that read or write a single key (plus scatter/gather queries in the case of document-partitioned secondary indexes). **This is about the level of access supported by most NoSQL distributed datastores**.
+
+> However, massively parallel processing (MPP) relational database products, often used for analytics, are much more sophisticated in the types of queries they support.
+
+> Fast parallel execution of data warehouse queries is a specialized topic, and given the business importance of analytics, it receives a lot of commercial interest. 
 
 
 --- 
