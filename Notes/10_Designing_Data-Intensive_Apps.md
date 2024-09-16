@@ -2150,6 +2150,8 @@ Here are a few different approaches to this problem:
 > Fast parallel execution of data warehouse queries is a specialized topic, and given the business importance of analytics, it receives a lot of commercial interest. 
 
 
+# Chapter 7: Transactions
+
 --- 
 
 Investiga sobre el replication stream
