@@ -30,6 +30,34 @@ Convert `binary` to `int`:
     # output -> '3'
     ```
 
+### Sorting
+
+Sorting by using a lambda funciton:
+
+```Python
+# Sample list of tuples
+data = [(1, 'apple'), (3, 'banana'), (2, 'cherry')]
+
+# Sort by the second element of each tuple
+data.sort(key=lambda x: x[1])
+
+print(data) # [(1, 'apple'), (3, 'banana'), (2, 'cherry')]
+```
+
+### Strings
+
+Join an array of numbers into a single string
+
+```Python
+# Sample list with integers
+my_numbers = [1, 2, 3, 4, 5]
+
+# Convert each element to a string and join with a comma
+result = ', '.join(map(str, my_numbers))
+
+print(result) # 12345
+```
+
 
 ### Decorators
 
