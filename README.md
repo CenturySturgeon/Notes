@@ -2916,6 +2916,14 @@ Multithreading and multiprocessing are both techniques for parallel execution, b
 
 # Saved for later
 
+# Got-Stuck Problems
+
+[241 Different Ways To Add Parentheses](https://leetcode.com/problems/different-ways-to-add-parentheses/description/)
+    - [Explanation](https://leetcode.com/problems/different-ways-to-add-parentheses/solutions/5806448/beats-90-beginner-friendly-python3-java-c-c-rust-go-js)
+
+[214 Shortest Palindrome](https://leetcode.com/problems/shortest-palindrome/description/)
+    - [Explanation](https://www.youtube.com/watch?v=niOT-FK1RH8)
+
 #### Prefix Sum with Dictionary
 https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-sum-hashmap-patterns-7-problems
 
