@@ -195,6 +195,9 @@ Multithreading and multiprocessing are both techniques for parallel execution, b
 [214 Shortest Palindrome](https://leetcode.com/problems/shortest-palindrome/description/)
     - [Explanation](https://www.youtube.com/watch?v=niOT-FK1RH8)
 
+[440 Kth Smallest In Lexicographical Order](https://leetcode.com/problems/k-th-smallest-in-lexicographical-order/)
+    - [Explanation](https://leetcode.com/problems/k-th-smallest-in-lexicographical-order/solutions/5818614/beats-100-easy-solution/)
+
 #### Prefix Sum with Dictionary
 https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-sum-hashmap-patterns-7-problems
 
