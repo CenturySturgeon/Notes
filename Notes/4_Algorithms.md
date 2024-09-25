@@ -205,3 +205,169 @@ https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-s
 [Leetcode Strategy Hustle](https://leetcode.com/discuss/study-guide/5762077/lld-strategy-hustle)
 
 [Greedy Algorithm Guide](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/solutions/4836121/simple-beginner-friendly-dry-run-greedy-approach-readable-sol-time-o-n-space-o-1-gits)
+
+# Solved Premium Problems
+
+[Get Premium Probelms Here](https://interview-prep-pro.vercel.app)
+
+- [490 The Maze](https://leetcode.ca/2017-04-03-490-The-Maze/)
+
+    ```Python
+    """
+        There is a ball in a maze with empty spaces (represented as 0) and walls (represented as 1). The ball can go through the empty spaces by rolling up, down, left or right, but it won't stop rolling until hitting a wall. When the ball stops, it could choose the next direction.
+
+        Given the m x n maze, the ball's start position and the destination, where start = [startrow, startcol] and destination = [destinationrow, destinationcol], return true if the ball can stop at the destination, otherwise return false.
+
+        You may assume that the borders of the maze are all walls (see examples).
+        """
+
+        from typing import List
+        import unittest
+
+        class Solution:
+            def canStopAtTarget(self, maze: List[List[int]], start: List[int], destination: List[int]):        
+                rows, columns = len(maze), len(maze[0])
+                directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+                visiting = set()
+                dead_ends = set()
+                print(destination)
+
+                def dfs(row, column, depth):
+                    visiting.add((row, column))
+                    r, c = row, column
+
+                    if (row, column) == (destination[0], destination[1]):
+                        return True
+                    if (row, column) in dead_ends:
+                        return False
+                    
+                    # 4 rotations
+                    for delta_row, delta_column in directions:
+                        r, c = row, column
+                        while 0 <= r + delta_row < rows and 0 <= c + delta_column < columns and maze[r + delta_row][c + delta_column] != 1:
+                            r += delta_row
+                            c += delta_column
+                        if (r, c) not in visiting and dfs(r, c, depth + 1):
+                            return True
+                    
+                    dead_ends.add((row, column))
+                    visiting.remove((row, column))
+                    return False
+
+                return dfs(start[0], start[1], 0)
+
+
+        class Tests(unittest.TestCase):
+
+            def test1(self):
+                case = Solution()
+                maze = [[0,0,1,0,0],[0,0,0,0,0],[0,0,0,1,0],[1,1,0,1,1],[0,0,0,0,0]] 
+                start = [0,4]
+                destination = [4,4]
+                return self.assertEqual(True, case.canStopAtTarget(maze, start, destination))
+            
+            def test2(self):
+                case = Solution()
+                maze = [[0,0,1,0,0],[0,0,0,0,0],[0,0,0,1,0],[1,1,0,1,1],[0,0,0,0,0]]
+                start = [0,4]
+                destination = [3,2]
+                return self.assertEqual(False, case.canStopAtTarget(maze, start, destination))
+
+            def test3(self):
+                case = Solution()
+                maze = [[0,0,0,0,0],[1,1,0,0,1],[0,0,0,0,0],[0,1,0,0,1],[0,1,0,0,0]]
+                start = [4,3]
+                destination = [0,1]
+                return self.assertEqual(False, case.canStopAtTarget(maze, start, destination))
+
+        if __name__ == '__main__':
+            unittest.main()
+    ```
+
+- [Number of connected components in an undirected graph](https://www.lintcode.com/problem/591/)
+
+    ```Python
+        """
+        Number of connected components in an undirected graph
+        Given n nodes in a graph, denoted 1 through n. ConnectingGraph3(n) creates n nodes, and at the beginning there are no edges in the graph.
+
+        You need to support the following method:
+
+        connect(a, b), an edge to connect node a and node b
+        query(), Returns the number of connected component in the graph
+        """
+
+        import unittest
+
+
+
+        class connectGraph:
+
+            def __init__(self, n):
+                self.parents = [i for i in range(0, n + 1)]
+                self.rank = [1 for _ in range(n)]
+
+            def get_parent(self, node):
+                p = self.parents[node]
+                while p != self.parents[p]:
+                    p = self.parents[self.parents[p]]
+                return p
+
+            def connect(self, a, b):
+                parent_a, parent_b = self.get_parent(a), self.get_parent(b)
+
+                if parent_a == parent_b:
+                    return False
+                
+                if self.rank[parent_a] >= self.rank[parent_b]:
+                    self.parents[parent_b] = parent_a
+                    self.rank[parent_a] += 1
+                else:
+                    self.parents[parent_a] = parent_b
+                    self.rank[parent_b] += 1
+
+                return True
+
+                
+            def query(self):
+                nodes = 0
+                groups = set()
+                for node in self.parents:
+                    if node != 0 :
+                        p = self.get_parent(node)
+                        if p not in groups:
+                            nodes += 1
+                        groups.add(p)
+                return nodes
+
+
+        class Test(unittest.TestCase):
+
+            def test1(self):
+                ans = []
+                case = connectGraph(5)
+                ans.append(case.query())
+                case.connect(1, 2)
+                ans.append(case.query())
+                case.connect(2, 4)
+                ans.append(case.query())
+                case.connect(1, 4)
+                ans.append(case.query())
+
+                return self.assertEqual(ans, [5,4,3,3])
+            
+            def test2(self):
+                ans = []
+                case = connectGraph(6)
+                ans.append(case.query())
+                ans.append(case.query())
+                ans.append(case.query())
+                ans.append(case.query())
+                ans.append(case.query())
+                self.assertEqual(ans, [6,6,6,6,6])
+
+            
+
+        if __name__ == '__main__':
+            unittest.main()
+    ```
