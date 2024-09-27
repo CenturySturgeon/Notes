@@ -371,3 +371,38 @@ https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-s
         if __name__ == '__main__':
             unittest.main()
     ```
+
+- [1668 Shortest Way to Form String](https://algo.monster/liteproblems/1055)
+
+    ```Python
+        def shortestWay(source: str, target: str) -> int:
+            count = 0
+            target_p = 0  # Pointer for target
+
+            while target_p < len(target):
+                # source = 'abc' target = 'abcbc'
+                # Start matching with a new subsequence
+                count += 1
+                source_p = 0  # Pointer for source
+                
+                # Try to match target[target_p] with source characters
+                while source_p < len(source) and target_p < len(target):
+                    if source[source_p] == target[target_p]:
+                        target_p += 1  # Move to the next character in target
+                    source_p += 1  # Move to the next character in source
+                    
+                # If we can't match anymore, it means we need another subsequence
+
+            return count
+    ```
+
+    | Source      | Target      | Expected Output |
+    |-------------|-------------|------------------|
+    | abc         | ababc       | 2                |
+    | abc         | acdbc       | 3                |
+    | xyz         | xzyz        | 3                |
+    | abc         | cba         | 3                |
+    | abcde       | ade         | 1                |
+    | abc         | def         | 3                |
+    | abacaba     | aaa         | 2                |
+    | xyz         | xyzxyz      | 2                |
