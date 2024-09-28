@@ -406,3 +406,130 @@ https://leetcode.com/problems/continuous-subarray-sum/solutions/5276981/prefix-s
     | abc         | def         | 3                |
     | abacaba     | aaa         | 2                |
     | xyz         | xyzxyz      | 2                |
+
+- [Number of connected components in an undirected graph](Amazon problem)
+
+    ```Python
+        """
+        Number of connected components in an undirected graph
+        Given n nodes in a graph, denoted 1 through n. ConnectingGraph3(n) creates n nodes, and at the beginning there are no edges in the graph.
+
+        You need to support the following method:
+
+        connect(a, b), an edge to connect node a and node b
+        query(), Returns the number of connected component in the graph
+        """
+
+        import unittest
+
+
+
+        class connectGraph:
+
+            def __init__(self, n):
+                self.parents = [i for i in range(0, n + 1)]
+                self.rank = [1 for _ in range(n)]
+
+            def get_parent(self, node):
+                p = self.parents[node]
+                while p != self.parents[p]:
+                    p = self.parents[self.parents[p]]
+                return p
+
+            def connect(self, a, b):
+                parent_a, parent_b = self.get_parent(a), self.get_parent(b)
+
+                if parent_a == parent_b:
+                    return False
+                
+                if self.rank[parent_a] >= self.rank[parent_b]:
+                    self.parents[parent_b] = parent_a
+                    self.rank[parent_a] += 1
+                else:
+                    self.parents[parent_a] = parent_b
+                    self.rank[parent_b] += 1
+
+                return True
+
+                
+            def query(self):
+                nodes = 0
+                groups = set()
+                for node in self.parents:
+                    if node != 0 :
+                        p = self.get_parent(node)
+                        if p not in groups:
+                            nodes += 1
+                        groups.add(p)
+                return nodes
+
+
+        class Test(unittest.TestCase):
+
+            def test1(self):
+                ans = []
+                case = connectGraph(5)
+                ans.append(case.query())
+                case.connect(1, 2)
+                ans.append(case.query())
+                case.connect(2, 4)
+                ans.append(case.query())
+                case.connect(1, 4)
+                ans.append(case.query())
+
+                return self.assertEqual(ans, [5,4,3,3])
+            
+            def test2(self):
+                ans = []
+                case = connectGraph(6)
+                ans.append(case.query())
+                ans.append(case.query())
+                ans.append(case.query())
+                ans.append(case.query())
+                ans.append(case.query())
+                self.assertEqual(ans, [6,6,6,6,6])
+
+            
+
+        if __name__ == '__main__':
+            unittest.main()
+    ```
+
+- [Find the celebrity](https://leetcode.ca/all/277.html)
+
+    ```Python
+        # The knows API is already defined for you.
+        # @param a, person a
+        # @param b, person b
+        # @return a boolean, whether a knows b
+        # def knows(a, b):
+
+        class Solution(object):
+            def findCelebrity(self, n):
+                """
+                :type n: int
+                :rtype: int
+                """
+                # find the potential celebrity
+                candidate = 0
+                
+                # for each person, check if the potential celebrity knows them
+                # if the potential celebrity knows them, then they cannot be the celebrity
+                # if the potential celebrity does not know them, then move on to the next person
+                for i in range(1, n):
+                    if knows(candidate, i):
+                        candidate = i
+                        # it makes candidate = i since a celebrity MUST be followed by all other nodes.
+                        # Check the images of the problem link, in image 1 if node 0 doesn't follow node 1 then candidate will be equal to 2 at the end of this loop. However, it doesn't matter since no celebrity will be found on the next for loop:
+                        # The celebrity MUST be inmeditaly reachable on this first loop.
+                
+                # now we need to validate that the potential celebrity is indeed a celebrity
+                # for each person, check if the potential celebrity knows them
+                # if the potential celebrity does know them, then they cannot be the celebrity
+                # if the potential celebrity does not know them, then check if the person knows the potential celebrity
+                # if the person does not know the potential celebrity, then the potential celebrity cannot be a celebrity
+                for i in range(n):
+                    if i != candidate and (knows(candidate, i) or not knows(i, candidate)):
+                        return -1
+                return candidate
+    ```

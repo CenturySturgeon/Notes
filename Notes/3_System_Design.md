@@ -28,7 +28,19 @@
 - **1 IPV4** Addresss = **4 Bytes**
 - **1 IPV6** Address = **16 Bytes**
 - **1 Unix Timestamp** = **4 Bytes**
-- SSD: Solid State Drive
+
+- Amazon Relational Database Service (RDS), you can get a database server with 24 TB of RAM.
+  * For example, stackoverflow.com in 2013 had over 10 million monthly unique visitors, but it only
+had 1 master database.
+
+"Sharding; the horizontal scaling of DBs"
+
+> Sharding separates large databases into smaller, more easily managed parts called shards. Each shard shares the same schema, though the actual data on each shard is unique to the
+shard.
+
+> The most important factor to consider when implementing a sharding strategy is the choice of the sharding key. Sharding key (known as a partition key) consists of one or more columns that determine how data is distributed.
+
+  * Choose a key that can evenly distribute data.
 
 <details>
   <summary><h5 style="display: inline;">Latency Numbers Every Programmer Should Know</h5></summary><br>
@@ -156,12 +168,39 @@ User_Id/Ip -> Count (Enforces count using rule)
 **Identify rule (youtube rate limiter rules may be different than gmail's)**
 
 **Rule DB Schema**
-| Parameeter | Type |
-|----------|----------|
-| Id   | String   |
-| API To forward the request to   | Cell 4   |
-| Operation/Endpoint   | String   |
-| TimeUnit   | String   |
-| Request   | Int   |
+| Parameeter                    | Type   |
+|-------------------------------|--------|
+| Id                            | String |
+| API To forward the request to | Cell 4 |
+| Operation/Endpoint            | String |
+| TimeUnit                      | String |
+| Request                       | Int    |
 
 </details>
+
+
+## Design Patterns
+
+Design patterns are reusable solutions to common problems that occur in software design. They provide a template or blueprint for solving specific issues, making it easier to build systems that are flexible, maintainable, and scalable.
+
+1. **Categories**: Design patterns are typically categorized into three main types:
+
+   - **Creational Patterns**: Deal with object creation mechanisms, trying to create objects in a manner suitable to the situation. Examples include Singleton, Factory Method, and Abstract Factory.
+
+   - **Structural Patterns**: Focus on how classes and objects are composed to form larger structures. Examples include Adapter, Composite, and Proxy.
+
+   - **Behavioral Patterns**: Concerned with algorithms and the assignment of responsibilities between objects. Examples include Observer, Strategy, and Command.
+
+2. **Not a Finished Product**: Patterns are not code that you can just plug into your application. They are guidelines or best practices that help developers think about the design of their systems.
+
+3. **Facilitate Communication**: They provide a common vocabulary for developers, making it easier to discuss solutions to design problems.
+
+4. **Promote Reusability**: By using established patterns, developers can avoid reinventing the wheel and can rely on proven solutions.
+
+5. **Encourage Good Practices**: Many patterns encourage principles like separation of concerns, encapsulation, and adherence to SOLID principles, which help in creating cleaner, more maintainable code.
+
+## Example: Singleton Pattern
+
+To illustrate, consider the Singleton pattern. This pattern ensures that a class has only one instance and provides a global point of access to it. It's commonly used for managing shared resources, like database connections or configuration settings.
+
+In summary, design patterns are valuable tools in software development that help streamline design processes and foster collaboration among developers by providing well-understood, reusable solutions to common challenges.
