@@ -27,26 +27,29 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 
 - **Sizes Of Commonly Used Resources**
 
-  | Item            | Size/Unit                            | Notes                                             |
-  |-----------------|--------------------------------------|---------------------------------------------------|
-  | ASCII Character | 1 byte                               | Standard ASCII uses 7 bits, but 1 byte is common. |
-  | UTF-8 Character | 1 to 4 bytes                         | Variable-length encoding.                         |
-  | Image (JPEG)    | ~500 KB to 5 MB (or more) per image  | Depends on resolution and compression.            |
-  | Image (PNG)     | ~200 KB to 10 MB (or more) per image | Lossless compression, larger files.               |
-  | Video (720p)    | ~1.5 GB per hour                     | Depends on bitrate and codec.                     |
-  | Video (1080p)   | ~3 GB per hour                       | Higher resolution increases size.                 |
-  | Audio (MP3)     | ~1 MB per minute                     | Depends on bitrate (e.g., 128 kbps).              |
-  | Web Page (HTML) | ~1 KB to 1 MB per page               | Depends on content and resources.                 |
-  | JSON Object     | Varies widely                        | Depends on size and complexity of data.           |
+  | Item              | Size/Unit                            | Notes                                             |
+  |-------------------|--------------------------------------|---------------------------------------------------|
+  | ASCII Character   | 1 byte                               | Standard ASCII uses 7 bits, but 1 byte is common. |
+  | UTF-8 Character   | 1 to 4 bytes                         | Variable-length encoding.                         |
+  | UUID              | 16 Bytes                             | Consists of a mix of numbers and letters.         |
+  | Image (JPEG)      | ~500 KB to 5 MB (or more) per image  | Depends on resolution and compression.            |
+  | Image (PNG)       | ~200 KB to 10 MB (or more) per image | Lossless compression, larger files.               |
+  | Video (720p)      | ~1.5 GB per hour                     | Depends on bitrate and codec.                     |
+  | Video (1080p)     | ~3 GB per hour                       | Higher resolution increases size.                 |
+  | Audio (MP3)       | ~1 MB per minute                     | Depends on bitrate (e.g., 128 kbps).              |
+  | Web Page (HTML)   | ~1 KB to 1 MB per page               | Depends on content and resources.                 |
+  | Book              | ~300 KB to 2 MB                      | Depends on formatting and length.                 |
+  | Ten Page Document | ~100 KB to 500 KB                    | Varies with images, formatting, and content.      |
 
 
 - **Estimated Round-Trip Times** (RTT):
 
-  - **Within the same continent**: Typically around 20 to 100 ms.
+  | Distance Type                                    | Typical Latency        |
+  |--------------------------------------------------|------------------------|
+  | Within the same continent                        | 20 to 100 ms           |
+  | Intercontinental (e.g., North America to Europe) | 100 to 200 ms          |
+  | Around the world                                 | Exceeds 300 ms or more |
 
-  - **Intercontinental (e.g., from North America to Europe)**: Generally between 100 to 200 ms.
-  
-  - **Around the world**: Could exceed 300 ms or more, depending on the factors mentioned.
 
 - **Quorum Consensus**
 
@@ -75,6 +78,16 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 
   > Strong consistency is usually achieved by forcing a replica not to accept new reads/writes until every replica has agreed on current write. This approach is not ideal for highly available systems because it could block new operations
 
+- **Hash Function Outputs**
+
+  - [Online Hash Function Comparer](https://md5calc.com/hash/sha256/LSKDJFHSFA)
+
+  | Hash Function | Output                                                           |
+  |---------------|------------------------------------------------------------------|
+  | CRC32         | 747900d0                                                         |
+  | SHA1          | ffb9e0aec8fefa6497076632823d7bb0704dff95                         |
+  | SHA256        | 9b6e9d23eaf779fc30ec88e4ff7ee734528a4b5844234e0247c5ce7ef1a3fd0f |
+
 
 ### Re-Read
   - Sloppy Quorums (chapter 6).
@@ -90,8 +103,12 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 
     * Understangind Merkle trees is going to be hard, but the main idea is that from the parent node of two merkle trees (one for each replica) you can compare their hashes and determine if they have different data. If the hashes don't match, then there's a conflict and you will recursivly do this for their children nodes until you find the conflicting data.
 
-  - Bloom filter (chapter 6)
+  - Bloom filter (chapter 6 & 8)
     * The bloom filter is used to figure out which SSTables might contain the key.
+    * (chapter 8) A bloom filter is a space-efficient probabilistic technique to test if an element is a member of a set. Refer to the reference material [2] for more details.
+
+  - **Epoch** (chapter 7)
+    * The epoch is where you meassure time from (think of unix timestamps, their epoch is Jan x something).
 
 ### Fundamentals
 
@@ -139,158 +156,15 @@ This website is really useful so you can get an idea (it's a little outdated, 20
 
 </details>
 
-#### Concepts I Found Interesting
 
-<details>
-  <summary><h5 style="display: inline;">CPU Cache Mutex Lock/Unlock</h5></summary><br>
+## Alex Xu
 
-In the context of CPU cache, mutex lock and unlock operations typically refer to synchronization mechanisms used in multi-threaded programming to control access to shared resources.
+### Chapter 8 notes
 
-1. Mutex Lock:
-
-- When a thread wants to access a shared resource (such as a region of memory or a data structure) that is cached in CPU cache, it first acquires a mutex lock associated with that resource.
-- Acquiring a mutex lock ensures that only one thread can access the shared resource at a time. If the resource is already locked by another thread, the thread attempting to lock it will wait until the lock is released.
-
-2. Mutex Unlock:
-
-- Once a thread has finished using the shared resource, it releases the mutex lock by invoking the unlock operation.
-- Releasing the mutex lock allows other threads to acquire the lock and access the shared resource.
-- Mutex locks and unlocks help prevent race conditions and ensure that concurrent access to shared resources is properly coordinated, thereby avoiding data corruption and inconsistency.
-
-In the context of CPU cache, when a thread acquires a mutex lock before accessing a shared resource that resides in the cache, it ensures that only one thread can access that resource at a time, even if multiple threads are running concurrently on different CPU cores. This helps maintain data integrity and consistency in multi-threaded applications.
-
-</details>
-
-### Software Technologies You Should Know
-
-<details>
-  <summary><h4 style="display: inline;">Redis</h4></summary><br>
-
-![Redis](../images/Redis.jpg)
-
-Redis, **RE**mote **DI**ctionary **S**erver, is an open-source, in-memory data structure store used as a database, cache, and message broker. It supports various data structures such as strings, hashes, lists, sets, sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes, and streams. Redis is known for its high performance, flexibility, and rich set of features.
-
-##### Key Features:
-
-- **In-Memory Storage**: Redis primarily stores data in RAM, which allows for extremely fast data access and retrieval.
-- **Data Structures**: It supports various data structures, enabling users to store and manipulate data efficiently.
-- **Persistence**: Redis offers different persistence options to ensure data durability, including snapshotting and append-only file (AOF) persistence.
-- **Replication and High Availability**: Redis supports replication and clustering, allowing for data redundancy and high availability.
-- **Pub/Sub Messaging**: Redis can be used as a message broker through its publish/subscribe functionality.
-- **Lua Scripting**: Users can extend Redis functionality using Lua scripting.
-- **Transactions**: Redis supports transactions, allowing users to execute a group of commands as a single atomic operation.
-
-##### Alternatives:
-
-1. **Memcached**: Memcached is a distributed memory caching system that also stores key-value pairs. It is known for its simplicity and high-performance caching capabilities.
-
-4. **Amazon DynamoDB**: DynamoDB is a fully managed NoSQL database service provided by Amazon Web Services (AWS). It offers seamless scalability, high performance, and built-in security features.
-
-</details>
-
-<details>
-  <summary><h4 style="display: inline;">Elastic Search</h4></summary><br>
-
-![Redis](../images/Redis.jpg)
-
-</details>
-
-
-
-
-
-
-
-
-
-
-
-### Designing Systems & Components
-<details>
-  <summary><h4 style="display: inline;">Rate Limiter</h4></summary><br>
-
-##### Requirements
-
-1. Take 1 Billion (1x10^9 or 1,000,000,000) users.
-2. Must be as general use as possible (multiple services use it).
-
-Components you ended up using:
-- Reddis: Sorted sets 
-- Memcache
-- Consistent Hashing
-
-##### Algorithms
-
-###### Fixed Window Algorithm for Rate limiters
-
-We set a fix window of time, lets say every minute a user can send 100 requests, so everytime a new minute encompasses we refresh his available requests total to 100.
-
-- Benefit: Since we're storing counts inside of the key value store in our memory, this is a very simplistic approach to take. We don't have to take into account when the requests were made exactly, we just care that they happened in the window -> we would just need to include the minute when checking for the availability.
-
-- Issue with refresh rate of the algorithm: With a requests/per minute of a 100; if the user sends a request at 0:59 and then at 1:00 the valid window refreshes, the user could send another 100 requests at 1:01: in total 200 requests in a matter of 2 seconds
-
-###### Sliding window
-
-Any time a user makes a request we check if it is inside the invalid window, every second we shift this valid window by one second so the user can't take advantage of the refresh rate of the fixed window Algo.
-
-- Benefit: Here we're checking if the user has expired his total amout of requests in the previous 60 seconds so we don't have the same refresh rate issue as the Fixed widow.
-
-- Downside: We have to store the exact time-stamp when the user attempted to perform his requests. This increases our memory requirements since one Unix timestamp per request per user:
-
-$4 \text{ Bytes} \times \text{Max\_No.Of\_Requests} \times \text{No\_Of\_Users} -> 4 * 100 * 1000000000 = 400GB$ 
-
-##### Other Algorithms
-
-- Token bucket
-- Sliding Window Counter (Balance between Fixed Window and Sliding Window Algorithms)
-
-##### Data Schemas
-
-**Identify User and his count**
-key -> Value
-User_Id/Ip -> Count (Enforces count using rule)
-*Redis can set data to expire
-
-**Identify rule (youtube rate limiter rules may be different than gmail's)**
-
-**Rule DB Schema**
-| Parameeter                    | Type   |
-|-------------------------------|--------|
-| Id                            | String |
-| API To forward the request to | Cell 4 |
-| Operation/Endpoint            | String |
-| TimeUnit                      | String |
-| Request                       | Int    |
-
-</details>
-
-
-## Design Patterns
-
-Design patterns are reusable solutions to common problems that occur in software design. They provide a template or blueprint for solving specific issues, making it easier to build systems that are flexible, maintainable, and scalable.
-
-1. **Categories**: Design patterns are typically categorized into three main types:
-
-   - **Creational Patterns**: Deal with object creation mechanisms, trying to create objects in a manner suitable to the situation. Examples include Singleton, Factory Method, and Abstract Factory.
-
-   - **Structural Patterns**: Focus on how classes and objects are composed to form larger structures. Examples include Adapter, Composite, and Proxy.
-
-   - **Behavioral Patterns**: Concerned with algorithms and the assignment of responsibilities between objects. Examples include Observer, Strategy, and Command.
-
-2. **Not a Finished Product**: Patterns are not code that you can just plug into your application. They are guidelines or best practices that help developers think about the design of their systems.
-
-3. **Facilitate Communication**: They provide a common vocabulary for developers, making it easier to discuss solutions to design problems.
-
-4. **Promote Reusability**: By using established patterns, developers can avoid reinventing the wheel and can rely on proven solutions.
-
-5. **Encourage Good Practices**: Many patterns encourage principles like separation of concerns, encapsulation, and adherence to SOLID principles, which help in creating cleaner, more maintainable code.
-
-## Example: Singleton Pattern
-
-To illustrate, consider the Singleton pattern. This pattern ensures that a class has only one instance and provides a global point of access to it. It's commonly used for managing shared resources, like database connections or configuration settings.
-
-In summary, design patterns are valuable tools in software development that help streamline design processes and foster collaboration among developers by providing well-understood, reusable solutions to common challenges.
-
+- Hashing functions for tiny url
+  - CRC32
+  - MD5
+  - SHA-1. 
 
 ## Doubts I Had
 
@@ -364,3 +238,31 @@ Yes, that's correct! Shards typically replicate data only within their own group
   - Local Replication: Replication is local to each shard, meaning that the replicas of a shard only contain the data for that shard. This ensures that replicas are always in sync with their primary shard.
 
   - Scalability: This approach allows you to scale your database horizontally while maintaining efficient data access and redundancy within each shard.
+
+
+## Design Patterns
+
+Design patterns are reusable solutions to common problems that occur in software design. They provide a template or blueprint for solving specific issues, making it easier to build systems that are flexible, maintainable, and scalable.
+
+1. **Categories**: Design patterns are typically categorized into three main types:
+
+   - **Creational Patterns**: Deal with object creation mechanisms, trying to create objects in a manner suitable to the situation. Examples include Singleton, Factory Method, and Abstract Factory.
+
+   - **Structural Patterns**: Focus on how classes and objects are composed to form larger structures. Examples include Adapter, Composite, and Proxy.
+
+   - **Behavioral Patterns**: Concerned with algorithms and the assignment of responsibilities between objects. Examples include Observer, Strategy, and Command.
+
+2. **Not a Finished Product**: Patterns are not code that you can just plug into your application. They are guidelines or best practices that help developers think about the design of their systems.
+
+3. **Facilitate Communication**: They provide a common vocabulary for developers, making it easier to discuss solutions to design problems.
+
+4. **Promote Reusability**: By using established patterns, developers can avoid reinventing the wheel and can rely on proven solutions.
+
+5. **Encourage Good Practices**: Many patterns encourage principles like separation of concerns, encapsulation, and adherence to SOLID principles, which help in creating cleaner, more maintainable code.
+
+### Example: Singleton Pattern
+
+To illustrate, consider the Singleton pattern. This pattern ensures that a class has only one instance and provides a global point of access to it. It's commonly used for managing shared resources, like database connections or configuration settings.
+
+In summary, design patterns are valuable tools in software development that help streamline design processes and foster collaboration among developers by providing well-understood, reusable solutions to common challenges.
+
