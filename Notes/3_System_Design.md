@@ -1,84 +1,92 @@
-### Handy Stuff
+# Handy Stuff
 
 Amazon Relational Database Service (RDS), can get you a database server with 24 TB of RAM. For example, stackoverflow.com in 2013 had over 10 million monthly unique visitors, but it only had 1 master database.
 
-- **Memory Basics**
+## Memory Basics
 
-  | Item                  | Size      |
-  |-----------------------|-----------|
-  | 1 Byte                | 8 bits    |
-  | 1 IPv4 Address        | 4 Bytes   |
-  | 1 Unix Timestamp      | 4 Bytes   |
-  | 1 IPv6 Address        | 16 Bytes  |
+### Memory Units
 
-- **Memory Units**
+| Power | Approx Value  | Short Name | Numeric Representation  (Bytes) | Number of 0s |
+|-------|---------------|------------|---------------------------------|--------------|
+| 10    | 1 Thousand    | 1 KB       | 1,000                           | 3            |
+| 20    | 1 Million     | 1 MB       | 1,000,000                       | 6            |
+| 30    | 1 Billion     | 1 GB       | 1,000,000,000                   | 9            |
+| 40    | 1 Trillion    | 1 TB       | 1,000,000,000,000               | 12           |
+| 50    | 1 Quadrillion | 1 PB       | 1,000,000,000,000,000           | 15           |
 
-  | Power | Approx Value  | Short Name | Numeric Representation  (Bytes) | Number of 0s |
-  |-------|---------------|------------|---------------------------------|--------------|
-  | 10    | 1 Thousand    | 1 KB       | 1,000                           | 3            |
-  | 20    | 1 Million     | 1 MB       | 1,000,000                       | 6            |
-  | 30    | 1 Billion     | 1 GB       | 1,000,000,000                   | 9            |
-  | 40    | 1 Trillion    | 1 TB       | 1,000,000,000,000               | 12           |
-  | 50    | 1 Quadrillion | 1 PB       | 1,000,000,000,000,000           | 15           |
+- **Note**: Everything is in American orders of magnitude (1 billion in Spanish isn't a billion but rather 1,000 millions etc.).
 
-  - **Note**: Everything is in American orders of magnitude (1 billion in Spanish isn't a billion but rather 1,000 millions etc.).
+| Item                  | Size      |
+|-----------------------|-----------|
+| 1 Byte                | 8 bits    |
+| 1 IPv4 Address        | 4 Bytes   |
+| 1 Unix Timestamp      | 4 Bytes   |
+| 1 IPv6 Address        | 16 Bytes  |
+
 
 Keep in mind, if you ever hear *"Big Data"* in an interview they're talking about Terabytes [TB] or Petabytes [PB].
 
-- **Sizes Of Commonly Used Resources**
+### Sizes Of Commonly Used Resources
 
-  | Item              | Size/Unit                            | Notes                                             |
-  |-------------------|--------------------------------------|---------------------------------------------------|
-  | ASCII Character   | 1 byte                               | Standard ASCII uses 7 bits, but 1 byte is common. |
-  | UTF-8 Character   | 1 to 4 bytes                         | Variable-length encoding.                         |
-  | UUID              | 16 Bytes                             | Consists of a mix of numbers and letters.         |
-  | Image (JPEG)      | ~500 KB to 5 MB (or more) per image  | Depends on resolution and compression.            |
-  | Image (PNG)       | ~200 KB to 10 MB (or more) per image | Lossless compression, larger files.               |
-  | Video (720p)      | ~1.5 GB per hour                     | Depends on bitrate and codec.                     |
-  | Video (1080p)     | ~3 GB per hour                       | Higher resolution increases size.                 |
-  | Audio (MP3)       | ~1 MB per minute                     | Depends on bitrate (e.g., 128 kbps).              |
-  | Web Page (HTML)   | ~1 KB to 1 MB per page               | Depends on content and resources.                 |
-  | Book              | ~300 KB to 2 MB                      | Depends on formatting and length.                 |
-  | Ten Page Document | ~100 KB to 500 KB                    | Varies with images, formatting, and content.      |
-
-
-- **Estimated Round-Trip Times** (RTT):
-
-  | Distance Type                                    | Typical Latency        |
-  |--------------------------------------------------|------------------------|
-  | Within the same continent                        | 20 to 100 ms           |
-  | Intercontinental (e.g., North America to Europe) | 100 to 200 ms          |
-  | Around the world                                 | Exceeds 300 ms or more |
+| Item              | Size/Unit                            | Notes                                                          |
+|-------------------|--------------------------------------|----------------------------------------------------------------|
+| ASCII Character   | 1 byte                               | Standard ASCII uses 7 bits, but 1 byte is common.              |
+| UTF-8 Character   | 1 to 4 bytes                         | Variable-length encoding.                                      |
+| UUID              | 16 Bytes                             | Consists of a mix of numbers and letters.                      |
+| Image (JPEG)      | ~500 KB to 5 MB (or more) per image  | Depends on resolution and compression.                         |
+| Image (PNG)       | ~200 KB to 10 MB (or more) per image | Lossless compression, larger files.                            |
+| Video (720p)      | ~1.5 GB per hour                     | Depends on bitrate and codec.                                  |
+| Video (1080p)     | ~3 GB per hour                       | Higher resolution increases size.                              |
+| Audio (MP3)       | ~1 MB per minute                     | Depends on bitrate (e.g., 128 kbps).                           |
+| Email             | Varies [~20 KB for text only]        | Size can vary depending on content, attachments, and encoding. |
+| Web Page (HTML)   | ~1 KB to 1 MB per page               | Depends on content and resources.                              |
+| Book              | ~300 KB to 2 MB                      | Depends on formatting and length.                              |
+| Ten Page Document | ~100 KB to 500 KB                    | Varies with images, formatting, and content.                   |
 
 
-- **Quorum Consensus**
+## Networks
 
-  - **N**: The toal number of nodes.
-  - **W**: The number of nodes that need to acknowledge (return 201) when you perform a write operation.
-  - **R**: The number of nodes that need to be probed when you perform a Read operation. This is so you can compare their responses and use the most recent data.
+### Estimated Round-Trip Times** (RTT):
 
-  - If `W + R > N`, strong consistency is guaranteed because there's an overlapping node that has the latest data to ensure consistency.
+| Distance Type                                    | Typical Latency        |
+|--------------------------------------------------|------------------------|
+| Within the same continent                        | 20 to 100 ms           |
+| Intercontinental (e.g., North America to Europe) | 100 to 200 ms          |
+| Around the world                                 | Exceeds 300 ms or more |
 
-    | Configuration   | Description                                              |
-    |-----------------|----------------------------------------------------------|
-    | R = 1 and W = N | Optimized for a fast read                                |
-    | W = 1 and R = N | Optimized for a fast write                               |
-    | W + R > N       | Strong consistency guaranteed (Usually N = 3, W = R = 2) |
-    | W + R <= N      | Strong consistency not guaranteed                        |
 
-    - For your examples in the interview, use `N=3` for your examples as it's eassier to understand the table above.
+## DB Stuff
 
-- **Consistency Models**
+### Quorum Consensus
 
-  | Consistency Model    | Description                                                                                                   |
-  |----------------------|---------------------------------------------------------------------------------------------------------------|
-  | Strong Consistency   | Any read operation returns the most updated value; clients never see out-of-date data.                        |
-  | Weak Consistency     | Subsequent read operations may not see the most updated value.                                                |
-  | Eventual Consistency | Given enough time, all updates are propagated, and all replicas become consistent (weak consistency variant). |
+- **N**: The toal number of nodes.
+- **W**: The number of nodes that need to acknowledge (return 201) when you perform a write operation.
+- **R**: The number of nodes that need to be probed when you perform a Read operation. This is so you can compare their responses and use the most recent data.
 
-  > Strong consistency is usually achieved by forcing a replica not to accept new reads/writes until every replica has agreed on current write. This approach is not ideal for highly available systems because it could block new operations
+- If `W + R > N`, strong consistency is guaranteed because there's an overlapping node that has the latest data to ensure consistency.
 
-- **Hash Function Outputs**
+  | Configuration   | Description                                              |
+  |-----------------|----------------------------------------------------------|
+  | R = 1 and W = N | Optimized for a fast read                                |
+  | W = 1 and R = N | Optimized for a fast write                               |
+  | W + R > N       | Strong consistency guaranteed (Usually N = 3, W = R = 2) |
+  | W + R <= N      | Strong consistency not guaranteed                        |
+
+  - For your examples in the interview, use `N=3` for your examples as it's eassier to understand the table above.
+
+### Consistency Models
+
+| Consistency Model    | Description                                                                                                   |
+|----------------------|---------------------------------------------------------------------------------------------------------------|
+| Strong Consistency   | Any read operation returns the most updated value; clients never see out-of-date data.                        |
+| Weak Consistency     | Subsequent read operations may not see the most updated value.                                                |
+| Eventual Consistency | Given enough time, all updates are propagated, and all replicas become consistent (weak consistency variant). |
+
+> Strong consistency is usually achieved by forcing a replica not to accept new reads/writes until every replica has agreed on current write. This approach is not ideal for highly available systems because it could block new operations
+
+## Hashing and Consistent Hashing
+
+### Hash Function Outputs
 
   - [Online Hash Function Comparer](https://md5calc.com/hash/sha256/LSKDJFHSFA)
 
@@ -90,25 +98,25 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 
 
 ### Re-Read
-  - Sloppy Quorums (chapter 6).
-    * Instead of enforcing the quorum requirement, the system chooses the first W healthy servers for writes and first R healthy servers for reads on the hash ring. Offline servers are ignored.
-  
-  - Hinted Handoff (chapter 6).
-    * If a server is unavailable, another server will process requests temporarily. When the down server is up, changes will be pushed back to achieve data consistency.
-    * Used to handle temprary (NOT PERMANENT) failures.
+- Sloppy Quorums (chapter 6).
+  * Instead of enforcing the quorum requirement, the system chooses the first W healthy servers for writes and first R healthy servers for reads on the hash ring. Offline servers are ignored.
 
-  - Anti-entropy (chapter 6) [used for handling permanent node failures].
-    * Uses Merkle trees for inconsistency detection and minimizing the amount of data transferred.
-      > A hash tree or Merkle tree is a tree in which every non-leaf node is labeled with the hash of the labels or values (in case of leaves) of its child nodes. Hash trees allow efficient and secure verification of the contents of large data structures.
+- Hinted Handoff (chapter 6).
+  * If a server is unavailable, another server will process requests temporarily. When the down server is up, changes will be pushed back to achieve data consistency.
+  * Used to handle temprary (NOT PERMANENT) failures.
 
-    * Understangind Merkle trees is going to be hard, but the main idea is that from the parent node of two merkle trees (one for each replica) you can compare their hashes and determine if they have different data. If the hashes don't match, then there's a conflict and you will recursivly do this for their children nodes until you find the conflicting data.
+- Anti-entropy (chapter 6) [used for handling permanent node failures].
+  * Uses Merkle trees for inconsistency detection and minimizing the amount of data transferred.
+    > A hash tree or Merkle tree is a tree in which every non-leaf node is labeled with the hash of the labels or values (in case of leaves) of its child nodes. Hash trees allow efficient and secure verification of the contents of large data structures.
 
-  - Bloom filter (chapter 6 & 8)
-    * The bloom filter is used to figure out which SSTables might contain the key.
-    * (chapter 8) A bloom filter is a space-efficient probabilistic technique to test if an element is a member of a set. Refer to the reference material [2] for more details.
+  * Understangind Merkle trees is going to be hard, but the main idea is that from the parent node of two merkle trees (one for each replica) you can compare their hashes and determine if they have different data. If the hashes don't match, then there's a conflict and you will recursivly do this for their children nodes until you find the conflicting data.
 
-  - **Epoch** (chapter 7)
-    * The epoch is where you meassure time from (think of unix timestamps, their epoch is Jan x something).
+- Bloom filter (chapter 6 & 8)
+  * The bloom filter is used to figure out which SSTables might contain the key.
+  * (chapter 8) A bloom filter is a space-efficient probabilistic technique to test if an element is a member of a set. Refer to the reference material [2] for more details.
+
+- **Epoch** (chapter 7)
+  * The epoch is where you meassure time from (think of unix timestamps, their epoch is Jan x something).
 
 ### Fundamentals
 
