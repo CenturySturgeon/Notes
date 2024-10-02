@@ -2988,6 +2988,81 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 
 > Strong consistency is usually achieved by forcing a replica not to accept new reads/writes until every replica has agreed on current write. This approach is not ideal for highly available systems because it could block new operations
 
+## APIs
+
+### REST
+
+#### Request Anatomy
+
+1. Method
+  
+    | Method  | Description                                                   |
+    |---------|---------------------------------------------------------------|
+    | GET     | Retrieve data from the server.                                |
+    | POST    | Submit data to the server, creating a resource.               |
+    | PUT     | Update an existing resource or create it if it doesn't exist. |
+    | DELETE  | Remove a resource from the server.                            |
+    | PATCH   | Partially update an existing resource.                        |
+    | HEAD    | Similar to GET, but retrieves only headers.                   |
+    | OPTIONS | Describes the communication options for the target resource.  |
+
+2. URL
+    - **Protocol**: `http` or `https`.
+    - **Domain**: The server's address (e.g., `api.example.com`).
+    - **Path**: The specific resource (e.g., `/users/123`).
+    - **Query Parameters** (optional): Key-value pairs for additional filtering (e.g., `?sort=asc&limit=10`).
+
+
+3. Headers
+    - **Content-Type**: Specifies the media type of the resource (e.g., `application/json`).
+    - **Authorization**: Credentials for authenticating the request (e.g., `Bearer token`).
+    - **Accept**: Indicates the media types that are acceptable for the response (e.g., `application/json`).
+
+4. Body
+    - **JSON**.
+    - **XML**.
+    - **Form Data**: Key-value pairs sent as form submissions.
+
+- Example: 
+  ```csharp
+  [METHOD, URL, PROTOCOL]
+  POST https://api.example.com/users HTTP/1.1
+
+  [HEADERS]
+  Content-Type: application/json
+  Authorization: Bearer YOUR_JWT_TOKEN
+  Accept: application/json
+
+  [BODY]
+  {
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "age": 30
+  }
+  ```
+
+#### HTTP Status Codes
+
+| Status Code Category | Description   | Examples                    |
+|----------------------|---------------|-----------------------------|
+| **1xx**              | Informational | 100 (Continue)              |
+|                      |               | 101 (Switching Protocols)   |
+| **2xx**              | Successful    | 200 (OK)                    |
+|                      |               | 201 (Created)               |
+|                      |               | 202 (Accepted)              |
+| **3xx**              | Redirection   | 301 (Moved Permanently)     |
+|                      |               | 307 (Temporary Redirect)    |
+| **4xx**              | Client Error  | 400 (Bad Request)           |
+|                      |               | 401 (Unauthorized)          |
+|                      |               | 403 (Forbidden)             |
+|                      |               | 404 (Not Found)             |
+| **5xx**              | Server Error  | 500 (Internal Server Error) |
+|                      |               | 502 (Bad Gateway)           |
+|                      |               | 503 (Service Unavailable)   |
+
+
+
+
 ## Hashing and Consistent Hashing
 
 ### Hash Function Outputs
