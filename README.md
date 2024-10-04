@@ -3025,20 +3025,20 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 
 - Example: 
   ```csharp
-  [METHOD, URL, PROTOCOL]
-  POST https://api.example.com/users HTTP/1.1
+    [METHOD, URL, PROTOCOL]
+    POST https://api.example.com/users HTTP/1.1
 
-  [HEADERS]
-  Content-Type: application/json
-  Authorization: Bearer YOUR_JWT_TOKEN
-  Accept: application/json
+    [HEADERS]
+    Content-Type: application/json
+    Authorization: Bearer YOUR_JWT_TOKEN
+    Accept: application/json
 
-  [BODY]
-  {
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "age": 30
-  }
+    [BODY]
+    {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "age": 30
+    }
   ```
 
 #### HTTP Status Codes
