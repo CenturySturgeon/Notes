@@ -32,17 +32,33 @@ Convert `binary` to `int`:
 
 ### Sorting
 
+#### Array built-in method
 Sorting by using a lambda funciton:
 
 ```Python
 # Sample list of tuples
 data = [(1, 'apple'), (3, 'banana'), (2, 'cherry')]
 
-# Sort by the second element of each tuple
+# Sort by the second element of each tuple (default is first element)
 data.sort(key=lambda x: x[1])
 
 print(data) # [(1, 'apple'), (3, 'banana'), (2, 'cherry')]
 ```
+
+#### Sorted method
+
+Sort a list of tuples based on a specific element.
+
+```Python
+# Sample list of tuples (name, age)
+people = [('Alice', 25), ('Bob', 30), ('Charlie', 20)]
+
+# Sort by age (second element of each tuple)
+sorted_people = sorted(people, key=lambda x: x[1])
+
+print(sorted_people) # [('Charlie', 20), ('Alice', 25), ('Bob', 30)]
+```
+
 
 ### Strings
 
@@ -58,6 +74,21 @@ result = ', '.join(map(str, my_numbers))
 print(result) # 12345
 ```
 
+### Zip
+
+Combine multiple iterables into tuples.
+
+```Python
+# Sample lists
+names = ['Alice', 'Bob', 'Charlie']
+ages = [25, 30, 35]
+
+# Combine names and ages using zip
+combined = list(zip(names, ages))
+
+print(combined) # [('Alice', 25), ('Bob', 30), ('Charlie', 35)]
+
+```
 
 ### Decorators
 
