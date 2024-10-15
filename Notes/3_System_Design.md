@@ -54,8 +54,22 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 | Intercontinental (e.g., North America to Europe) | 100 to 200 ms          |
 | Around the world                                 | Exceeds 300 ms or more |
 
+## Time Values and Relations
+
+| Time Unit              | Estimate Value in Relation to |
+|------------------------|-------------------------------|
+| **Days in a month**    | 30 days/month                 |
+| **Hours in a month**   | 720 hours/month               |
+| **Minutes in a month** | 40,000 minutes/month          |
+| **Seconds in a month** | 2,500,000 seconds/month       |
+| **Seconds in a day**   | 100,000 seconds/day           |
+
 
 ## DB Stuff
+
+### Write Capacity
+
+As an estimate, a single PostgreSQL instance in AWS can handle around **5,000 to 20,000 Writes per Second** (remember this is per node). The reason for the wide throughput window is that *this largely depends on the size of your writes*.
 
 ### Quorum Consensus
 
