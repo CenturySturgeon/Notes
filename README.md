@@ -3299,6 +3299,76 @@ To illustrate, consider the Singleton pattern. This pattern ensures that a class
 In summary, design patterns are valuable tools in software development that help streamline design processes and foster collaboration among developers by providing well-understood, reusable solutions to common challenges.
 
 
+# Main Types of Design Patterns
+
+Design patterns are common solutions to recurring design problems in software development. They can be categorized into three main types:
+
+## 1. Creational Patterns
+
+These patterns deal with object creation mechanisms, aiming to create objects in a manner suitable to the situation.
+
+  - **Singleton**: Ensures a class has only one instance and provides a global point of access to it.
+    - *Use Case*: When you need to control access to a shared resource, such as a configuration manager or logging service.
+
+  - **Factory Method**: Defines an interface for creating an object but allows subclasses to alter the type of created objects.
+    - *Use Case*: When a class cannot anticipate the type of objects it needs to create, allowing subclasses to define specific types.
+
+  - **Abstract Factory**: Provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+    - *Use Case*: When you need to create families of related or dependent objects, such as UI components for different platforms (Windows, macOS, Linux).
+
+  - **Builder**: Separates the construction of a complex object from its representation, allowing the same construction process to create different representations.
+    - *Use Case*: When you want to construct a complex object step by step, such as building a pizza with various toppings.
+
+  - **Prototype**: Creates new objects by copying an existing object, known as the prototype.
+    - *Use Case*: When object creation is costly, and you can create new instances by copying existing ones, like cloning complex configurations.
+
+## 2. Structural Patterns
+
+These patterns focus on how objects and classes are composed to form larger structures, ensuring that if one part changes, the entire system doesn't need to change.
+
+  - **Adapter**: Allows incompatible interfaces to work together by wrapping an existing class with a new interface.
+    - *Use Case*: When you need to integrate a new system with an existing incompatible interface, such as adapting a new payment processor to a legacy system.
+
+  - **Composite**: Composes objects into tree structures to represent part-whole hierarchies, allowing clients to treat individual objects and compositions uniformly.
+    - *Use Case*: When you need to treat individual objects and compositions uniformly, like in a file system where files and directories are treated as the same type.
+
+  - **Proxy**: Provides a surrogate or placeholder for another object to control access to it.
+    - *Use Case*: When you want to control access to an object, such as lazy loading of an image to improve performance.
+
+  - **Decorator**: Adds new functionality to an existing object dynamically without altering its structure.
+    - *Use Case*: When you need to add responsibilities to objects dynamically, such as adding scrollbars to a window or additional features to a graphical user interface.
+
+  - **Facade**: Simplifies a complex subsystem by providing a unified interface to a set of interfaces in that subsystem.
+    - *Use Case*: When you want to simplify interactions with a complex system, like providing a simple interface for a complex library or API.
+
+  - **Bridge**: Separates an object’s abstraction from its implementation, allowing both to evolve independently.
+    - *Use Case*: When you want to decouple an abstraction from its implementation, such as in a graphics library where shapes can have different rendering options.
+
+## 3. Behavioral Patterns
+
+These patterns are concerned with the interaction and responsibility between objects, helping define how they communicate.
+
+- **Observer**: Defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.
+  - *Use Case*: When you need to maintain consistency between related objects, such as in a stock price display where multiple clients need updates when the price changes.
+
+- **Strategy**: Defines a family of algorithms, encapsulates each one, and makes them interchangeable, allowing the algorithm to vary independently from clients that use it.
+  - *Use Case*: When you want to define a family of algorithms that can be swapped at runtime, such as sorting algorithms in a collection management application.
+
+- **Command**: Encapsulates a request as an object, thereby allowing parameterization of clients with queues, requests, and operations.
+  - *Use Case*: When you want to parameterize actions, like in a text editor where commands (e.g., copy, paste) can be queued and executed later.
+
+- **Iterator**: Provides a way to access the elements of a collection sequentially without exposing its underlying representation.
+  - *Use Case*: When you need to traverse a collection without exposing its underlying structure, such as in a custom collection class.
+
+- **State**: Allows an object to alter its behavior when its internal state changes, appearing to change its class.
+  - *Use Case*: When an object needs to change its behavior based on its state, like a media player that behaves differently when playing, paused, or stopped.
+
+- **Mediator**: Defines an object that encapsulates how a set of objects interact, promoting loose coupling by preventing direct interactions between the objects.
+  - *Use Case*: When you want to reduce the complexity of communication between multiple objects, such as in a chat application where a central server manages interactions between users.
+
+### Extra
+
+https://www.hellointerview.com/practice
 </details>
 <details>
   <summary><h2 style='display: inline;'> Algorithms </h2></summary>
