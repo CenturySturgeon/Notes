@@ -2999,6 +2999,12 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 | **Seconds in a month** | 2,500,000 seconds/month       |
 | **Seconds in a day**   | 100,000 seconds/day           |
 
+| Requests per X  | Requests per Y     |
+|-----------------|--------------------|
+| 1 billion/month | 33,333,333 per day |
+| 1 billion/month | 400 per second     |
+| 1 million/month | 33,333  per day    |
+| 1 million/month | 0.4 per second     |
 
 ## DB Stuff
 
