@@ -3006,6 +3006,8 @@ Keep in mind, if you ever hear *"Big Data"* in an interview they're talking abou
 | 1 million/month | 33,333  per day    |
 | 1 million/month | 0.4 per second     |
 
+**Uploading** a file of 100GB with a connection of 100Mbps takes 2 hours.
+
 ## DB Stuff
 
 ### Write Capacity
@@ -3371,6 +3373,68 @@ These patterns are concerned with the interaction and responsibility between obj
 
 - **Mediator**: Defines an object that encapsulates how a set of objects interact, promoting loose coupling by preventing direct interactions between the objects.
   - *Use Case*: When you want to reduce the complexity of communication between multiple objects, such as in a chat application where a central server manages interactions between users.
+
+# API Design
+
+Absolutely! Here are the improved examples with additional details for pagination and media attachments, keeping your notes concise.
+
+---
+
+### API Design
+
+#### Create
+- **POST /v1/products**  
+  *Creates a new product.*  
+  **Request Body:** `{ "name": "Product A", "price": 100, "imageUrl": "http://example.com/image.jpg" }`
+
+#### Read
+- **GET /v1/products**  
+  *Retrieves a list of products with pagination.*  
+  **Query Parameters:** `?page=2&limit=50`  
+  **Response:**  
+  ```json
+  {
+    "products": [{ "id": 123, "name": "Product A", "price": 100 }, ...],
+    "page": 2,
+    "totalPages": 10
+  }
+  ```
+
+- **GET /v1/products/{id}**  
+  *Retrieves a specific product by ID.*  
+  **Example:** `GET /v1/products/123`
+
+#### Update
+- **PUT /v1/products/{id}**  
+  *Updates a specific product by ID.*  
+  **Request Body:** `{ "name": "Updated Product A", "price": 120, "imageUrl": "http://example.com/newimage.jpg" }`
+
+- **PATCH /v1/products/{id}**  
+  *Partially updates a specific product by ID.*  
+  **Request Body:** `{ "price": 110 }`
+
+#### Delete
+- **DELETE /v1/products/{id}**  
+  *Deletes a specific product by ID.*  
+  **Example:** `DELETE /v1/products/123`
+
+### Media Attachments
+- **POST /v1/products/{id}/media**  
+  *Uploads media for a specific product.*  
+  **Request Body:** Form-data containing the file.  
+  **Response:**  
+  ```json
+  { "message": "Media uploaded successfully", "mediaUrl": "http://example.com/media/456" }
+  ```
+
+### Best Practices
+1. **Versioning:** Use versioning in your endpoints (e.g., `/v1/`) to manage changes.
+2. **Nouns for Resources:** Use nouns (e.g., `products`, `users`) for resource names rather than verbs.
+3. **Consistent Naming:** Keep naming conventions consistent (e.g., plural vs. singular).
+4. **Use HTTP Methods Correctly:** Use GET for retrieval, POST for creation, PUT for full updates, PATCH for partial updates, and DELETE for removal.
+5. **Status Codes:** Return appropriate HTTP status codes (e.g., 200, 201, 204, 404, 500).
+
+
 
 ### Extra
 
